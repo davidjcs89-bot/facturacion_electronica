@@ -1,0 +1,151 @@
+﻿@model Facturacion_Electronica.Models.Emisor.ModeloEmisor
+
+@{
+    ViewBag.Title = "Configuracion Emisor";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+}
+
+<h2>Configuracion de Emisor</h2>
+
+@using (Html.BeginForm("Edit", "Emisor", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @Html.HiddenFor(model => model.Id)
+    <div class="form-group">
+        @Html.LabelFor(model => model.Ruc, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Ruc, new { htmlAttributes = new { @class = "form-control" } })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.RazonSocial, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.RazonSocial, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.RazonSocial, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NombreComercial, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NombreComercial, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.NombreComercial, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DireccionMatriz, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.DireccionMatriz, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.DireccionMatriz, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ContirbuyenteEspecial, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.ContirbuyenteEspecial, new { htmlAttributes = new { @id = "ContirbuyenteEspecial", @style = "margin-left:0px" } })
+                @Html.ValidationMessageFor(model => model.ContirbuyenteEspecial, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.NumeroContribuyenteEspecial, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.NumeroContribuyenteEspecial, new { htmlAttributes = new { @class = "form-control", @id = "txt-num-ctr-especial" } })
+            @Html.ValidationMessageFor(model => model.NumeroContribuyenteEspecial, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ObligadoContabilidad, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <div class="checkbox">
+                @Html.EditorFor(model => model.ObligadoContabilidad, new { htmlAttributes = new { @style = "margin-left:0px" } })
+                @Html.ValidationMessageFor(model => model.ObligadoContabilidad, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Logo, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <input type="file" id="logo" name="logo" accept="image/png, image/jpeg">
+            @Html.ValidationMessageFor(model => model.Logo, "", new { @class = "text-danger" })
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TipoAmbiente, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.TipoAmbiente, (IEnumerable<SelectListItem>)ViewBag.Tipo_ambiente, null, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.TipoAmbiente, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.IdImpuestoIva, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.IdImpuestoIva, (IEnumerable<SelectListItem>)ViewBag.ImpuestoIva, null, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.IdImpuestoIva, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Firma, new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            <input type="file" id="firma" name="firma" accept="application/x-pkcs12">
+            @Html.ValidationMessageFor(model => model.Firma, "", new { @class = "text-danger" })
+
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ContrasenaFirma, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.PasswordFor(model => model.ContrasenaFirma, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.ContrasenaFirma, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Adicionales, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.Adicionales, htmlAttributes: new { @class = "form-control " })
+            <span style="font-style:italic">Ejm: correo, telefono, etc.</span>
+            @Html.ValidationMessageFor(model => model.Adicionales, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Guardar" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/EmisorJs")
+    @Scripts.Render("~/bundles/SweetAlert")
+    @if (ViewBag.Mensaje != null)
+    {
+        <script type="text/javascript">
+            swal('@ViewBag.Mensaje');
+        </script>
+    }
+}

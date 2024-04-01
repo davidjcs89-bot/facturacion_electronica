@@ -1,0 +1,138 @@
+﻿@model Facturacion_Electronica.Models.Usuario.ModeloNuevoUsuario
+@{
+    ViewBag.Title = "Creacion de Nuevo Usuario";
+}
+
+<h2>Creaci&oacute;n de Nuevo Usuario</h2>
+<br />
+<a href='@Url.Action("Index", "Home")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Regresar</a>
+<br />
+<a href='@Url.Action("Login", "Login")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Iniciar Sesi&oacute;n</a>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.NombreUsuario, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NombreUsuario, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NombreUsuario, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Clave, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.PasswordFor(model => model.Clave, new { @class = "form-control", @id = "txtClave" })
+                <input type="checkbox" id="ver" class="ver" onChange="hideOrShowPassword()" />
+                <label class="text">Mostrar contraseña</label>
+                @Html.ValidationMessageFor(model => model.Clave, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Nombre, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Nombre, new { htmlAttributes = new { @class = "form-control txt-mayusc" } })
+                @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Apellido, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Apellido, new { htmlAttributes = new { @class = "form-control txt-mayusc" } })
+                @Html.ValidationMessageFor(model => model.Apellido, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Correo, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Correo, new { htmlAttributes = new { @class = "form-control txt-mayusc" } })
+                @Html.ValidationMessageFor(model => model.Correo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Numero_telefono, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Numero_telefono, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Numero_telefono, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Direccion, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Direccion, new { htmlAttributes = new { @class = "form-control txt-mayusc" } })
+                @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Ciudad, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Ciudad, new { htmlAttributes = new { @class = "form-control txt-mayusc" } })
+                @Html.ValidationMessageFor(model => model.Ciudad, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Provincia, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Provincia, new { htmlAttributes = new { @class = "form-control txt-mayusc" } })
+                @Html.ValidationMessageFor(model => model.Provincia, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Notificaciones, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Notificaciones, new { htmlAttributes = new { @style = "margin-left:0px" } })
+                    @Html.ValidationMessageFor(model => model.Notificaciones, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">Tipo Suscripción</label>
+            <div class="col-md-10 suscripcion-desc">
+
+                <label class="control-label">Gratuito</label>
+                <button type="button" id="btnMostrarNota" onclick="mostraOcultarNotaSuscripcion()">
+                    <i class="fa fa-info-circle"></i>
+                </button>
+                <p id="txtNota" style="display:none">
+                    Informacion: Todos los Usuarios se crean por defecto con suscrpcion de tipo gratuita, para
+                    cambiarte de tipo de suscripcion debes comunicarte con la administacion de este sitio web
+                    para indicar que deseas obtener una suscripcion de pago. La administracion te dara las
+                    indicaciones a seguir.
+                </p>
+            </div>
+        </div>
+
+        @Html.Raw(Model.ReCapcha)
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Registrarse" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+
+@section Scripts {
+
+
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/UsuarioJs")
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/UsuarioCss")
+}

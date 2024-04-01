@@ -1,0 +1,248 @@
+﻿@model Facturacion_Electronica.Models.NotaCredito.ModeloImpresionNotaCredito
+@{
+    Layout = null;
+}
+<html>
+<head>
+</head>
+<body onload="window.print();">
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        @Model.NotaCredito.Emisor.Razon_social
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        RUC: @Model.NotaCredito.Emisor.Ruc
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nota Credito#: @Model.NotaCredito.Numero
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Clave Acceso:
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: small">
+                        @Model.NotaCredito.Clave_acceso
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Motivo:
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @Model.NotaCredito.motivo
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    @{
+                        var date = Model.NotaCredito.Fecha_emision.ToString("dd/MM/yyyy-HH:mm:ss");
+                    }
+                    <td>Fecha Emisión: @Html.DisplayFor(model => date)</td>
+                </tr>
+                <tr>
+                    <td>
+                        Id Cliente: @Html.DisplayFor(model => model.NotaCredito.Clientes.identificacion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nombre Cliente: @Html.DisplayFor(model => model.NotaCredito.Clientes.nombre_cliente)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            string address = Model.NotaCredito.Clientes.Direccion;
+
+                            if (address != null && Model.NotaCredito.Clientes.Direccion.Length > 20)
+                            {
+                                address = Model.NotaCredito.Clientes.Direccion.Substring(0, 20);
+                            }
+                        }
+                        Dirección: @Html.DisplayFor(model => address)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Email
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        #Factura Devuelta: @Html.DisplayFor(model => model.NotaCredito.Factura.Numero)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            var dateDev = Model.NotaCredito.Factura.Fecha_emision.ToString("dd/MM/yyyy-HH:mm:ss");
+                        }
+                        #Factura F.Emision: @Html.DisplayFor(model => dateDev)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            string email = Model.NotaCredito.Clientes.correo;
+
+                            if (email != null && Model.NotaCredito.Clientes.correo.Length > 24)
+                            {
+                                email = Model.NotaCredito.Clientes.correo.Substring(0, 24);
+                                email = email.ToUpper();
+                            }
+                            else
+                            {
+                                email = "";
+                            }
+                        }
+                        @Html.DisplayFor(model => email)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Código
+                    </th>
+                    <th colspan="2">
+                        Producto
+                    </th>
+                    <th>
+                        Qty
+                    </th>
+                    <th>
+                        P.Unit
+                    </th>
+                    <th>
+                        Descuento
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.NotaCredito.Detalle_nota_credito.ToList())
+                {
+                    <tr>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(model => item.Producto.Codigo)
+                        </td>
+                        <td colspan="2" style="text-align: left">
+                            @{
+                                string descr = item.Producto.Nombre;
+
+                                if (item.Producto.Nombre.Length > 8)
+                                {
+                                    descr = item.Producto.Nombre.Substring(0, 8);
+                                }
+                            }
+                            @Html.DisplayFor(model => descr)
+                        </td>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(model => item.Cantidad)
+                        </td>
+                        <td style="text-align: right">
+                            @Html.DisplayFor(model => item.Precio)
+                        </td>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(model => item.Descuento)
+                        </td>
+                        <td style="text-align: right">
+                            @{
+                                var subtotal = item.Subtotal - item.Descuento;
+                            }
+                            @Html.DisplayFor(model => subtotal)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td><strong>Subtotal Sin Imp</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">$@Html.DisplayFor(model => model.NotaCredito.sumtota_sin_impuesto)</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Descuento</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                $@Html.DisplayFor(model => model.NotaCredito.Total_descuento)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Iva</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                $@Html.DisplayFor(model => model.NotaCredito.Valor_iva)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Total</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                $@Html.DisplayFor(model => model.NotaCredito.Total)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <br/>
+        <div style="font-size: small">
+            @Html.Raw(Model.Impresion.mensajes)
+        </div>
+
+        @if (Model.Impresion.firma)
+        {
+            <div>
+                <p>----------------------------------------------------------</p>
+                   Firma
+            </div>
+        }
+    </div>
+</body>
+</html>

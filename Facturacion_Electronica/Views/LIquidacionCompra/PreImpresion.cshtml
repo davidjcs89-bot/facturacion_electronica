@@ -1,0 +1,20 @@
+﻿@model Facturacion_Electronica.Models.LiquidacionCompra.ModeloImpresionLiquidacion
+@{
+
+}
+
+@Html.HiddenFor(model => model.Liquidacion.id, new { id = "sale-id", Value = Model.Liquidacion.id })
+
+@Scripts.Render("~/bundles/jquery")
+<script type="text/javascript">
+    $(document).ready(function () {
+        PrintSale();
+    });
+
+    function PrintSale() {
+        var id = $("#sale-id").val();
+        window.open("/LiquidacionCompra/Index/", "_self");
+        window.open("/LiquidacionCompra/Impresion/" + id, "", 1200, 1000);
+        return false;
+    }
+</script>

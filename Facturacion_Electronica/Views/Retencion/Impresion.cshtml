@@ -1,0 +1,146 @@
+﻿@model Facturacion_Electronica.Models.Retencion.ModeloImpresionRetencion
+@{
+    Layout = null;
+}
+<html>
+<head>
+</head>
+<body onload="window.print();">
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        @Model.Retencion.Emisor.Razon_social
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        RUC: @Model.Retencion.Emisor.Ruc
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Retencion#: @Model.Retencion.numero
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Clave Acceso:
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: small">
+                        @Model.Retencion.Clave_acceso
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    @{
+                        var date = Model.Retencion.fecha_emision.ToString("dd/MM/yyyy-HH:mm:ss");
+                    }
+                    <td>Fecha Emisión: @Html.DisplayFor(model => date)</td>
+                </tr>
+                <tr>
+                    <td>
+                        Id Cliente: @Html.DisplayFor(model => model.Retencion.Clientes.identificacion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nombre Cliente: @Html.DisplayFor(model => model.Retencion.Clientes.nombre_cliente)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            string address = Model.Retencion.Clientes.Direccion;
+
+                            if (address != null && Model.Retencion.Clientes.Direccion.Length > 20)
+                            {
+                                address = Model.Retencion.Clientes.Direccion.Substring(0, 20);
+                            }
+                        }
+                        Dirección: @Html.DisplayFor(model => address)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Email
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            string email = Model.Retencion.Clientes.correo;
+
+                            if (email != null && Model.Retencion.Clientes.correo.Length > 24)
+                            {
+                                email = Model.Retencion.Clientes.correo.Substring(0, 24);
+                                email = email.ToUpper();
+                            }
+                            else
+                            {
+                                email = "";
+                            }
+                        }
+                        @Html.DisplayFor(model => email)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Impuesto
+                    </th>
+                    <th>
+                        Porcentaje
+                    </th>
+                    <th>
+                        Base
+                    </th>
+                    <th>
+                        Valor
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Retencion.Detalle_retencion.ToList())
+                {
+                <tr>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(model => item.Impuestos_retencion.Descripcion)
+                    </td>
+                    <td style="text-align: center">
+                        @Html.DisplayFor(model => item.Impuesto_porcentaje_retencion.Porcentaje)
+                    </td>
+                    <td style="text-align: right">
+                        @Html.DisplayFor(model => item.Base_imponible)
+                    </td>
+                    <td style="text-align: right">
+                        @Html.DisplayFor(model => item.Valor_retenido)
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+        
+        <br/>
+        <div style="font-size: small">
+            @Html.Raw(Model.Impresion.mensajes)
+        </div>
+
+        @if (Model.Impresion.firma)
+        {
+            <div>
+                <p>----------------------------------------------------------</p>
+                   Firma
+            </div>
+        }
+    </div>
+</body>
+</html>

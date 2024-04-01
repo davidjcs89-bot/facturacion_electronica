@@ -1,0 +1,51 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .btn-editar {
+            background-color: #cdbe34 !important;
+        }
+    </style>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - SIDOIT</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/bundles/fontawesome")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            @{
+                Html.RenderAction("Menu", "Admin");
+            }
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <div class="row">
+                <div class="col-md-6 text-left">
+                    <p>&copy; @DateTime.Now.Year - SIDOIT</p>
+                </div>
+                <div class="col-md-6 text-right">
+                    <p id="txt-dias-restantes"></p>
+                </div>
+            </div>
+
+
+        </footer>
+    </div>
+    @if (IsSectionDefined("BodyArea"))
+    {@RenderSection("BodyArea", required: false)}
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+    @RenderSection("styles", required: false)
+    @Scripts.Render("~/bundles/UsuarioJs")
+    <div class="loading" style="top:0;width: 100%; height: 100%;display:none;position:fixed;z-index: 900;background-image: url('/Content/Imagenes/content-bg.png');"></div>
+    <div class="loading" style="bottom: 10px;position: fixed;display:none;right: 50%;top: 50%;z-index: 100000;"><img src="/Content/Imagenes/loading-image.gif" width="60px" /></div>
+</body>
+</html>

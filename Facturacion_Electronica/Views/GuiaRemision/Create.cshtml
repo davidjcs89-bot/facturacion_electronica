@@ -1,0 +1,189 @@
+﻿@model Facturacion_Electronica.Models.GuiaRemision.ModeloGuiaRemision
+@{
+    ViewBag.Title = "Guia de Remision";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Nueva Guía de Remisión</h2>
+@using (Html.BeginForm("Create", "GuiaRemision", null, FormMethod.Post, new { id = "frm-nueva-guia", autocomplete = "off" }))
+{
+    @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-guia" })
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="col-md-12" style="border-style: solid;">
+                    <fieldset>
+                        <div style="text-align:center">
+                            @if (Model.Emisor.LogoRelativoPath != null)
+                            {
+                                <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                            }
+                        </div>
+
+                        <legend>Datos del Emisor</legend>
+                        <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                        <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                        <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                        <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                        <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                        @if (Model.Emisor.ContirbuyenteEspecial)
+                        {
+                            <p>Contribuyente Especial: <strong>SI</strong></p>
+                            <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                        }
+                        else
+                        {
+                            <p>Contribuyente Especial: <strong>NO</strong></p>
+                        }
+                        @if (Model.Emisor.ObligadoContabilidad)
+                        {
+                            <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                        }
+                        else
+                        {
+                            <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                        }
+                        <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="col-md-12" style="border-style: solid;">
+                    <fieldset>
+                        <legend>Identificación del Comprobante</legend>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">Fecha Incio Transporte:</label>
+                            <div class="input-group date datePickerBasicDate col-md-6">
+                                @Html.EditorFor(model => model.FechaInicioTransporte, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaInicioTransporte, @type = "text" } })
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">Fecha Fin Transporte:</label>
+                            <div class="input-group date datePickerBasicDate col-md-6">
+                                @Html.EditorFor(model => model.FechaFinTransporte, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaFinTransporte, @type = "text" } })
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <label>Punto de Emisón:</label>
+                        @Html.DropDownListFor(model => model.PuntoEmisionId, (IEnumerable<SelectListItem>)ViewBag.PuntoEmision, null, new { @id = "lista-punto-emision", @class = "form-control" })
+                        <p>Número: <strong id="numero-factura">@Model.Numero</strong></p>
+                        <p>Ambiente: <strong>@Model.Ambiente</strong></p>
+                        <p>Clave Acceso:</p>
+                        <p style="font-size: 1em;word-wrap: break-word; "><strong>@Model.ClaveAcceso</strong></p>
+                    </fieldset>
+                </div>
+
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="table-responsive" style="border-style: solid;overflow:hidden">
+                <fieldset>
+                    <legend>Datos del Transportista</legend>
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.IdentificacionTransportista, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-4 ">
+                                @Html.EditorFor(model => model.IdentificacionTransportista, new { htmlAttributes = new { @class = "form-control", @id = "id-transportista" } })
+                                <span>
+                                    <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="CrearGuia();" /></span>
+                                    <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoTransportista" class="btn btn-default" onclick="AbrirModalNuevoTransportista();" /></span>
+                                    <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
+                                </span>
+                                <br />
+                                @Html.ValidationMessageFor(model => model.IdentificacionTransportista, "", new { @class = "text-danger" })
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Transportista.Nombre, htmlAttributes: new { @class = "control-label  " })
+                                            @Html.EditorFor(model => model.Transportista.Nombre, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "nombre-transportista" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Transportista.Placa, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(model => model.Transportista.Placa, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "placa-transportista" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Transportista.Correo, htmlAttributes: new { @class = "control-label  " })
+                                            @Html.EditorFor(model => model.Transportista.Correo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "email-transportista" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.DireccionPartida, htmlAttributes: new { @class = "control-label  " })
+                                            @Html.TextAreaFor(model => model.DireccionPartida, htmlAttributes: new { @class = "form-control " })
+                                            @Html.ValidationMessageFor(model => model.DireccionPartida, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+}
+
+@section BodyArea {
+    <div id="nuevoTransportista" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear Transportista</h4>
+                </div>
+                <div id="vistaNuevoTransportista">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editarTransportista" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Transportista</h4>
+                </div>
+                <div id="vistaEditarTransportista">
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/GuiaRemisionJS")

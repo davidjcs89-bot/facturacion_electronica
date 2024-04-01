@@ -1,0 +1,83 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<autorizacion>
+  <estado>AUTORIZADO</estado>
+  <numeroAutorizacion>0207202101019012242500120028020000459272524528514</numeroAutorizacion>
+  <fechaAutorizacion>2021-07-07T12:56:10-05:00</fechaAutorizacion>
+  <comprobante>
+    <factura id="comprobante" version="1.1.0">
+      <infoTributaria>
+        <ambiente>2</ambiente>
+        <tipoEmision>1</tipoEmision>
+        <razonSocial>INMOBILIARIA PIEDRA HUASI S A</razonSocial>
+        <nombreComercial>MALL DEL RIO SHOPPING CENTER</nombreComercial>
+        <ruc>0190122425001</ruc>
+        <claveAcceso>0207202101019012242500120028020000459272524528514</claveAcceso>
+        <codDoc>01</codDoc>
+        <estab>002</estab>
+        <ptoEmi>802</ptoEmi>
+        <secuencial>000045927</secuencial>
+        <dirMatriz>AV. CARLOS JULIO AROSEMENA S/N JUNTO A VALLEJO ARAUJO</dirMatriz>
+      </infoTributaria>
+      <infoFactura>
+        <fechaEmision>02/07/2021</fechaEmision>
+        <dirEstablecimiento>AV. FELIPE II Y AUTOPISTA</dirEstablecimiento>
+        <contribuyenteEspecial>849</contribuyenteEspecial>
+        <obligadoContabilidad>SI</obligadoContabilidad>
+        <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+        <razonSocialComprador>DIVADCLOSET CIA LTDA</razonSocialComprador>
+        <identificacionComprador>0190422135001</identificacionComprador>
+        <direccionComprador>AV. FELIPE SEGUNDO Y CIRCUNVALACI N SUR</direccionComprador>
+        <totalSinImpuestos>873.00</totalSinImpuestos>
+        <totalDescuento>0.00</totalDescuento>
+        <totalConImpuestos>
+          <totalImpuesto>
+            <codigo>2</codigo>
+            <codigoPorcentaje>2</codigoPorcentaje>
+            <baseImponible>873.00</baseImponible>
+            <valor>104.76</valor>
+          </totalImpuesto>
+        </totalConImpuestos>
+        <propina>0.00</propina>
+        <importeTotal>977.76</importeTotal>
+        <moneda>DOLAR</moneda>
+        <pagos>
+          <pago>
+            <formaPago>20</formaPago>
+            <total>977.76</total>
+          </pago>
+        </pagos>
+      </infoFactura>
+      <detalles>
+        <detalle>
+          <codigoPrincipal>GPOV001</codigoPrincipal>
+          <descripcion>CUOTAS VALOR INICIAL ARRIENDO</descripcion>
+          <cantidad>1.0000</cantidad>
+          <precioUnitario>873.0000</precioUnitario>
+          <descuento>0.00</descuento>
+          <precioTotalSinImpuesto>873.00</precioTotalSinImpuesto>
+          <detallesAdicionales>
+            <detAdicional nombre="TipoServicio" valor="VIA Mensual de Arriendo - Periodo Pago Desde 01-06-2021 hasta 30-06-2021"/>
+          </detallesAdicionales>
+          <impuestos>
+            <impuesto>
+              <codigo>2</codigo>
+              <codigoPorcentaje>2</codigoPorcentaje>
+              <tarifa>12.00</tarifa>
+              <baseImponible>873.00</baseImponible>
+              <valor>104.76</valor>
+            </impuesto>
+          </impuestos>
+        </detalle>
+      </detalles>
+      <infoAdicional>
+        <campoAdicional nombre="Lugar Venta">MALL DE RIO SEG</campoAdicional>
+        <campoAdicional nombre="Recordar">El tiempo limite para la documentacion de esta factura es de 8 dias, desde la fecha de emision de la Misma</campoAdicional>
+        <campoAdicional nombre="Codigo">960191</campoAdicional>
+        <campoAdicional nombre="Rep Legal">CONTRERAS SOLIS DAVID JOSUE</campoAdicional>
+        <campoAdicional nombre="Direccion">AV. FELIPE SEGUNDO Y CIRCUNVALACI N SUR</campoAdicional>
+        <campoAdicional nombre="Ciudad">CUENCA</campoAdicional>
+        <campoAdicional nombre="Correo">DIVADCLOSET@GMAIL.COM</campoAdicional>
+      </infoAdicional>
+    </factura>
+</comprobante>
+</autorizacion>

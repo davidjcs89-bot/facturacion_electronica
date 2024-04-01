@@ -1,0 +1,210 @@
+﻿@model Facturacion_Electronica.Models.Cliente.ModeloBuscarClientes
+
+@{
+    ViewBag.Title = "Clientes";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Clientes</h2>
+
+<p>
+    <button type="button" id="nuevoCliente" class="btn btn-success" data-target="#nuevoCliete">
+        Crear Cliente
+    </button>
+    <a href='@Url.Action("Importar", "Cliente")' class="btn btn-info">Importar Excel</a>
+</p>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+<div class="container" style="border-style: solid;">
+
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <h4 class="mb-0">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Busqueda de Clientes
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="accordion-body collapse-in">
+                <div class="accordion-inner">
+                    <fieldset>
+
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BuscarPorIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BuscarPorIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BuscarPorRazonSocial, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BuscarPorRazonSocial, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BuscarPorTelefono, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BuscarPorTelefono, new { htmlAttributes = new { @class = "form-control" } })
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-7">
+                                            @Html.LabelFor(model => model.BuscarTodos, htmlAttributes: new { @class = "control-label", @style = "padding-right: 10px" })
+
+                                            @Html.EditorFor(model => model.BuscarTodos)
+
+                                        </div>
+                                        <div class="col-md-5">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="table-responsive" style="width:1200px">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Razon Social
+                            </th>
+                            <th>
+                                Numero Identificacion
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                Celular
+                            </th>
+                            <th>
+                                Direccion
+                            <th>
+                                Fecha Creacion
+                            </th>
+                            <th>
+                                Fecha Modificacion
+                            </th>
+                            <th>
+                                Tipo Cliente
+                            </th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Model.Clientes)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.nombre_cliente)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.identificacion)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.correo)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.telefono_movil)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Direccion)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.fecha_creacion)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.fecha_modificacion)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Tipo_cliente1.Descripcion)
+                                </td>
+                                <td>
+                                    <button type="button" id="nuevoCliente" class="btn btn-warning btn-editar" data-target="#editarCliete" onclick="CargarVistaEditarCliente(@(item.id))">
+                                        Editar
+                                    </button>
+                                </td>
+                                <td>
+                                    <button type="button" id="nuevaFactura" class="btn bg-info" data-target="#notasCliente" onclick="location.href='/Cliente/Notas/@item.id'">
+                                        Notas
+                                    </button>
+
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@section BodyArea {
+    <div id="nuevoCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear Cliente</h4>
+                </div>
+                <div id="vistaNuevoCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editarCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Cliente</h4>
+                </div>
+                <div id="vistaEditarCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/ClienteJs")
+}

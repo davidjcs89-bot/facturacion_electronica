@@ -1,0 +1,20 @@
+﻿@model Facturacion_Electronica.Models.Retencion.ModeloImpresionRetencion
+@{
+
+}
+
+@Html.HiddenFor(model => model.Retencion.id, new { id = "sale-id", Value = Model.Retencion.id })
+
+@Scripts.Render("~/bundles/jquery")
+<script type="text/javascript">
+    $(document).ready(function () {
+        PrintSale();
+    });
+
+    function PrintSale() {
+        var id = $("#sale-id").val();
+        window.open("/Retencion/Index/", "_self");
+        window.open("/Retencion/Impresion/" + id, "", 1200, 1000);
+        return false;
+    }
+</script>

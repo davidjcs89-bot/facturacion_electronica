@@ -1,0 +1,117 @@
+﻿@model Facturacion_Electronica.Models.Emisor.ModeloEmisorConfigAdmin
+@{
+    ViewBag.Title = "Configurar";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h2>Configuracion de Emisor</h2>
+
+@using (Html.BeginForm("Configurar", "Emisor", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Emisor.Id)
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.Ruc, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Emisor.Ruc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.RazonSocial, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Emisor.RazonSocial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.NombreComercial, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Emisor.NombreComercial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.DireccionMatriz, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Emisor.DireccionMatriz, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.ContirbuyenteEspecial, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Emisor.ContirbuyenteEspecial, new { htmlAttributes = new { @id = "check-ctr-especial", @style = "margin-left:0px", @disabled = "@disabled" } })
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.NumeroContribuyenteEspecial, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Emisor.NumeroContribuyenteEspecial, new { htmlAttributes = new { @class = "form-control", @id = "txt-num-ctr-especial", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.ObligadoContabilidad, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <div class="checkbox">
+                    @Html.EditorFor(model => model.Emisor.ObligadoContabilidad, new { htmlAttributes = new { @style = "margin-left:0px", @disabled = "@disabled" } })
+                </div>
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Emisor.TipoAmbiente, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.Emisor.TipoAmbiente, (IEnumerable<SelectListItem>)ViewBag.Tipo_ambiente, null, new { @class = "form-control", @disabled = "@disabled" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Habilitado Desde:</label>
+            <div class="col-md-10">
+                <div class="input-group date datePickerBasicDate">
+                    @Html.EditorFor(model => model.FechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Habilitado Hasta:</label>
+            <div class="col-md-10">
+                <div class="input-group date datePickerBasicDate">
+                    @Html.EditorFor(model => model.FechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Guardar" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/datetimePicker")
+    @Scripts.Render("~/bundles/EmisorJs")
+}

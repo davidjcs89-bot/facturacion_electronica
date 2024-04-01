@@ -1,0 +1,383 @@
+﻿@model Facturacion_Electronica.Models.Retencion.ModeloRetencion
+@{
+    ViewBag.Title = "Nueva Retención";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Nueva Retención</h2>
+@using (Html.BeginForm("Create", "Retencion", null, FormMethod.Post, new { id = "frm-retencion", autocomplete = "off" }))
+{
+    @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-retencion" })
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <div style="text-align:center">
+                        @if (Model.Emisor.LogoRelativoPath != null)
+                        {
+                            <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                        }
+                    </div>
+
+                    <legend>Datos del Emisor</legend>
+                    <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                    <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                    <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                    <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                    <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                    @if (Model.Emisor.ContirbuyenteEspecial)
+                    {
+                        <p>Contribuyente Especial: <strong>SI</strong></p>
+                        <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                    }
+                    else
+                    {
+                        <p>Contribuyente Especial: <strong>NO</strong></p>
+                    }
+                    @if (Model.Emisor.ObligadoContabilidad)
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                    }
+                    else
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                    }
+                    <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <legend>Identificación del Comprobante</legend>
+                    <div class="form-group">
+                        <label class="control-label col-md-12">Fecha de Emisón:</label>
+                        <div class="input-group date datePickerBasicDate col-md-6">
+                            @Html.EditorFor(model => model.FechaEmison, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaEmision, @type = "text" } })
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <label>Punto de Emisón:</label>
+                    @Html.DropDownListFor(model => model.PuntoEmisionId, (IEnumerable<SelectListItem>)ViewBag.PuntoEmision, null, new { @id = "lista-punto-emision", @class = "form-control", @onchange = "CambiarPuntoEmision()" })
+                    <p>Número: <strong id="numero-factura">@Model.Numero</strong></p>
+                    <p>Ambiente: <strong>@Model.Ambiente</strong></p>
+                    <p>Clave Acceso:</p>
+                    <p style="font-size: 1em;word-wrap: break-word; "><strong>@Model.ClaveAcceso</strong></p>
+                </fieldset>
+            </div>
+
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+            <fieldset>
+                <legend>Datos del Sujeto Retenido</legend>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 ">
+                            @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                            @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+
+                            <span>
+                                <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" /></span>
+                                <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearCliente();" /></span>
+                                <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
+                            </span>
+                            <br />
+                            @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
+                        </div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(model => model.Cliente.RazonSocial, htmlAttributes: new { @class = "control-label  " })
+                                    @Html.EditorFor(model => model.Cliente.RazonSocial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "nombre-cliente" } })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(model => model.Cliente.Direccion, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Cliente.Direccion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "direccion-cliente" } })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(model => model.Cliente.Email, htmlAttributes: new { @class = "control-label  " })
+                                    @Html.EditorFor(model => model.Cliente.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "email-cliente" } })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    @Html.LabelFor(model => model.Cliente.Celular, htmlAttributes: new { @class = "control-label" })
+                                    @Html.EditorFor(model => model.Cliente.Celular, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "celular-cliente" } })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <br />
+    <div style="border-style: solid;overflow:hidden">
+        <fieldset>
+            <legend>Impuestos</legend>
+            <div class="form-horizontal">
+
+
+                <div class="row" style="margin-left:0px;margin-right:0px">
+
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.IdTipoDocumento, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.IdTipoDocumento, (IEnumerable<SelectListItem>)ViewBag.TipoDocumento, null, new { @class = "form-control" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.NumeroComprobante, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.NumeroComprobante, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.NumeroComprobante, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4">
+                        <label class="control-label">Fecha de Emisón:</label>
+                        <div class="input-group date datePickerBasicDate col-md-6">
+                            @Html.EditorFor(model => model.FechaEmisionComprobante, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaEmisionComprobante, @type = "text" } })
+                            <span class="input-group-addon">
+                                <span class="fa fa-calendar"></span>
+                            </span>
+                        </div>
+                        @Html.ValidationMessageFor(model => model.FechaEmisionComprobante, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row" style="margin-left:0px;margin-right:0px">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.IdImpuesto, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.IdImpuesto, (IEnumerable<SelectListItem>)ViewBag.TipoImpuesto, null, new { @class = "form-control", @id = "listaImpuesto" })
+                    </div>
+                    <div class="col-md-8">
+                        @Html.LabelFor(model => model.IdPorcentajeImpuesto, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.IdPorcentajeImpuesto, (IEnumerable<SelectListItem>)ViewBag.TipoPorcentajeImpuesto, null, new { @class = "form-control", @id = "listaPorcentajes", @style = "max-width:100%" })
+                    </div>
+                </div>
+                <div class="row" style="margin-left:0px;margin-right:0px;margin-bottom:15px">
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.BaseImponible, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.BaseImponible, new { htmlAttributes = new { @class = "form-control", @id = "baseImponible" } })
+                        @Html.ValidationMessageFor(model => model.BaseImponible, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.PorcentajeRetencion, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.PorcentajeRetencion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "valorPocentaje" } })
+                        @Html.ValidationMessageFor(model => model.PorcentajeRetencion, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-4">
+                        @Html.LabelFor(model => model.ValorRetenido, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.ValorRetenido, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "valorRetenido" } })
+                        @Html.ValidationMessageFor(model => model.ValorRetenido, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <br />
+    <div class="table-responsive" style="border-style: solid;overflow:hidden">
+        <fieldset>
+            <legend>Detalle del Comprobante de Retencion</legend>
+            <button type="submit" id="agregarDetalle" class="btn bg-info" data-target="#nuevaRetencion" onclick="">
+                Añadir Impuesto Detalle
+            </button>
+            <table class="table">
+                <tr>
+                    <th>
+                        Código
+                    </th>
+                    <th>
+                        Impuesto
+                    </th>
+                    <th>
+                        Descripción
+                    </th>
+                    <th>
+                        Base Imponible
+                    </th>
+                    <th>
+                        Porcentaje
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                    <th>
+                        Documento
+                    </th>
+                    <th>
+                        Fecha Emision
+                    </th>
+                    <th></th>
+                </tr>
+
+                @foreach (var item in Model.Detalles)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CodigoImpuesto)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NombreImpuesto)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DescripcionImpuesto)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.BaseImponible)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Porcentaje)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TipoDocumento)
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(item.FechaEmision).ToString("dd/MM/yyyy")
+                        </td>
+                        <td>
+                            <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarDetalle(@item.Id)">
+                                Eliminar
+                            </button>
+                        </td>
+
+
+                    </tr>
+                }
+
+            </table>
+        </fieldset>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive" style="border-style: solid;">
+                <fieldset>
+                    <legend>Datos Adicionales</legend>
+                    <button type="button" id="agregar-pago" class="btn bg-info" data-target="#agregarAdicional" onclick="CargarAgregarAdicional()">
+                        Agregar Nuevo Dato
+                    </button>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Nombre
+                            </th>
+                            <th>
+                                Descripción
+                            </th>
+                            <th>
+                                Accion
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model.Adicionales)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Nombre)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Descripcion)
+                                </td>
+                                <td>
+                                    <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarAdicional(@item.Id)">
+                                        Eliminar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <br />
+    @if (Model.Detalles.Count > 0)
+    {
+        <button type="button" id="eliminar-detalle" class="btn bg-success" onclick="FinalizarRetencion()">
+            Finalizar
+        </button>
+    }
+    else
+    {
+        <button type="button" id="eliminar-detalle" class="btn bg-success" disabled="disabled">
+            Finalizar
+        </button>
+    }
+
+    <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarRetencion()()">
+        Cancelar y Salir
+    </button>
+</div>
+}
+@section BodyArea {
+    <div id="nuevoCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear Cliente</h4>
+                </div>
+                <div id="vistaNuevoCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editarCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Cliente</h4>
+                </div>
+                <div id="vistaEditarCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarAdicional" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Dato Adicional</h4>
+                </div>
+                <div id="vistaAgregarAdicional">
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/RetencionJs")

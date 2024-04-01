@@ -1,0 +1,20 @@
+﻿@model Facturacion_Electronica.Models.GuiaRemision.ModeloImpresionGuiaRemision
+@{
+
+}
+
+@Html.HiddenFor(model => model.GuiaRemision.id, new { id = "sale-id", Value = Model.GuiaRemision.id })
+
+@Scripts.Render("~/bundles/jquery")
+<script type="text/javascript">
+    $(document).ready(function () {
+        PrintSale();
+    });
+
+    function PrintSale() {
+        var id = $("#sale-id").val();
+        window.open("/GuiaRemision/Index/", "_self");
+        window.open("/GuiaRemision/Impresion/" + id, "", 1200, 1000);
+        return false;
+    }
+</script>

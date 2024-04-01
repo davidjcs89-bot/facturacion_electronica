@@ -1,0 +1,73 @@
+﻿@model Facturacion_Electronica.Puntos_emisior
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Puntos_emisior</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id_emisor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id_emisor)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Numero_establecimiento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Numero_establecimiento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Numero_emision)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Numero_emision)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Direccion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Direccion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_creacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_creacion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_modificacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_modificacion)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

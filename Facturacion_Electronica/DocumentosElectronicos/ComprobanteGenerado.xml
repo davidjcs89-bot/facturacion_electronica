@@ -1,0 +1,62 @@
+<factura id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>2</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>GALARZA CONTRERAS JUAN ANDRES</razonSocial>
+    <nombreComercial>GRUN PADEL</nombreComercial>
+    <ruc>0915845994001</ruc>
+    <claveAcceso>3001202401091584599400120010030000017998370901319</claveAcceso>
+    <codDoc>01</codDoc>
+    <estab>001</estab>
+    <ptoEmi>003</ptoEmi>
+    <secuencial>000001799</secuencial>
+    <dirMatriz>AV. LEON FEBRES CORDERO KM 14.5</dirMatriz>
+  </infoTributaria>
+  <infoFactura>
+    <fechaEmision>30/01/2024</fechaEmision>
+    <dirEstablecimiento>AV LEON FEBRES CORDERO KM 14.5</dirEstablecimiento>
+    <obligadoContabilidad>NO</obligadoContabilidad>
+    <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+    <razonSocialComprador>COELLO LAURA</razonSocialComprador>
+    <identificacionComprador>0705286136</identificacionComprador>
+    <direccionComprador>SIN DIRECCION</direccionComprador>
+    <totalSinImpuestos>28.58</totalSinImpuestos>
+    <totalDescuento>0.00</totalDescuento>
+    <totalConImpuestos>
+      <totalImpuesto>
+        <codigo>2</codigo>
+        <codigoPorcentaje>2</codigoPorcentaje>
+        <baseImponible>28.58</baseImponible>
+        <valor>3.42</valor>
+      </totalImpuesto>
+    </totalConImpuestos>
+    <propina>0.00</propina>
+    <importeTotal>32.00</importeTotal>
+    <moneda>USD</moneda>
+    <pagos>
+      <pago>
+        <formaPago>19</formaPago>
+        <total>32.00</total>
+      </pago>
+    </pagos>
+  </infoFactura>
+  <detalles>
+    <detalle>
+      <codigoPrincipal>LV90N</codigoPrincipal>
+      <descripcion>ALQUILER DE CANCHA DE PADEL DE LUNES A VIERNES 90 MIN NOCHE</descripcion>
+      <cantidad>1</cantidad>
+      <precioUnitario>28.580</precioUnitario>
+      <descuento>0.00</descuento>
+      <precioTotalSinImpuesto>28.58</precioTotalSinImpuesto>
+      <impuestos>
+        <impuesto>
+          <codigo>2</codigo>
+          <codigoPorcentaje>2</codigoPorcentaje>
+          <tarifa>12.000</tarifa>
+          <baseImponible>28.58</baseImponible>
+          <valor>3.42</valor>
+        </impuesto>
+      </impuestos>
+    </detalle>
+  </detalles>
+</factura>

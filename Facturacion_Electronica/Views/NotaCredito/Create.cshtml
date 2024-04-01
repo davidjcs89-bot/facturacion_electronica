@@ -1,0 +1,293 @@
+﻿@model Facturacion_Electronica.Models.NotaCredito.ModeloNotaCredito
+@{
+    ViewBag.Title = "Nota de Crédito";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Nueva Nota de Crédito</h2>
+
+@using (Html.BeginForm("Create", "NotaCredito", null, FormMethod.Post, new { id = "frm-nota-credito", autocomplete = "off" }))
+{
+    @Html.HiddenFor(x => x.IdCliente)
+    @Html.HiddenFor(x => x.IdFactura)
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="col-md-12" style="border-style: solid;">
+                    <fieldset>
+                        <div style="text-align:center">
+                            @if (Model.Emisor.LogoRelativoPath != null)
+                            {
+                                <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                            }
+                        </div>
+
+                        <legend>Datos del Emisor</legend>
+                        <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                        <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                        <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                        <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                        <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                        @if (Model.Emisor.ContirbuyenteEspecial)
+                        {
+                            <p>Contribuyente Especial: <strong>SI</strong></p>
+                            <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                        }
+                        else
+                        {
+                            <p>Contribuyente Especial: <strong>NO</strong></p>
+                        }
+                        @if (Model.Emisor.ObligadoContabilidad)
+                        {
+                            <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                        }
+                        else
+                        {
+                            <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                        }
+                        <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="col-md-12" style="border-style: solid;">
+                    <fieldset>
+                        <legend>Identificación del Comprobante</legend>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">Fecha de Emisón:</label>
+                            <div class="input-group date datePickerBasicDate col-md-6">
+                                @Html.EditorFor(model => model.FechaEmison, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaEmision, @type = "text" } })
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <label>Punto de Emisón:</label>
+                        @Html.DropDownListFor(model => model.PuntoEmisionId, (IEnumerable<SelectListItem>)ViewBag.PuntoEmision, null, new { @id = "lista-punto-emision", @class = "form-control", @onchange = "CambiarPuntoEmision()" })
+                        <p>Número: <strong id="numero-factura">@Model.Numero</strong></p>
+                        <p>Ambiente: <strong>@Model.Ambiente</strong></p>
+                        <p>Clave Acceso:</p>
+                        <p style="font-size: 1em;word-wrap: break-word; "><strong>@Model.ClaveAcceso</strong></p>
+                    </fieldset>
+                </div>
+
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="table-responsive" style="border-style: solid;overflow:hidden">
+                <fieldset>
+                    <legend>Datos del Comprador</legend>
+                    <p>Número Identificación: <strong>@Model.Factura.Cliente.NumeroIdentificacion</strong></p>
+                    <p>Razón Social: <strong>@Model.Factura.Cliente.RazonSocial</strong></p>
+                    <p>Dirección: <strong>@Model.Factura.Cliente.Direccion</strong></p>
+                    <p>Email: <strong>@Model.Factura.Cliente.Email</strong></p>
+                    <p>Celular: <strong>@Model.Factura.Cliente.Celular</strong></p>
+                </fieldset>
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="table-responsive" style="border-style: solid;overflow:hidden">
+                <fieldset>
+                    <legend>Datos del Comprobante de Venta que se modifica</legend>
+                    <p>Tipo de Documento: <strong>Factura</strong></p>
+                    <p>Fecha de Emisión: <strong>@Model.Factura.FechaEmison.ToString("dd/MM/yyyy")</strong></p>
+                    <p>Número: <strong>@Model.Factura.Numero</strong></p>
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.Motivo, htmlAttributes: new { @class = "control-label " })
+                        @Html.TextAreaFor(model => model.Motivo, htmlAttributes: new { @class = "form-control " })
+                        @Html.ValidationMessageFor(model => model.Motivo, "", new { @class = "text-danger" })
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <br />
+        <div class="table-responsive" style="border-style: solid;">
+            @Html.ValidationMessageFor(model => model.Numero, "", new { @class = "text-danger" })
+            <fieldset>
+                <legend>Datos de Producto</legend>
+                <p>*Seleccione el/los item/s a devolver y luego coloque la cantidad devuelta</p>
+                <table class="table">
+                    <tr>
+                        <th>
+                            Seleccionar
+                        </th>
+                        <th>
+                            SKU o Codigo
+                        </th>
+                        <th>
+                            Estilo o Codigo auxiliar
+                        </th>
+                        <th>
+                            Nombre del producto
+                        </th>
+                        <th>
+                            Precio Unitario
+                        </th>
+                        <th>
+                            Cantidad
+                        </th>
+                        <th>
+                            %Descuento
+                        </th>
+                        <th>
+                            Subtotal
+                        </th>
+                        <th>
+                            Valor IVA
+                        </th>
+                        <th>
+                            Valor ICE
+                        </th>
+                        <th>
+                            Valor IRBPNR
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                        <th></th>
+                    </tr>
+                    @for (var i = 0; i < Model.Detalles.Count; i++)
+                    {
+                        <tr>
+                            @Html.HiddenFor(modelItem => Model.Detalles[i].IdDetalleFactura)
+                            <td>
+                                @Html.CheckBoxFor(modelIem => Model.Detalles[i].Seleccionar)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.Producto.CodigoPrincipal)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.Producto.CodigoAuxiliar)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.Producto.Nombre)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.PrecioUnitario)
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => Model.Detalles[i].Cantidad, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => Model.Detalles[i].Cantidad, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.Descuento)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.Subtotal)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.ValorIva)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.ValorIce)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.ValorIrbpnr)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Detalles[i].DetalleFactura.Total)
+                            </td>
+
+                        </tr>
+                    }
+
+
+                </table>
+            </fieldset>
+
+
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive" style="border-style: solid;">
+                            <fieldset>
+                                <legend>Datos Adicionales</legend>
+
+                                <button type="button" id="agregar-pago" class="btn bg-info" data-target="#agregarAdicional" onclick="CargarAgregarAdicional()">
+                                    Agregar Nuevo Dato
+                                </button>
+                                <table class="table">
+                                    <tr>
+                                        <th>
+                                            Nombre
+                                        </th>
+                                        <th>
+                                            Descripción
+                                        </th>
+                                        <th>
+                                            Accion
+                                        </th>
+                                    </tr>
+
+                                    @foreach (var item in Model.Adicionales)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Nombre)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Descripcion)
+                                            </td>
+                                            <td>
+                                                <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarAdicional(@item.Id)">
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <button type="button" id="eliminar-detalle" class="btn bg-success" onclick="FinalizarNotaCredito()">
+                    Finalizar
+                </button>
+
+
+                <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarNotaCredito()()">
+                    Cancelar y Salir
+                </button>
+                <p>*Si no se cancelo la factura, esta sigue pendiente</p>
+            </div>
+
+        </div>
+    </div>
+    @Html.HiddenFor(model => model.Id, new { id = "id-nota-credito", Value = Model.Id })
+}
+@section BodyArea {
+    <div id="agregarAdicional" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Dato Adicional</h4>
+                </div>
+                <div id="vistaAgregarAdicional">
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/NotaCreditoJs")
+
+

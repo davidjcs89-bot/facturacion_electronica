@@ -1,0 +1,147 @@
+﻿@model Facturacion_Electronica.Models.GuiaRemision.ModeloGuiaDestinatario
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AgregarDestinatario", "GuiaRemision", null, FormMethod.Post, new { id = "frm-agregar-destinatario", autocomplete = "off" }))
+{
+    <div class="modal-body">
+        @Html.AntiForgeryToken()
+        <div class="form-group">
+            @Html.HiddenFor(model => model.IdGuia, new { @id = "id-guia-remision" })
+            @Html.HiddenFor(model => model.IdCliente, new { @id = "destinatario-id" })
+            @Html.LabelFor(model => model.Identificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-12 ">
+                @Html.EditorFor(model => model.Identificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+                <span>
+                    <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarDestinatario();" /></span>
+                    <span><input type="button" id="btn-crear-dest" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearDestinatario();" /></span>
+                    <span><input type="button" style="display:none" id="btn-editar-dest" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarDestinatario();" /></span>
+                </span>
+                <br />
+                @Html.ValidationMessageFor(model => model.Identificacion, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.Nombres, htmlAttributes: new { @class = "control-label  " })
+                        @Html.EditorFor(model => model.Nombres, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "nombre-destinatario" } })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.DireccionDestino, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.DireccionDestino, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DireccionDestino, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.Ruta, htmlAttributes: new { @class = "control-label  " })
+                        @Html.EditorFor(model => model.Ruta, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Ruta, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.MotivoTraslado, htmlAttributes: new { @class = "control-label  " })
+                        @Html.EditorFor(model => model.MotivoTraslado, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.MotivoTraslado, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.DocumentoAduanero, htmlAttributes: new { @class = "control-label  " })
+                        @Html.EditorFor(model => model.DocumentoAduanero, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DocumentoAduanero, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label ">Fecha Emisión:</label>
+                    <div class="input-group date datePickerBasicDate col-md-6">
+                        @Html.EditorFor(model => model.FechaEmisionDocumento, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaEmisionDocumento, @type = "text" } })
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.IdDocumento, htmlAttributes: new { @class = "control-label" })
+                        @Html.DropDownListFor(model => model.IdDocumento, (IEnumerable<SelectListItem>)ViewBag.Documento, null, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                @Html.LabelFor(model => model.CodigoEstabComprobante, htmlAttributes: new { @class = "control-label  " })
+                <div class="form-group">
+
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.CodigoEstabComprobante, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CodigoEstabComprobante, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-3">
+                        @Html.EditorFor(model => model.PuntiEmisComprobante, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.PuntiEmisComprobante, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="col-md-6">
+                        @Html.EditorFor(model => model.NumComprobante, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.NumComprobante, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.CodigoEstablecimientoDestino, htmlAttributes: new { @class = "control-label" })
+                        @Html.EditorFor(model => model.CodigoEstablecimientoDestino, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.CodigoEstablecimientoDestino, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-12">
+                        @Html.LabelFor(model => model.NumeroAutorizacion, htmlAttributes: new { @class = "control-label  " })
+                        @Html.EditorFor(model => model.NumeroAutorizacion, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.NumeroAutorizacion, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="button" value="Agregar" class="btn btn-default" onclick="AgregarDestinatario();" />
+        </div>
+    </div>
+}
+
+
+@Styles.Render("~/bundles/datetimePickerCss")
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/datetimePicker")

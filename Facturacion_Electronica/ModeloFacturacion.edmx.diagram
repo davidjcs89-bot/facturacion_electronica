@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c00da0c137534bc2bd57850d01eaa14a" Name="Diagram1" ZoomLevel="142">
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Atributos_adicionales_producto" Width="1.5" PointX="7.5" PointY="51.5" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Categoria_usuarios" Width="1.5" PointX="6" PointY="41.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Clientes" Width="1.5" PointX="11.25" PointY="45.875" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.codigos_seguridad" Width="1.5" PointX="10.5" PointY="42.375" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Cola_envio_comprobantes" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Factura" Width="1.5" PointX="20.75" PointY="72.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Guia_Remision" Width="1.5" PointX="15.75" PointY="47.5" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Liquidacion" Width="1.5" PointX="18.75" PointY="63.5" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Nota_Credito" Width="1.5" PointX="26" PointY="57.875" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Nota_Debito" Width="1.5" PointX="26" PointY="46" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Retencion" Width="1.5" PointX="15.75" PointY="61" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_factura" Width="1.5" PointX="20.75" PointY="49.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_Liquidacion" Width="1.5" PointX="26.75" PointY="50.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_nota_credito" Width="1.5" PointX="29" PointY="50.125" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_nota_debito" Width="1.5" PointX="26" PointY="40" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_pago_Factura" Width="1.5" PointX="23.75" PointY="47.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_pago_Liquidacion" Width="1.5" PointX="18.75" PointY="59.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_pago_nota_debito" Width="1.5" PointX="29" PointY="41.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_Proforma" Width="1.5" PointX="18.75" PointY="40" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_retencion" Width="1.5" PointX="18.75" PointY="54.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalles_guia_remision" Width="1.5" PointX="21" PointY="46.125" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Documentos_Electronicos" Width="1.5" PointX="3" PointY="2.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Emisor" Width="1.5" PointX="3" PointY="45" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Emisor_habilitacion" Width="1.5" PointX="5.25" PointY="55.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Factura" Width="1.5" PointX="18.5" PointY="44.875" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Formas_de_Pago" Width="1.5" PointX="26.75" PointY="36.5" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Guia_remision" Width="1.5" PointX="13.5" PointY="46.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Guia_remision_destinatario" Width="1.5" PointX="15.75" PointY="42.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Impuesto_porcentaje_retencion" Width="1.5" PointX="16.5" PointY="63.875" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Impuestos_producto" Width="1.5" PointX="5.75" PointY="3.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Impuestos_retencion" Width="1.5" PointX="16.5" PointY="67.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Liquidacion_Compra" Width="1.5" PointX="16.5" PointY="53" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Nota_credito" Width="1.5" PointX="23.75" PointY="50.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Nota_debito" Width="1.5" PointX="23.75" PointY="38.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Porcentaje_impuesto_producto" Width="1.5" PointX="0.75" PointY="47.125" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Producto" Width="1.5" PointX="5.25" PointY="45.375" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Proforma" Width="1.5" PointX="13.5" PointY="40.125" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Puntos_emisior" Width="1.5" PointX="11.25" PointY="52.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Retencion" Width="1.5" PointX="13.5" PointY="52.5" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Rol_Usuario" Width="1.5" PointX="6" PointY="38.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Secuencias" Width="1.5" PointX="13.5" PointY="28.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Tipo_ambientes" Width="1.5" PointX="0.75" PointY="43.5" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Tipo_cliente" Width="1.5" PointX="9" PointY="55" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Tipo_doc_retencion" Width="1.5" PointX="0.75" PointY="6.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Tipo_documento" Width="1.5" PointX="0.75" PointY="3" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Tipo_Identificacion" Width="1.5" PointX="9" PointY="38.25" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Tipo_producto" Width="1.5" PointX="3" PointY="41.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Transportistas" Width="1.5" PointX="8.25" PointY="46.875" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Usuario" Width="1.5" PointX="8.25" PointY="41" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Atributos_adicionales_producto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Categoria_usuario" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Usuario_Categoria_usuarios" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Clientes_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Clientes_Tipo_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Clientes_Tipo_Identificacion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Factura_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Guia_remision_destinatario_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Liquidacion_Compra" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Liquidacion_Compra_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_credito_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_debito_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Proforma_Clientes" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Retencion_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_codigos_seguridad_Usuario" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Factura" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Guia_Remision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Liquidacion_Liquidacion_Compra" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Nota_Credito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Nota_Debito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Nota_Debito_Datos_Adicionales_Nota_Debito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Retencion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_factura_factura" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_factura_Producto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_Liquidacion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_Liquidacion_Producto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_nota_credito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_nota_credito_produco" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_nota_debito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_pago_Factura" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_pago_Factura_Forma" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_pago_Liquidacion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_pago_Liquidacion_Forma" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_pago_nota_debito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_pago_nota_debito_tipo_pago" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_Proforma_Producto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_Proforma_Proforma" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_retencion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_retencion_impuesto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_retencion_porcentaje" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalles_guia_remision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalles_guia_remision_Producto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Documentos_Electronicos_Tipo_documento" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Emisor_Ambiente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Emisor_habilitacion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Emisor_Porcentaje_impuesto_producto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Factura_Emiso" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Guia_remision_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Liquidacion_Emiso" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_credito_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_debito_Emisior" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Producto_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Proforma_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Retencion_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Transportistas_emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Usuario_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Factura_PuntoEmision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_credito_factura" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_debito_factura" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Guia_remision_destinatario" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Guia_remision_punto_emision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Guia_remision_Transportista" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Impuesto_porcentaje_retencion" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Liquidacion_PuntoEmision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_credito_Nota_credito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_credito_punto_emision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_debito_Nota_debito" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_debito_porcentaje_iva" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Nota_debito_punto_emision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Producto_ice" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Producto_irbpnr" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Producto_iva" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Producto_TipoProducto" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Retencion_Punto_Emision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Secuencias_PuntoEmision" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Usuario_Rol" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Secuencias_Documentos" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Transportistas_Tipo_identifiacion" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Cuentas_correo" Width="1.5" PointX="3.375" PointY="6.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.impresion_comprobantes" Width="1.5" PointX="5.25" PointY="58.5" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_impresion_comprobantes_Emisor" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.vw_comprobantes_no_autorizados" Width="1.5" PointX="5.375" PointY="6.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Compra" Width="1.5" PointX="21.5" PointY="41.875" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Detalle_Compra" Width="1.5" PointX="23.75" PointY="32.625" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Impuesto_Detalle_Compra" Width="1.5" PointX="26" PointY="33" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Impuestos_Compra" Width="1.5" PointX="23.75" PointY="59.375" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Compra_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Compra_Emisor" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Detalle_Compra" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Impuestos_Compra" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Impuesto_Detalle_Compra" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Datos_Adicionales_Cliente" Width="1.5" PointX="13.5" PointY="57.75" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Cliente" />
+        <AssociationConnector Association="FacturacionElectronicaModel.FK_Datos_Adicionales_Usuario" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Avisos" Width="1.5" PointX="7.375" PointY="6.75" />
+        <EntityTypeShape EntityType="FacturacionElectronicaModel.Log" Width="1.5" PointX="8.375" PointY="0.75" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

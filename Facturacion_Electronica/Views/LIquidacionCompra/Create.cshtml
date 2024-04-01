@@ -1,0 +1,514 @@
+﻿@model Facturacion_Electronica.Models.LiquidacionCompra.ModeloLiquidacion
+@{
+    ViewBag.Title = "Factura";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Nueva Liquidacion Compra</h2>
+@using (Html.BeginForm("Create", "LiquidacionCompra", null, FormMethod.Post, new { id = "frm-liquidacion", autocomplete = "off" }))
+{
+    @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-liquidacion" })
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="col-md-12" style="border-style: solid;">
+                    <fieldset>
+                        <div style="text-align:center">
+                            @if (Model.Emisor.LogoRelativoPath != null)
+                            {
+                                <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                            }
+                        </div>
+
+                        <legend>Datos del Emisor</legend>
+                        <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                        <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                        <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                        <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                        <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                        @if (Model.Emisor.ContirbuyenteEspecial)
+                        {
+                            <p>Contribuyente Especial: <strong>SI</strong></p>
+                            <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                        }
+                        else
+                        {
+                            <p>Contribuyente Especial: <strong>NO</strong></p>
+                        }
+                        @if (Model.Emisor.ObligadoContabilidad)
+                        {
+                            <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                        }
+                        else
+                        {
+                            <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                        }
+                        <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                    </fieldset>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="col-md-12" style="border-style: solid;">
+                    <fieldset>
+                        <legend>Identificación del Comprobante</legend>
+                        <div class="form-group">
+                            <label class="control-label col-md-12">Fecha de Emisón:</label>
+                            <div class="input-group date datePickerBasicDate col-md-6">
+                                @Html.EditorFor(model => model.FechaEmison, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaEmision, @type = "text" } })
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                        <label>Punto de Emisón:</label>
+                        @Html.DropDownListFor(model => model.PuntoEmisionId, (IEnumerable<SelectListItem>)ViewBag.PuntoEmision, null, new { @id = "lista-punto-emision", @class = "form-control", @onchange = "CambiarPuntoEmision()" })
+                        <p>Número: <strong id="numero-factura">@Model.Numero</strong></p>
+                        <p>Ambiente: <strong>@Model.Ambiente</strong></p>
+                        <p>Clave Acceso:</p>
+                        <p style="font-size: 1em;word-wrap: break-word; "><strong>@Model.ClaveAcceso</strong></p>
+                        <div class="form-group" style="margin-bottom:52px">
+                            <div class="col-md-12">
+                                @Html.LabelFor(model => model.GuiaRemision, htmlAttributes: new { @class = "control-label " })
+                                @Html.EditorFor(model => model.GuiaRemision, new { htmlAttributes = new { @class = "form-control", @style = "margin-bottom:33px" } })
+                                @Html.ValidationMessageFor(model => model.GuiaRemision, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+            </div>
+        </div>
+        <br />
+        <div>
+            <div class="table-responsive" style="border-style: solid;overflow:hidden">
+                <fieldset>
+                    <legend>Datos</legend>
+                    @if (Model.PermiteEditarCliente)
+                    {
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-4 ">
+                                    @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                    @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+                                    <span>
+                                        <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" /></span>
+                                        <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearCliente();" /></span>
+                                        <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
+                                    </span>
+                                    @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1"></div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Cliente.RazonSocial, htmlAttributes: new { @class = "control-label  " })
+                                            @Html.EditorFor(model => model.Cliente.RazonSocial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "nombre-cliente" } })
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Cliente.Direccion, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(model => model.Cliente.Direccion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "direccion-cliente" } })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Cliente.Email, htmlAttributes: new { @class = "control-label  " })
+                                            @Html.EditorFor(model => model.Cliente.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "email-cliente" } })
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(model => model.Cliente.Celular, htmlAttributes: new { @class = "control-label" })
+                                            @Html.EditorFor(model => model.Cliente.Celular, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "celular-cliente" } })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Número de Identificación: <strong>@Model.Cliente.NumeroIdentificacion</strong></p>
+                        <p>Nombre y Apellido/Razon Social: <strong id="numero-factura">@Model.Cliente.RazonSocial</strong></p>
+                        <p>Dirección: <strong>@Model.Cliente.Direccion</strong></p>
+                        <p>Email: <strong>@Model.Cliente.Email</strong></p>
+                        <p>Nro Celular: <strong>@Model.Cliente.Celular</strong></p>
+                    }
+
+                </fieldset>
+            </div>
+        </div>
+        <br />
+        <div class="table-responsive" style="border-style: solid;">
+            <fieldset>
+                <legend>Datos de Producto</legend>
+                @if (Model.PermiteEditarDetalles)
+                {
+                    <button type="button" id="agregar-producto" class="btn btn-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
+                        Agregar Nuevo Detalle
+                    </button>
+                }
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <th>
+                            Codigo
+                        </th>
+                        <th>
+                            Producto
+                        </th>
+                        <th>
+                            Adicional
+                        </th>
+                        <th>
+                            Precio Unitario
+                        </th>
+                        <th>
+                            Cantidad
+                        </th>
+                        <th>
+                            %Descuento
+                        </th>
+                        <th>
+                            Subtotal
+                        </th>
+                        <th>
+                            IVA
+                        </th>
+                        <th>
+                            ICE
+                        </th>
+                        <th>
+                            IRBPNR
+                        </th>
+                        <th>
+                            Total
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model.Detalles)
+                    {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Producto.CodigoPrincipal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                    </td>
+                    @if (Model.PermiteEditarDetalles)
+                    {
+                        <td>
+                            @Html.EditorFor(model => item.Adicional, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarAdicionalDetalle(" + item.Id + ",this)" } })
+                            @Html.ValidationMessageFor(model => item.Adicional, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.EditorFor(model => item.PrecioUnitario, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPrecioDetalle(" + item.Id + ",this)" } })
+                            @Html.ValidationMessageFor(model => item.PrecioUnitario, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.EditorFor(model => item.Cantidad, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarCantidadDetalle(" + item.Id + ",this)" } })
+                            @Html.ValidationMessageFor(model => item.Cantidad, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            @Html.EditorFor(model => item.Descuento, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPorcentajeDescuentoDetalle(" + item.Id + ",this)" } })
+                            @Html.ValidationMessageFor(model => item.Descuento, "", new { @class = "text-danger" })
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cantidad)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Descuento)
+                        </td>
+                    }
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subtotal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorIva)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorIce)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorIrbpnr)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Total)
+                    </td>
+                    @if (Model.PermiteEditarDetalles)
+                    {
+                        <td>
+                            <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarDetalle(@item.Id)">
+                                Eliminar
+                            </button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+
+                </tr>
+                    }
+
+                </table>
+            </div>
+                
+            </fieldset>
+
+
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        @if (Model.Detalles.Count > 0)
+                        {
+
+                            <div class="table-responsive" style="border-style: solid;">
+                                <fieldset>
+                                    <legend>Datos de Pago</legend>
+                                    <button type="button" id="agregar-pago" class="btn bg-info" data-target="#agregarPago" onclick="CargarAgregarPago()">
+                                        Agregar Nuevo Pago
+                                    </button>
+                                    <table class="table">
+                                        <tr>
+                                            <th>
+                                                Descripción
+                                            </th>
+                                            <th>
+                                                Total
+                                            </th>
+                                            <th>
+                                                Plazo
+                                            </th>
+                                            <th>
+                                                Tiempo
+                                            </th>
+                                            <th>
+                                                Accion
+                                            </th>
+                                        </tr>
+
+                                        @foreach (var item in Model.Pagos)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.DescripcionFormaPago)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Valor)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Plazo)
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(modelItem => item.Tiempo)
+                                                </td>
+                                                <td>
+                                                    <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarPago(@item.Id)">
+                                                        Eliminar
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                    </table>
+                                </fieldset>
+                                <p>Nota: Para editar información de la liquidación eliminar los pagos</p>
+                            </div>
+
+                        }
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive" style="border-style: solid;">
+                            <fieldset>
+                                <legend>Datos Adicionales</legend>
+                                <button type="button" id="agregar-pago" class="btn bg-info" data-target="#agregarAdicional" onclick="CargarAgregarAdicional()">
+                                    Agregar Nuevo Dato
+                                </button>
+                                <table class="table">
+                                    <tr>
+                                        <th>
+                                            Nombre
+                                        </th>
+                                        <th>
+                                            Descripción
+                                        </th>
+                                        <th>
+                                            Accion
+                                        </th>
+                                    </tr>
+
+                                    @foreach (var item in Model.Adicionales)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Nombre)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Descripcion)
+                                            </td>
+                                            <td>
+                                                <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarAdicional(@item.Id)">
+                                                    Eliminar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </table>
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                @if (Model.Detalles.Count > 0 && Model.Pagos.Count > 0)
+                {
+                    <button type="button" id="eliminar-detalle" class="btn bg-success" onclick="FinalizarLiquidacion()">
+                        Finalizar
+                    </button>
+                }
+                else
+                {
+                    <button type="button" id="eliminar-detalle" class="btn bg-success" disabled="disabled">
+                        Finalizar
+                    </button>
+                }
+
+                <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarLiquidacion()">
+                    Cancelar y Salir
+                </button>
+                <p>*Si no se cancelo la liquidacion, esta sigue pendiente</p>
+            </div>
+            <div class="col-md-6">
+                <div class="table-responsive">
+                    <table class="table" border="2">
+                        <tr><th>Subtotal sin impuesto :</th><td>@Model.SubtotalSinImpuestos.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal Iva :</th><td>@Model.SubtotalIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal Iva 0:</th><td>@Model.SubtotalIvaCero.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal No objeto Iva :</th><td>@Model.SubtotalNoObjetoIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal Excento Iva:</th><td>@Model.SubtotalExcentoIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Total Descuento:</th><td>@Model.TotalDescuento.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Ice :</th><td>@Model.ValorIce.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Iva :</th><td>@Model.ValorIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Irbpnr :</th><td>@Model.ValorIrbpnr.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Total :</th><td>@Model.Total.ToString("C2")</td>
+                        <tr />
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section BodyArea {
+    <div id="nuevoCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear Cliente</h4>
+                </div>
+                <div id="vistaNuevoCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editarCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Cliente</h4>
+                </div>
+                <div id="vistaEditarCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarProducto" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Producto</h4>
+                </div>
+                <div id="vistaAgregarProducto">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarPago" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Pago</h4>
+                </div>
+                <div id="vistaAgregarPago">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarAdicional" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Dato Adicional</h4>
+                </div>
+                <div id="vistaAgregarAdicional">
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/LiquidacionJs")

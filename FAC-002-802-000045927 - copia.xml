@@ -1,0 +1,174 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<autorizacion>
+  <estado>AUTORIZADO</estado>
+  <numeroAutorizacion>0207202101019012242500120028020000459272524528514</numeroAutorizacion>
+  <fechaAutorizacion>2021-07-07T12:56:10-05:00</fechaAutorizacion>
+  <comprobante>
+    <![CDATA[<?xml version = '1.0' encoding = 'UTF-8'?>
+<factura id="comprobante" version="1.1.0">
+<infoTributaria>
+<ambiente>2</ambiente>
+<tipoEmision>1</tipoEmision>
+<razonSocial>INMOBILIARIA PIEDRA HUASI S A</razonSocial>
+<nombreComercial>MALL DEL RIO SHOPPING CENTER</nombreComercial>
+<ruc>0190122425001</ruc>
+<claveAcceso>0207202101019012242500120028020000459272524528514</claveAcceso>
+<codDoc>01</codDoc>
+<estab>002</estab>
+<ptoEmi>802</ptoEmi>
+<secuencial>000045927</secuencial>
+<dirMatriz>AV. CARLOS JULIO AROSEMENA S/N JUNTO A VALLEJO ARAUJO</dirMatriz>
+</infoTributaria>
+<infoFactura>
+<fechaEmision>02/07/2021</fechaEmision>
+<dirEstablecimiento>AV. FELIPE II Y AUTOPISTA</dirEstablecimiento>
+<contribuyenteEspecial>849</contribuyenteEspecial>
+<obligadoContabilidad>SI</obligadoContabilidad>
+<tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+<razonSocialComprador>DIVADCLOSET CIA LTDA</razonSocialComprador>
+<identificacionComprador>0190422135001</identificacionComprador>
+<direccionComprador>AV. FELIPE SEGUNDO Y CIRCUNVALACI N SUR</direccionComprador>
+<totalSinImpuestos>873.00</totalSinImpuestos>
+<totalDescuento>0.00</totalDescuento>
+<totalConImpuestos>
+<totalImpuesto>
+<codigo>2</codigo>
+<codigoPorcentaje>2</codigoPorcentaje>
+<baseImponible>873.00</baseImponible>
+<valor>104.76</valor>
+</totalImpuesto>
+</totalConImpuestos>
+<propina>0.00</propina>
+<importeTotal>977.76</importeTotal>
+<moneda>DOLAR</moneda>
+<pagos>
+<pago>
+<formaPago>20</formaPago>
+<total>977.76</total>
+</pago>
+</pagos>
+</infoFactura>
+<detalles>
+<detalle>
+<codigoPrincipal>GPOV001</codigoPrincipal>
+<descripcion>CUOTAS VALOR INICIAL ARRIENDO</descripcion>
+<cantidad>1.0000</cantidad>
+<precioUnitario>873.0000</precioUnitario>
+<descuento>0.00</descuento>
+<precioTotalSinImpuesto>873.00</precioTotalSinImpuesto>
+<detallesAdicionales>
+<detAdicional nombre="TipoServicio" valor="VIA Mensual de Arriendo - Periodo Pago Desde 01-06-2021 hasta 30-06-2021"/>
+</detallesAdicionales>
+<impuestos>
+<impuesto>
+<codigo>2</codigo>
+<codigoPorcentaje>2</codigoPorcentaje>
+<tarifa>12.00</tarifa>
+<baseImponible>873.00</baseImponible>
+<valor>104.76</valor>
+</impuesto>
+</impuestos>
+</detalle>
+</detalles>
+<infoAdicional>
+<campoAdicional nombre="Lugar Venta">MALL DE RIO SEG</campoAdicional>
+<campoAdicional nombre="Recordar">El tiempo limite para la documentacion de esta factura es de 8 dias, desde la fecha de emision de la Misma</campoAdicional>
+<campoAdicional nombre="Codigo">960191</campoAdicional>
+<campoAdicional nombre="Rep Legal">CONTRERAS SOLIS DAVID JOSUE</campoAdicional>
+<campoAdicional nombre="Direccion">AV. FELIPE SEGUNDO Y CIRCUNVALACI N SUR</campoAdicional>
+<campoAdicional nombre="Ciudad">CUENCA</campoAdicional>
+<campoAdicional nombre="Correo">DIVADCLOSET@GMAIL.COM</campoAdicional>
+</infoAdicional>
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="Signature497609" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#">
+<ds:SignedInfo Id="Signature-SignedInfo169323">
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<ds:Reference URI="#Signature497609-SignedProperties142245" Id="SignedPropertiesID199421" Type="http://uri.etsi.org/01903#SignedProperties">
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>Ce/iNW8AAo0D+t+1SS7goHYDZaM=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference URI="#Certificate1170871">
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>Waz38wSCV7LW5b5P7kpD80SBxFQ=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference URI="#comprobante" Id="Reference-ID-701577">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>3tOHbrHzBS6t82LGq83XAb5IgHo=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue Id="SignatureValue398836">
+JFwCZ9ElVosrDwYdWVNAzU7zibDc4/EzYc2tkGNkM0NWuvDcJgDboI6g0VYyhQRW/77Zaxj7Be5z
++/Uk8Fm9JDU5hi9zpj+KUXy7us7b7cVgzyRTNfRYfmHCqXMvcStlsKjx8mzQdKJrT+VRUNb6+0Q+
+hDMIk4fwN5a9gonGG/EARU3c2y906t6XnnYSqlumipx14cT/HwbmP9HIAlOXKdrLNSG7/y2enCId
+x/Dh5/Kw3V6WKlUaI3M1MRJwHx99G8aCb/r8KRGrLHB8s0uS30Sp7hcTX3+C7wQYta0HC2CzfPP+
+sM4wldvRftYHl0xlm8yXr4yg4uDrSppcO9lS5w==
+</ds:SignatureValue>
+<ds:KeyInfo Id="Certificate1170871">
+<ds:X509Data>
+<ds:X509Certificate>
+MIIJ3zCCB8egAwIBAgIEW2HW3DANBgkqhkiG9w0BAQsFADCBoTELMAkGA1UEBhMCRUMxIjAgBgNV
+BAoTGUJBTkNPIENFTlRSQUwgREVMIEVDVUFET1IxNzA1BgNVBAsTLkVOVElEQUQgREUgQ0VSVElG
+SUNBQ0lPTiBERSBJTkZPUk1BQ0lPTi1FQ0lCQ0UxDjAMBgNVBAcTBVFVSVRPMSUwIwYDVQQDExxB
+QyBCQU5DTyBDRU5UUkFMIERFTCBFQ1VBRE9SMB4XDTE5MTIwNDEzNTQ1N1oXDTIxMTIwNDE0MjQ1
+N1owgbQxCzAJBgNVBAYTAkVDMSIwIAYDVQQKExlCQU5DTyBDRU5UUkFMIERFTCBFQ1VBRE9SMTcw
+NQYDVQQLEy5FTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04tRUNJQkNFMQ4w
+DAYDVQQHEwVRVUlUTzE4MBEGA1UEBRMKMDAwMDI0MjMzODAjBgNVBAMTHEpVQU4gQ0FSTE9TIEJF
+TkFMQ0FaQVIgUElOT1MwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC+Zkq+V6g02e0X
+eKVZPvoCVudmaSzMgAyO1uTfJnPk7IfUXv+eE9JmpgT4V67EkKMrLVCDs/S1b5XDgK3pyApqTyZa
+l9gLy0JI6SP2zuT0q1zGcis5nbGby++pXalJYyn5rADwSTCBcK1lgWtSCs6IYwE0DPjY3FkyLMrn
+tjuaP6XJKape7ZZLraT3rgxlKWVSOUZRcu2fUCL5sruOkIZzS23lNOwjPySXe2UVBKnu1xNUlvMR
+/qYtIgH0LGtu7rOHPt6EwPZVzjOW3NhrIcNlAaTP1p5Pe19T50lwOAZoo8nWRZWu02KIOH+W137G
+CfZGsThUJdwCvqHsjQZToDM9AgMBAAGjggUIMIIFBDALBgNVHQ8EBAMCB4AwZwYDVR0gBGAwXjBc
+BgsrBgEEAYKoOwICATBNMEsGCCsGAQUFBwIBFj9odHRwOi8vd3d3LmVjaS5iY2UuZWMvcG9saXRp
+Y2EtY2VydGlmaWNhZG8vcGVyc29uYS1qdXJpZGljYS5wZGYwgZEGCCsGAQUFBwEBBIGEMIGBMD4G
+CCsGAQUFBzABhjJodHRwOi8vb2NzcC5lY2kuYmNlLmVjL2VqYmNhL3B1YmxpY3dlYi9zdGF0dXMv
+b2NzcDA/BggrBgEFBQcwAYYzaHR0cDovL29jc3AxLmVjaS5iY2UuZWMvZWpiY2EvcHVibGljd2Vi
+L3N0YXR1cy9vY3NwMCwGCisGAQQBgqg7AwoEHhMcSU5NT0JJTElBUklBIFBJRURSQSBIVUFTSSBT
+QTAdBgorBgEEAYKoOwMLBA8TDTAxOTAxMjI0MjUwMDEwGgYKKwYBBAGCqDsDAQQMEwoxNzA3ODA4
+NTk2MBsGCisGAQQBgqg7AwIEDRMLSlVBTiBDQVJMT1MwGgYKKwYBBAGCqDsDAwQMEwpCRU5BTENB
+WkFSMBUGCisGAQQBgqg7AwQEBxMFUElOT1MwFwYKKwYBBAGCqDsDBQQJEwdHRVJFTlRFMBsGCisG
+AQQBgqg7AwcEDRMLVklBIEEgUkFDQVIwGQYKKwYBBAGCqDsDCAQLEwkwNzQxMzQ2MDAwFgYKKwYB
+BAGCqDsDCQQIEwZDdWVuY2EwFwYKKwYBBAGCqDsDDAQJEwdFQ1VBRE9SMCAGCisGAQQBgqg7AzME
+EhMQU09GVFdBUkUtQVJDSElWTzAlBgNVHREEHjAcgRpkYWx2YXJhZG9AZ2VyYXJkb29ydGl6LmNv
+bTCCAd8GA1UdHwSCAdYwggHSMIIBzqCCAcqgggHGhoHVbGRhcDovL2JjZXFsZGFwc3VicDEuYmNl
+LmVjL2NuPUNSTDg4MSxjbj1BQyUyMEJBTkNPJTIwQ0VOVFJBTCUyMERFTCUyMEVDVUFET1IsbD1R
+VUlUTyxvdT1FTlRJREFEJTIwREUlMjBDRVJUSUZJQ0FDSU9OJTIwREUlMjBJTkZPUk1BQ0lPTi1F
+Q0lCQ0Usbz1CQU5DTyUyMENFTlRSQUwlMjBERUwlMjBFQ1VBRE9SLGM9RUM/Y2VydGlmaWNhdGVS
+ZXZvY2F0aW9uTGlzdD9iYXNlhjRodHRwOi8vd3d3LmVjaS5iY2UuZWMvQ1JML2VjaV9iY2VfZWNf
+Y3JsZmlsZWNvbWIuY3JspIG1MIGyMQswCQYDVQQGEwJFQzEiMCAGA1UEChMZQkFOQ08gQ0VOVFJB
+TCBERUwgRUNVQURPUjE3MDUGA1UECxMuRU5USURBRCBERSBDRVJUSUZJQ0FDSU9OIERFIElORk9S
+TUFDSU9OLUVDSUJDRTEOMAwGA1UEBxMFUVVJVE8xJTAjBgNVBAMTHEFDIEJBTkNPIENFTlRSQUwg
+REVMIEVDVUFET1IxDzANBgNVBAMTBkNSTDg4MTArBgNVHRAEJDAigA8yMDE5MTIwNDEzNTQ1N1qB
+DzIwMjExMjA0MTQyNDU3WjAfBgNVHSMEGDAWgBRIot8jHx34LFF6jAPNSTKlCcGUqzAdBgNVHQ4E
+FgQUvq9IDJ1XIxAeenU/JhXFbrfPea4wCQYDVR0TBAIwADAZBgkqhkiG9n0HQQAEDDAKGwRWOC4x
+AwIEsDANBgkqhkiG9w0BAQsFAAOCAgEAbZJwUhaayPHTCYimfQui4+D0bJ/s3xU10P4cSp6vk3Zq
+TpDjS0DpnAeKO07QERYaglJNk1QagAZ1aKbJqAKloHv21KOqKAwdJFVJfrIGeKHYo5aErIeljDnW
+YiqxcJysdwOT2x5lSPSnv9k04N2hXNYC9BYX16KoZTuLGnoPKFqFGtjAEz+Z0TL5f7quzgURrIuV
+VqQvDTbFYfMDTj6WPjgEspTuof1/lBI6UyHAus4kMRK648DT8vSK/UGbbk0zWv2B3FEI2+5b/9F9
+zo1cvD5sysxX1Xbcvh6g7pRI5uqZxu4ahrqgzEqzKqq2IJ2GWL32QMwVnrgfURiXHdoPEBkBdgvh
+9fV/eIKNFbcLSC+VmxV+aoaTLveA7ztfaefmvpWv6+hYgVEE0NDSztmjNmrnRiYvAYDwEZQhpuLS
+k9NQDuO8bCuIfKsk+YqKvQzCrlsIX+q720t7+p+ecRRPJ+7+Ht4ha7N269LifShXlg88MLMIbj5H
+VuoswzeMxvwkl62K39ISQivexlrpIyN+Vx7h6tJ4X60K81TO7twIUhsOkB85sNC8ipbJOpfwBl9n
+MLwfnVngh9vGkgB8tHx0ta4qINnf4h0N+sD/h39E4DoVruTkXa+9j7L6j40qigLMejNToFyg9o3B
+MAaNOx3joDY0MkMsy51Wu6od/VqKW18=
+</ds:X509Certificate>
+</ds:X509Data>
+<ds:KeyValue>
+<ds:RSAKeyValue>
+<ds:Modulus>
+vmZKvleoNNntF3ilWT76AlbnZmkszIAMjtbk3yZz5OyH1F7/nhPSZqYE+FeuxJCjKy1Qg7P0tW+V
+w4Ct6cgKak8mWpfYC8tCSOkj9s7k9KtcxnIrOZ2xm8vvqV2pSWMp+awA8EkwgXCtZYFrUgrOiGMB
+NAz42NxZMizK57Y7mj+lySmqXu2WS62k964MZSllUjlGUXLtn1Ai+bK7jpCGc0tt5TTsIz8kl3tl
+FQSp7tcTVJbzEf6mLSIB9Cxrbu6zhz7ehMD2Vc4zltzYayHDZQGkz9aeT3tfU+dJcDgGaKPJ1kWV
+rtNiiDh/ltd+xgn2RrE4VCXcAr6h7I0GU6AzPQ==
+</ds:Modulus>
+<ds:Exponent>AQAB</ds:Exponent>
+</ds:RSAKeyValue>
+</ds:KeyValue>
+</ds:KeyInfo>
+<ds:Object Id="Signature497609-Object540868"><etsi:QualifyingProperties Target="#Signature497609"><etsi:SignedProperties Id="Signature497609-SignedProperties142245"><etsi:SignedSignatureProperties><etsi:SigningTime>2021-07-07T13:56:10-04:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>BiZG5Y9lBTImj+I29mWIUKk3M0o=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AC BANCO CENTRAL DEL ECUADOR,L=QUITO,OU=ENTIDAD DE CERTIFICACION DE INFORMACION-ECIBCE,O=BANCO CENTRAL DEL ECUADOR,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1533138652</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-701577"><etsi:Description>Contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></factura>]]>
+  </comprobante>
+</autorizacion>

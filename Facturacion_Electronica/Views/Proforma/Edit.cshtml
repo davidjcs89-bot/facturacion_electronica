@@ -1,0 +1,233 @@
+﻿@model Facturacion_Electronica.Models.Proforma.ModeloProforma
+@{
+    ViewBag.Title = "Proforma";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Proformación1</h2>
+@using (Html.BeginForm("Create", "Producto", null, FormMethod.Post, new { onkeydown = "return event.keyCode!=13", enctype = "multipart/form-data" }))
+{
+    <div class="container">
+        @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-proforma" })
+        <div class="row">
+            <div class="col-md-6" style="border-style: solid;">
+                <fieldset>
+                    <div style="text-align:center">
+                        @if (Model.Emisor.LogoRelativoPath != null)
+                        {
+                            <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                        }
+                    </div>
+
+                    <legend>Datos del Emisor</legend>
+                    <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                    <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                    <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                    <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                    <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                    @if (Model.Emisor.ContirbuyenteEspecial)
+                    {
+                        <p>Contribuyente Especial: <strong>SI</strong></p>
+                        <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                    }
+                    else
+                    {
+                        <p>Contribuyente Especial: <strong>NO</strong></p>
+                    }
+                    @if (Model.Emisor.ObligadoContabilidad)
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                    }
+                    else
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                    }
+                    <p>Correo Electrónico: <strong>Correo de la empresa</strong></p>
+                </fieldset>
+
+            </div>
+            <div class="col-md-6" style="border-style: solid;">
+                <fieldset>
+                    <legend>Identificación del Comprobante</legend>
+                    <p>Fecha de Emisón: <strong>@Model.FechaEmison</strong></p>
+                </fieldset>
+                <fieldset>
+                    <legend>Datos del Comprador</legend>
+                    <p>Número de Identificación: <strong>@Model.Cliente.NumeroIdentificacion</strong></p>
+                    <p>Nombre y Apellido/Razon Social: <strong id="numero-proforma">@Model.Cliente.RazonSocial</strong></p>
+                    <p>Dirección: <strong>@Model.Cliente.Direccion</strong></p>
+                </fieldset>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="table-responsive" style="border-style: solid;">
+        <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
+            Agregar Nuevo Detalle
+        </button>
+        <table class="table">
+            <tr>
+                <th>
+                    SKU o Codigo
+                </th>
+                <th>
+                    Nombre del producto
+                </th>
+                <th>
+                    Adicional
+                </th>
+                <th>
+                    Precio Unitario
+                </th>
+                <th>
+                    Cantidad
+                </th>
+                <th>
+                    %Descuento
+                </th>
+                <th>
+                    Subtotal
+                </th>
+                <th>
+                    Valor IVA
+                </th>
+                <th>
+                    Valor ICE
+                </th>
+                <th>
+                    Valor IRBPNR
+                </th>
+                <th>
+                    Total
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Detalles)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Producto.CodigoPrincipal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => item.Adicional, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPrecioDetalle(" + item.Id + ",this)" } })
+                        @Html.ValidationMessageFor(model => item.Adicional, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => item.PrecioUnitario, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPrecioDetalle(" + item.Id + ",this)" } })
+                        @Html.ValidationMessageFor(model => item.PrecioUnitario, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => item.Cantidad, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarCantidadDetalle(" + item.Id + ",this)" } })
+                        @Html.ValidationMessageFor(model => item.Cantidad, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.EditorFor(model => item.Descuento, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPorcentajeDescuentoDetalle(" + item.Id + ",this)" } })
+                        @Html.ValidationMessageFor(model => item.Descuento, "", new { @class = "text-danger" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Subtotal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorIva)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorIce)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ValorIrbpnr)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Total)
+                    </td>
+                    <td>
+                        <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarDetalle(@item.Id)">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" id="agregar-pago" class="btn bg-info" data-target="#agregarPago" onclick="CargarAgregarPago()">
+                Agregar Nuevo Pago
+            </button>
+        </div>
+        <div class="col-md-6">
+            <div class="table-responsive">
+                <table class="table" border="2">
+                    <tr><th>Subtotal sin impuesto :</th><td>@Model.SubtotalSinImpuestos.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal Iva :</th><td>@Model.SubtotalIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal Iva 0:</th><td>@Model.SubtotalIvaCero.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal No objeto Iva :</th><td>@Model.SubtotalNoObjetoIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal Excento Iva:</th><td>@Model.SubtotalExcentoIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Total Descuento:</th><td>@Model.TotalDescuento.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Ice :</th><td>@Model.ValorIce.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Iva :</th><td>@Model.ValorIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Irbpnr :</th><td>@Model.ValorIrbpnr.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Total :</th><td>@Model.Total.ToString("C2")</td>
+                    <tr />
+                </table>
+            </div>
+        </div>
+    </div>
+
+}
+@section BodyArea {
+    <div id="agregarProducto" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Producto</h4>
+                </div>
+                <div id="vistaAgregarProducto">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarPago" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Pago</h4>
+                </div>
+                <div id="vistaAgregarPago">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/ProformaJs")
+
+

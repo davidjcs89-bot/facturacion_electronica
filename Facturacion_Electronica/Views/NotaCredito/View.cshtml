@@ -1,0 +1,210 @@
+﻿@model Facturacion_Electronica.Models.NotaCredito.ModeloNotaCredito
+@{
+    ViewBag.Title = "Retención";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Nota de Crédito</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            @Html.HiddenFor(model => model.Id, new { id = "id-nota-credito", Value = Model.Id })
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <div style="text-align:center">
+                        @if (Model.Emisor.LogoRelativoPath != null)
+                        {
+                            <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                        }
+                    </div>
+
+                    <legend>Datos del Emisor</legend>
+                    <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                    <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                    <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                    <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                    <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                    @if (Model.Emisor.ContirbuyenteEspecial)
+                    {
+                        <p>Contribuyente Especial: <strong>SI</strong></p>
+                        <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                    }
+                    else
+                    {
+                        <p>Contribuyente Especial: <strong>NO</strong></p>
+                    }
+                    @if (Model.Emisor.ObligadoContabilidad)
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                    }
+                    else
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                    }
+                    <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <legend>Identificación del Comprobante</legend>
+                    <p>Fecha de Emisón: <strong>@Model.FechaEmison.ToString("dd/MM/yyyy")</strong></p>
+                    <p>Número: <strong id="numero-factura">@Model.Numero</strong></p>
+                    <p>Ambiente: <strong>@Model.Ambiente</strong></p>
+                    <p>Clave Acceso:</p>
+                    <p style="font-size: 1em;word-wrap: break-word; "><strong>@Model.ClaveAcceso</strong></p>
+                </fieldset>
+            </div>
+            <br />
+            <button type="button" style="margin-top:10px" class="btn btn-default" onclick="GenerarComrprobante()">Generar Comprobante Electrónico</button>
+            <a href="@Url.Action("Impresion", "NotaCredito", new { id = Model.Id})" class="btn btn-default" target="_blank">Imprimir </a>
+            <a href="@Url.Action("DescargarRide", "NotaCredito", new { id = Model.Id})" class="btn btn-default" target="_blank">Descargar RIDE </a>
+            <a href="@Url.Action("DescargarXml", "NotaCredito", new { id = Model.Id})" class="btn btn-default" target="_blank">Descargar XML </a>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+            <fieldset>
+                <legend>Datos del Sujeto Retenido</legend>
+                <p>Número Identificación: <strong id="numero-factura">@Model.Cliente.NumeroIdentificacion</strong></p>
+                <p>Razón Social: <strong id="numero-factura">@Model.Cliente.RazonSocial</strong></p>
+                <p>Dirección: <strong id="numero-factura">@Model.Cliente.Direccion</strong></p>
+                <p>Email: <strong id="numero-factura">@Model.Cliente.Email</strong></p>
+                <p>Celular: <strong id="numero-factura">@Model.Cliente.Celular</strong></p>
+            </fieldset>
+        </div>
+    </div>
+    <br />
+    <div class="table-responsive" style="border-style: solid;overflow:hidden">
+        <fieldset>
+            <legend>Detalle de la Nota de Crédito</legend>
+            <table class="table">
+                <tr>
+                    <th>
+                        SKU o Codigo
+                    </th>
+                    <th>
+                        Estilo o Codigo auxiliar
+                    </th>
+                    <th>
+                        Nombre del producto
+                    </th>
+                    <th>
+                        Precio Unitario
+                    </th>
+                    <th>
+                        Cantidad
+                    </th>
+                    <th>
+                        %Descuento
+                    </th>
+                    <th>
+                        Subtotal
+                    </th>
+                    <th>
+                        Valor IVA
+                    </th>
+                    <th>
+                        Valor ICE
+                    </th>
+                    <th>
+                        Valor IRBPNR
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                    <th></th>
+                </tr>
+                @for (var i = 0; i < Model.Detalles.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Producto.CodigoPrincipal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Producto.CodigoAuxiliar)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Producto.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].PrecioUnitario)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Cantidad)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Descuento)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Subtotal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].ValorIva)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].ValorIce)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].ValorIrbpnr)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => Model.Detalles[i].Total)
+                        </td>
+
+                    </tr>
+                }
+
+
+            </table>
+        </fieldset>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="table-responsive" style="border-style: solid;">
+                <fieldset>
+                    <legend>Datos Adicionales</legend>
+                    <table class="table">
+                        <tr>
+                            <th>
+                                Nombre
+                            </th>
+                            <th>
+                                Descripción
+                            </th>
+                        </tr>
+
+                        @foreach (var item in Model.Adicionales)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Nombre)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Descripcion)
+                                </td>
+                            </tr>
+                        }
+
+                    </table>
+                </fieldset>
+            </div>
+        </div>
+    </div>
+    <br />
+    <button type="button" class="btn bg-info" onclick="location.href='/NotaCredito/Index'">
+        Regresar
+    </button>
+</div>
+@Scripts.Render("~/bundles/NotaCreditoJs")
+
+@section Styles {
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/SweetAlert")

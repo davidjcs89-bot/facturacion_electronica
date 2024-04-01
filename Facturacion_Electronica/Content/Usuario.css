@@ -1,0 +1,10 @@
+﻿.suscripcion-desc {
+    color:red;
+}
+
+#mostrar-descr-suscrip {
+    width:200px;
+    height:200px;
+    background-image: url('Imagenes/i_sidoit.png');
+}
+

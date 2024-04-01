@@ -1,0 +1,254 @@
+﻿@model Facturacion_Electronica.Models.GuiaRemision.ModeloGuiaRemision
+@{
+    ViewBag.Title = "Guia de Remision";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Nueva Guía de Remisión</h2>
+
+@Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-guia" })
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <div style="text-align:center">
+                        @if (Model.Emisor.LogoRelativoPath != null)
+                        {
+                            <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                        }
+                    </div>
+
+                    <legend>Datos del Emisor</legend>
+                    <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                    <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                    <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                    <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                    <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                    @if (Model.Emisor.ContirbuyenteEspecial)
+                    {
+                        <p>Contribuyente Especial: <strong>SI</strong></p>
+                        <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                    }
+                    else
+                    {
+                        <p>Contribuyente Especial: <strong>NO</strong></p>
+                    }
+                    @if (Model.Emisor.ObligadoContabilidad)
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                    }
+                    else
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                    }
+                    <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <legend>Identificación del Comprobante</legend>
+                    <p>Fecha de Incio de Transporte: <strong>@Model.FechaInicioTransporte.ToString("dd/MM/yyyy")</strong></p>
+                    <p>Fecha de Fin de Transporte: <strong>@Model.FechaFinTransporte.ToString("dd/MM/yyyy")</strong></p>
+                    <p>Número: <strong id="numero-factura">@Model.Numero</strong></p>
+                    <p>Ambiente: <strong>@Model.Ambiente</strong></p>
+                    <p>Clave Acceso:</p>
+                    <p style="font-size: 1em;word-wrap: break-word; "><strong>@Model.ClaveAcceso</strong></p>
+                </fieldset>
+            </div>
+            <br />
+            <button type="button" style="margin-top:10px" class="btn btn-default" onclick="GenerarComrprobante()">Generar Comprobante Electrónico</button>
+            <a href="@Url.Action("Impresion", "GuiaRemision", new { id = Model.Id})" class="btn btn-default" target="_blank">Imprimir </a>
+            <a href="@Url.Action("DescargarRide", "GuiaRemision", new { id = Model.Id})" class="btn btn-default" target="_blank">Descargar RIDE </a>
+            <a href="@Url.Action("DescargarXml", "GuiaRemision", new { id = Model.Id})" class="btn btn-default" target="_blank">Descargar XML </a>
+        </div>        
+    </div>
+    <br />
+    <div>
+        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+            <fieldset>
+                <legend>Datos del Transportista</legend>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        @Html.HiddenFor(model => model.Transportista.Id, new { @id = "transportista-id" })
+                        @Html.LabelFor(model => model.Transportista.NumerdeIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-4 ">
+                            @Html.EditorFor(model => model.Transportista.NumerdeIdentificacion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "id-transportista" } })
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(model => model.Transportista.Nombre, htmlAttributes: new { @class = "control-label  " })
+                                        @Html.EditorFor(model => model.Transportista.Nombre, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "nombre-transportista" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(model => model.Transportista.Placa, htmlAttributes: new { @class = "control-label" })
+                                        @Html.EditorFor(model => model.Transportista.Placa, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "placa-transportista" } })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(model => model.Transportista.Correo, htmlAttributes: new { @class = "control-label  " })
+                                        @Html.EditorFor(model => model.Transportista.Correo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "email-transportista" } })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(model => model.DireccionPartida, htmlAttributes: new { @class = "control-label  " })
+                                        @Html.TextAreaFor(model => model.DireccionPartida, htmlAttributes: new { @class = "form-control ",@readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+            <fieldset>
+                <legend>Datos del Destinatario</legend>
+                <table class="table" id="tabla-destinatarios">
+                    <tr>
+                        <th>
+                            Nro Identificación
+                        </th>
+                        <th>
+                            Nombre/Apellido
+                        </th>
+                        <th>
+                            Motivo traslado
+                        </th>
+                        <th>
+                            Destino
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    @foreach (var item in Model.Destinatarios)
+                    {
+                        var estiloRegistro = Model.IdDestinatarioSeleccionado == item.Id ? "background-color:#bbefd3" : "";
+                        <tr>
+                            <td style="@estiloRegistro">
+                                @Html.DisplayFor(modelItem => item.Identificacion)
+                            </td>
+                            <td style="@estiloRegistro">
+                                @Html.DisplayFor(modelItem => item.Nombres)
+                            </td>
+                            <td style="@estiloRegistro">
+                                @Html.DisplayFor(modelItem => item.MotivoTraslado)
+                            </td>
+                            <td style="@estiloRegistro">
+                                @Html.DisplayFor(modelItem => item.DireccionDestino)
+                            </td>
+                            <td style="@estiloRegistro">
+                                <button type="button" id="seleccionar-detalle" class="btn btn-default btn-seleccionar-destinatario" onclick="seleccionarDestinatario(@item.Id)">
+                                    Seleccionar
+                                </button>
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+            </fieldset>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+            <fieldset>
+                <legend>Producto</legend>
+                @Html.HiddenFor(x => x.IdDestinatarioSeleccionado, new { @value = Model.IdDestinatarioSeleccionado, @id = "id-destinatario-seleccionado" })
+
+                <table class="table" id="tabla-detalles-vista">
+                    <thead>
+                        <tr>
+                            <th>
+                                Sku
+                            </th>
+                            <th>
+                                Descripcion
+                            </th>
+                            <th>
+                                Cantidad
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="data">
+                    </tbody>
+
+                </table>
+            </fieldset>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive" style="border-style: solid;">
+                        <fieldset>
+                            <legend>Datos Adicionales</legend>
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Nombre
+                                    </th>
+                                    <th>
+                                        Descripción
+                                    </th>
+                                </tr>
+
+                                @foreach (var item in Model.Adicionales)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Descripcion)
+                                        </td>
+                                    </tr>
+                                }
+
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/GuiaRemisionJS")

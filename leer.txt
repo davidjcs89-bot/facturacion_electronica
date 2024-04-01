@@ -1,0 +1,20 @@
+Emisor:
+-En el emisor debería ir reflejado el correo electrónico con el q se asocio el emisor. Y poder agregar otro dirección de correo electrónico para recepción de documentos.
+-Vista previo de logo.
+
+Puntos de Emisor: el editar y eliminar debemos cambiar la vista de los botones.
+
+Cliente: Debemos agregar otra opción para segundo correo electrónico.
+
+Producto: Agregar imagen del producto validando peso y formato.
+
+
+Reporte enviado por correo por método de pago(mas necesario en el correo generado automáticamente formato pdf)
+
+Cuadrar el inventario a nivel de base de datos
+
+cambiar de lado la opción de visualizar el menu
+
+En el nopcommerce poder ordenar lista de productos
+
+dcvidc	Crear accesos para la visualización de las facturas de los otros puntos. Cada usuario puede ver solo las facturas del punto al cual esta asignado.

@@ -1,0 +1,216 @@
+﻿
+
+@model Facturacion_Electronica.Models.Factura.ModeloBuscarFactura
+
+@{
+    ViewBag.Title = "Factura";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>
+    Facturas
+</h2>
+<p>
+    <button type="button" id="nuevaFactura" class="btn btn-success" data-target="#nuevaFactura" onclick="location.href='/Factura/Create'">
+        Crear nueva Factura
+    </button>
+</p>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+<div class="container" style="border-style: solid;">
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <h4 class="mb-0">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Busqueda de Facturas
+                    </a>
+                </h4>
+            </div>
+
+            <div id="collapseTwo" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <fieldset>
+
+                        <div class="form-horizontal">
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BuscarPorNumero, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BuscarPorNumero, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BuscarPorNombreCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BuscarPorNombreCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.BuscarPorIdCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                <div class="col-md-10">
+                                    @Html.EditorFor(model => model.BuscarPorIdCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                <div class="input-group date datePickerBasicDate col-md-3">
+                                    @Html.EditorFor(model => model.BuscarFechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                <div class="input-group date datePickerBasicDate col-md-3">
+                                    @Html.EditorFor(model => model.BuscarFechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+        
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>
+                    Estado
+                </th>
+                <th>
+                    Proforma
+                </th>
+                <th>
+                    Fecha Creacion
+                </th>
+                <th>
+                    Fecha Modificacion
+                </th>
+                <th>
+                    Fecha Emision
+                </th>
+                <th>
+                    Numero
+                </th>
+                <th>
+                    Total
+                </th>
+                <th>
+                    Cliente
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Facturas)
+            {
+                var colorFila = item.Estado == 1 ? "#faaa99" : "white";
+
+                <tr style="background-color:@colorFila">
+                    <td>
+                        @switch (item.Estado)
+                        {
+                            case 1:
+                                <p>PENDIENTE</p>
+                                break;
+                            case 2: <p>PAGADO</p>
+                                break;
+                            case 3: <p>FINALIZADO</p>
+                                break;
+                            case 4: <p>RECIBIDO</p>
+                                break;
+                            case 5: <p>NO_RECIBIDO</p>
+                                break;
+                            case 6: <p>AUTORIZADO</p>
+                                break;
+                            case 7: <p>NO_AUTORIZADO</p>
+                                break;
+                        }
+                    </td>
+                    @if (item.desde_proforma)
+                    {
+                        <td>
+                            SI
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            NO
+                        </td>
+                    }
+
+                    <td>
+                        @Convert.ToDateTime(item.fecha_creacion).ToString("dd/MM/yyyy HH:mm")
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item.fecha_modificacion).ToString("dd/MM/yyyy HH:mm")
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item.Fecha_emision).ToString("dd/MM/yyyy HH:mm")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Numero)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Total)
+                    </td>
+                    @{
+                        var cliente = item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente;
+                    }
+                    <td>
+                        @Html.Raw(cliente)
+                    </td>
+                    @if (item.Estado != 3 && item.Estado != 6)
+                    {
+                        <td>
+                            <button type="button" id="editarFactura" class="btn btn-info btn-editar" data-target="#editarFactura" onclick="location.href='/Factura/Edit/@item.id'">
+                                Editar
+                            </button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <button type="button" id="editarFactura" class="btn bg-info" data-target="#editarFactura" onclick="location.href='/Factura/View/@item.id'">
+                                Ver
+                            </button>
+                        </td>
+                    }
+                </tr>
+            }
+
+        </table>
+    </div>
+
+    }
+
+    @section Styles {
+        @Styles.Render("~/bundles/datetimePickerCss")
+    }
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/datetimePicker")

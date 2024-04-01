@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Facturacion_Electronica.Puntos_emisior>
+
+@{
+    ViewBag.Title = "Puntos de Emision";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Puntos de Emision</h2>
+
+<p>
+    <button type="button" id="nuevoCliente" class="btn btn-success" data-target="#editarCliete" onclick="location.href='PuntoEmision/Create'">
+        Crear nuevo punto de emision
+    </button>
+</p>
+<br/>
+<div class="table-responsive">
+    <table class="table">
+        <tr>
+            <th>
+                Numero Estab
+            </th>
+            <th>
+                Numero Emision
+            </th>
+            <th>
+                Direccion
+            </th>
+            <th>
+                Fecha Creacion
+            </th>
+            <th>
+                Fecha Modificacion
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Numero_establecimiento)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Numero_emision)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Direccion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha_creacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha_modificacion)
+                </td>
+                <td>
+                    <button type="button" id="editarPuntoEmision" class="btn btn-info btn-editar" data-target="#editarRetencion" onclick="location.href='/PuntoEmision/Edit/@item.id'">
+                        Editar
+                    </button>
+                    <button type="button" id="eliminarPuntoEmision" class="btn bg-info" data-target="#editarRetencion" onclick="location.href='/PuntoEmision/Delete/@item.id'">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        }
+
+    </table>
+</div>

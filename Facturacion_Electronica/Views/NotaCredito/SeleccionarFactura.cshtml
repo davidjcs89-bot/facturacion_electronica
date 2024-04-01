@@ -1,0 +1,136 @@
+﻿@model Facturacion_Electronica.Models.Factura.ModeloBuscarFactura
+@{
+    ViewBag.Title = "Nota de Crédito";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>
+    Seleccionar Factura
+</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+        <fieldset>
+            <legend>Busqueda de Facturas</legend>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorNumero, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorNumero, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorNombreCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorNombreCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorIdCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorIdCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                    <div class="input-group date datePickerBasicDate col-md-3">
+                        @Html.EditorFor(model => model.BuscarFechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                    <div class="input-group date datePickerBasicDate col-md-3">
+                        @Html.EditorFor(model => model.BuscarFechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Fecha Creacion
+                    </th>
+                    <th>
+                        Fecha Modificacion
+                    </th>
+                    <th>
+                        Fecha Emision
+                    </th>
+                    <th>
+                        Numero
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                    <th>
+                        Cliente
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Facturas)
+                {
+                    <tr>
+                        <td>
+                            @Convert.ToDateTime(item.fecha_creacion).ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(item.fecha_modificacion).ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(item.Fecha_emision).ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Numero)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                        @{
+                            var cliente = item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente;
+                        }
+                        <td>
+                            @Html.Raw(cliente)
+                        </td>
+                        <td>
+                            <button type="button" id="seleccionarFactura" class="btn bg-info" data-target="#seleccionarCliete" onclick="location.href='/NotaCredito/Create/@item.id'">
+                                Seleccionar
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+}
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+

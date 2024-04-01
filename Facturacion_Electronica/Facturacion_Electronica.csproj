@@ -1,0 +1,925 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F5696AA8-DF96-42A8-87EE-246444D9C3E0}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Facturacion_Electronica</RootNamespace>
+    <AssemblyName>Facturacion_Electronica</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <Use64BitIISExpress>
+    </Use64BitIISExpress>
+    <IISExpressSSLPort>44370</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
+    <FilesToIncludeForPublish>OnlyFilesToRunTheApp</FilesToIncludeForPublish>
+    <LegacyPublishPropertiesPageEnabled>true</LegacyPublishPropertiesPageEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="bcmail-jdk16-1.45, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\bcmail-jdk16-1.45.dll</HintPath>
+    </Reference>
+    <Reference Include="bcprov-jdk16-1.45, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\bcprov-jdk16-1.45.dll</HintPath>
+    </Reference>
+    <Reference Include="bctsp-jdk16-1.45, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\bctsp-jdk16-1.45.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="commons-codec-1.2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\commons-codec-1.2.dll</HintPath>
+    </Reference>
+    <Reference Include="commons-httpclient-3.0.1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\commons-httpclient-3.0.1.dll</HintPath>
+    </Reference>
+    <Reference Include="commons-lang-2.4, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\commons-lang-2.4.dll</HintPath>
+    </Reference>
+    <Reference Include="commons-logging-1.1.1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\commons-logging-1.1.1.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Beans.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Charsets, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Charsets.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Corba, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Corba.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Jdbc.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Management, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Media, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Media.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Misc, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Misc.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Naming, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Naming.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Remoting, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Remoting.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.SwingAWT, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.SwingAWT.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Tools, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Util, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Util.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.API, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.API.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Bind, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Crypto, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Parse, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Transform, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.WebServices, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.WebServices.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.XPath, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime.JNI, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.Runtime.JNI.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.2, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\iTextSharp.5.5.13.2\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.Primitives, Version=2.2.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.2.2.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Net.Http.Headers, Version=2.2.8.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Net.Http.Headers.2.2.8\lib\netstandard2.0\Microsoft.Net.Http.Headers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibAPI-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibAPI-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibCert-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibCert-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibCrypt-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibCrypt-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibOCSP-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibOCSP-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibPolicy-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibPolicy-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibTrust-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibTrust-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibTSA-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibTSA-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="MITyCLibXADES-1.1.7, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Business\FirmaDigital\Dll Libraries\MITyCLibXADES-1.1.7.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Linq.Dynamic.Core, Version=1.1.5.0, Culture=neutral, PublicKeyToken=0f07ec44de6ac832, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Linq.Dynamic.Core.1.1.5\lib\net46\System.Linq.Dynamic.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.7\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Atributos_adicionales_producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Avisos.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Business\CaptchaHttpClient.cs" />
+    <Compile Include="Business\CaptchaResponse.cs" />
+    <Compile Include="Business\ClienteBusiness.cs" />
+    <Compile Include="Business\CompartidaBusiness.cs" />
+    <Compile Include="Business\CompraBusiness.cs" />
+    <Compile Include="Business\ComprobanteBusiness.cs" />
+    <Compile Include="Business\EmailBusiness.cs" />
+    <Compile Include="Business\EmisorBusiness.cs" />
+    <Compile Include="Business\EnumDatosGenerales.cs" />
+    <Compile Include="Business\EnumEstadosComprobante.cs" />
+    <Compile Include="Business\EnumImpuestoProducto.cs" />
+    <Compile Include="Business\EnumIvaProducto.cs" />
+    <Compile Include="Business\EnumRolUsuario.cs" />
+    <Compile Include="Business\EnumTipoCliente.cs" />
+    <Compile Include="Business\EnumTipoDocumento.cs" />
+    <Compile Include="Business\EnumTipoIdentificacion.cs" />
+    <Compile Include="Business\EnumTipoProducto.cs" />
+    <Compile Include="Business\EnumTiposEmision.cs" />
+    <Compile Include="Business\Extensions.cs" />
+    <Compile Include="Business\FacturaBusiness.cs" />
+    <Compile Include="Business\FirmaDigital\GenericXMLSignature.cs" />
+    <Compile Include="Business\FirmaDigital\XAdESBESSignature.cs" />
+    <Compile Include="Business\GReCaptchaResponse.cs" />
+    <Compile Include="Business\GReCaptchaValidator.cs" />
+    <Compile Include="Business\GuiaRemisionBusiness.cs" />
+    <Compile Include="Business\LiquidacionCompraBusiness.cs" />
+    <Compile Include="Business\NotaCreditoBusiness.cs" />
+    <Compile Include="Business\NotaDebitoBusiness.cs" />
+    <Compile Include="Business\Productobusiness.cs" />
+    <Compile Include="Business\ProformaBusiness.cs" />
+    <Compile Include="Business\ReCapchaBusiness.cs" />
+    <Compile Include="Business\ReCapchaParametros.cs" />
+    <Compile Include="Business\ReCaptchaVersion.cs" />
+    <Compile Include="Business\RetencionBusiness.cs" />
+    <Compile Include="Business\SecuenciasBusiness.cs" />
+    <Compile Include="Business\TransportistaBusiness.cs" />
+    <Compile Include="Business\UsuarioBusiness.cs" />
+    <Compile Include="Business\ValidateCaptchaAttribute.cs" />
+    <Compile Include="Categoria_usuarios.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Clientes.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="codigos_seguridad.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Cola_envio_comprobantes.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Compra.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AvisoController.cs" />
+    <Compile Include="Controllers\ClienteController.cs" />
+    <Compile Include="Controllers\CompraController.cs" />
+    <Compile Include="Controllers\CuentaCorreoController.cs" />
+    <Compile Include="Controllers\EmisorController.cs" />
+    <Compile Include="Controllers\FacturaController.cs" />
+    <Compile Include="Controllers\FallidosController.cs" />
+    <Compile Include="Controllers\GuiaRemisionController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LiquidacionCompraController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\NotaCreditoController.cs" />
+    <Compile Include="Controllers\NotaDebitoController.cs" />
+    <Compile Include="Controllers\ProductoController.cs" />
+    <Compile Include="Controllers\ProformaController.cs" />
+    <Compile Include="Controllers\PuntoEmisionController.cs" />
+    <Compile Include="Controllers\RetencionController.cs" />
+    <Compile Include="Controllers\TransportistaController.cs" />
+    <Compile Include="Controllers\UsuarioController.cs" />
+    <Compile Include="Cuentas_correo.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Cliente.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Factura.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Guia_Remision.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Liquidacion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Nota_Credito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Nota_Debito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Datos_Adicionales_Retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalles_guia_remision.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_Compra.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_factura.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_Liquidacion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_nota_credito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_nota_debito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_pago_Factura.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_pago_Liquidacion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_pago_nota_debito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_Proforma.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Documentos_Electronicos.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Emisor.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Emisor_habilitacion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Factura.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Formas_de_Pago.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Guia_remision.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Guia_remision_destinatario.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="impresion_comprobantes.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Impuestos_Compra.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Impuestos_producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Impuestos_retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Impuesto_Detalle_Compra.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Impuesto_porcentaje_retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Liquidacion_Compra.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Log.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ModeloFacturacion.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloFacturacion.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ModeloFacturacion.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ModeloFacturacion.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ModeloFacturacion.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Cliente\DatosAdicionalesCliente.cs" />
+    <Compile Include="Models\Cliente\ModeloBuscarClientes.cs" />
+    <Compile Include="Models\Cliente\ModeloCliente.cs" />
+    <Compile Include="Models\Compra\ModeloCompra.cs" />
+    <Compile Include="Models\Compra\ModeloCompraXml.cs" />
+    <Compile Include="Models\Comprobantes\ComprobanteNoAutorizado.cs" />
+    <Compile Include="Models\Emisor\ModeloBuscarEmisor.cs" />
+    <Compile Include="Models\Emisor\ModeloEmisor.cs" />
+    <Compile Include="Models\Factura\ModeloBuscarFactura.cs" />
+    <Compile Include="Models\Factura\ModeloBuscarProducto.cs" />
+    <Compile Include="Models\Factura\ModeloFactura.cs" />
+    <Compile Include="Models\Factura\ModeloImpresionFactura.cs" />
+    <Compile Include="Models\GuiaRemision\ModeloBuscarGuiaRemision.cs" />
+    <Compile Include="Models\GuiaRemision\ModeloGuiaRemision.cs" />
+    <Compile Include="Controllers\ImpresionController.cs" />
+    <Compile Include="Models\GuiaRemision\ModeloImpresionGuiaRemision.cs" />
+    <Compile Include="Models\Impresion\ModeloConfigImpresion.cs" />
+    <Compile Include="Models\LiquidacionCompra\ModeloBuscarLiquidacion.cs" />
+    <Compile Include="Models\LiquidacionCompra\ModeloImpresionLiquidacion.cs" />
+    <Compile Include="Models\LiquidacionCompra\ModeloLiquidacion.cs" />
+    <Compile Include="Models\ModeloComprobanteReporte.cs" />
+    <Compile Include="Models\ModeloCuentaCorreo.cs" />
+    <Compile Include="Models\NotaCredito\ModeloBuscarNotaCredito.cs" />
+    <Compile Include="Models\NotaCredito\ModeloImpresionNotaCredito.cs" />
+    <Compile Include="Models\NotaCredito\ModeloNotaCredito.cs" />
+    <Compile Include="Models\NotaDebito\ModeloBuscarNotaDebito.cs" />
+    <Compile Include="Models\NotaDebito\ModeloImpresionNotaDebito.cs" />
+    <Compile Include="Models\NotaDebito\ModeloNotaDebito.cs" />
+    <Compile Include="Models\Producto\ModeloBuscarProducto.cs" />
+    <Compile Include="Models\Producto\ModeloImportarProducto.cs" />
+    <Compile Include="Models\Producto\ModeloProducto.cs" />
+    <Compile Include="Models\Proforma\ModeloBuscarProforma.cs" />
+    <Compile Include="Models\Proforma\ModeloProforma.cs" />
+    <Compile Include="Models\Retencion\ModeloBuscarRetencion.cs" />
+    <Compile Include="Models\Retencion\ModeloImpresionRetencion.cs" />
+    <Compile Include="Models\Retencion\ModeloRetencion.cs" />
+    <Compile Include="Models\Secuencias\ModeloSecuencia.cs" />
+    <Compile Include="Models\Secuencias\ModeloSecuenciacomprobante.cs" />
+    <Compile Include="Models\Transportista\ModeloBuscarTransportista.cs" />
+    <Compile Include="Models\Transportista\ModeloTransportista.cs" />
+    <Compile Include="Models\Usuario\ModeloBuscarUsuario.cs" />
+    <Compile Include="Models\Usuario\ModeloLogin.cs" />
+    <Compile Include="Models\Usuario\ModeloNuevoUsuario.cs" />
+    <Compile Include="Models\Usuario\ModeloUsuarioSesion.cs" />
+    <Compile Include="Models\Usuario\RecuperarClave.cs" />
+    <Compile Include="Nota_credito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Nota_debito.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Porcentaje_impuesto_producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Proforma.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Puntos_emisior.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Rol_Usuario.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ScheduleTask\Task.cs" />
+    <Compile Include="ScheduleTask\TaskManagerNotas.cs" />
+    <Compile Include="ScheduleTask\TaskManager.cs" />
+    <Compile Include="ScheduleTask\TaskNotasCliente.cs" />
+    <Compile Include="ScheduleTask\TaskThreadNotas.cs" />
+    <Compile Include="ScheduleTask\TaskThread.cs" />
+    <Compile Include="Secuencias.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tipo_ambientes.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tipo_cliente.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tipo_documento.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tipo_doc_retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tipo_Identificacion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tipo_producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Transportistas.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Usuario.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Validators\ConditionalRequiredAttribute.cs" />
+    <Compile Include="Validators\ExpressionParser.cs" />
+    <Compile Include="vw_comprobantes_no_autorizados.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WebServices\VerificarComprobante.cs" />
+    <Compile Include="WebServices\RespuestaAutorizacion.cs" />
+    <Compile Include="WebServices\EnvioComprobantes.cs" />
+    <Compile Include="WebServices\RespuestaEnvioComprobante.cs" />
+    <Compile Include="WebServices\WebServiceResults.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Business\FirmaDigital\Dll Libraries\bcmail-jdk16-1.45.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\bcprov-jdk16-1.45.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\bctsp-jdk16-1.45.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\commons-codec-1.2.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\commons-httpclient-3.0.1.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\commons-lang-2.4.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\commons-logging-1.1.1.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\ikvm-native-win32-x64.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\ikvm-native-win32-x86.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Beans.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Charsets.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Corba.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Core.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Jdbc.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Management.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Media.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Misc.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Naming.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Remoting.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Security.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.SwingAWT.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Text.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Tools.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.Util.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.API.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Bind.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Crypto.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Parse.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.Transform.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.WebServices.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.OpenJDK.XML.XPath.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.Runtime.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\IKVM.Runtime.JNI.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\jaxb-xalan-1.5.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibAPI-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibCert-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibCrypt-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibOCSP-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibPolicy-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibTrust-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibTSA-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\MITyCLibXADES-1.1.7.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\w3c-dom.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\xml-apis-1.3.04.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\xmlsec-1.4.2-ADSI-1.0.dll" />
+    <Content Include="Business\FirmaDigital\Dll Libraries\xmlsec-1.4.2-ADSI-1.1.dll" />
+    <Content Include="Content\bootstrap-car.min.css" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\fonts\fontawesome\css\font-awesome.min.css" />
+    <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\Imagenes\i_sidoit.png" />
+    <Content Include="Content\Usuario.css" />
+    <Content Include="DocumentosElectronicos\ComprobanteFirmado.xml" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Logos\0103957536001_error cname.PNG" />
+    <Content Include="ModeloFacturacion.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModeloFacturacion.edmx</DependentUpon>
+      <LastGenOutput>ModeloFacturacion.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="ModeloFacturacion.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>ModeloFacturacion.edmx</DependentUpon>
+      <LastGenOutput>ModeloFacturacion.cs</LastGenOutput>
+    </Content>
+    <EntityDeploy Include="ModeloFacturacion.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>ModeloFacturacion.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="ModeloFacturacion.edmx.diagram">
+      <DependentUpon>ModeloFacturacion.edmx</DependentUpon>
+    </Content>
+    <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\fonts\fontawesome\fonts\FontAwesome.otf" />
+    <Content Include="Firmas\json.json" />
+    <Content Include="Adicionales\Plantilla.xlsx" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Adicionales\PlantillaClientes.xls" />
+    <None Include="packages.config" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\Cliente\Cliente.js" />
+    <Content Include="Scripts\Comprobantes\Comprobantes.js" />
+    <Content Include="Scripts\Comun.js" />
+    <Content Include="Scripts\datePicker.js" />
+    <Content Include="Scripts\Emisor\Emisor.js" />
+    <Content Include="Scripts\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
+    <Content Include="Scripts\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
+    <Content Include="Scripts\Factura\Factura.js" />
+    <Content Include="Scripts\GuiaRemision\GuiaRemision.js" />
+    <Content Include="Scripts\Impresion\Impresion.js" />
+    <None Include="Properties\PublishProfiles\comprobantes-electronicos - Web Deploy.pubxml" />
+    <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.4.1.js" />
+    <Content Include="Scripts\jquery-3.4.1.min.js" />
+    <Content Include="Scripts\jquery-3.4.1.slim.js" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\LiquidacionCompra\LiquidacionCompra.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\moment\min\moment-with-locales.min.js" />
+    <Content Include="Scripts\NotaCredito\NotaCredito.js" />
+    <Content Include="Scripts\NotaDebito\NotaDebito.js" />
+    <Content Include="Scripts\Proforma\Proforma.js" />
+    <Content Include="Scripts\Retencion\Retencion.js" />
+    <Content Include="Scripts\sweetalert\dist\sweetalert.css" />
+    <Content Include="Scripts\sweetalert\dist\sweetalert.min.js" />
+    <Content Include="Scripts\Transportista\Transportista.js" />
+    <Content Include="Scripts\Usuario\Usuario.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Usuario\Create.cshtml" />
+    <Content Include="Views\Usuario\Edit.cshtml" />
+    <Content Include="Views\Login\Login.cshtml" />
+    <Content Include="Views\Shared\_AdminLayout.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\Emisor\Create.cshtml" />
+    <Content Include="Views\Emisor\Edit.cshtml" />
+    <Content Include="Views\PuntoEmision\Create.cshtml" />
+    <Content Include="Views\PuntoEmision\Delete.cshtml" />
+    <Content Include="Views\PuntoEmision\Details.cshtml" />
+    <Content Include="Views\PuntoEmision\Edit.cshtml" />
+    <Content Include="Views\PuntoEmision\Index.cshtml" />
+    <Content Include="Views\Cliente\Create.cshtml" />
+    <Content Include="Views\Cliente\Edit.cshtml" />
+    <Content Include="Views\Cliente\Index.cshtml" />
+    <Content Include="Views\Transportista\Create.cshtml" />
+    <Content Include="Views\Transportista\Edit.cshtml" />
+    <Content Include="Views\Transportista\Index.cshtml" />
+    <Content Include="Views\Producto\Create.cshtml" />
+    <Content Include="Views\Producto\Delete.cshtml" />
+    <Content Include="Views\Producto\Edit.cshtml" />
+    <Content Include="Views\Producto\Index.cshtml" />
+    <Content Include="Views\Factura\Index.cshtml" />
+    <Content Include="Views\Factura\Create.cshtml" />
+    <Content Include="Views\Factura\Edit.cshtml" />
+    <Content Include="Views\Factura\AgregarProducto.cshtml" />
+    <Content Include="Views\Factura\AgregarPago.cshtml" />
+    <Content Include="Views\Factura\AgregarAdicional.cshtml" />
+    <Content Include="Views\Retencion\Index.cshtml" />
+    <Content Include="Views\Retencion\Create.cshtml" />
+    <Content Include="Views\Shared\_NoConfigurado.cshtml" />
+    <Content Include="Views\Retencion\AgregarAdicional.cshtml" />
+    <Content Include="Views\Retencion\View.cshtml" />
+    <Content Include="Views\NotaCredito\Index.cshtml" />
+    <Content Include="Views\NotaCredito\SeleccionarFactura.cshtml" />
+    <Content Include="Views\NotaCredito\Create.cshtml" />
+    <Content Include="Views\NotaCredito\View.cshtml" />
+    <Content Include="Views\NotaCredito\AgregarAdicional.cshtml" />
+    <Content Include="Views\Factura\View.cshtml" />
+    <Content Include="Views\LIquidacionCompra\AgregarAdicional.cshtml" />
+    <Content Include="Views\LIquidacionCompra\AgregarPago.cshtml" />
+    <Content Include="Views\LIquidacionCompra\AgregarProducto.cshtml" />
+    <Content Include="Views\LIquidacionCompra\Create.cshtml" />
+    <Content Include="Views\LIquidacionCompra\Edit.cshtml" />
+    <Content Include="Views\LIquidacionCompra\Index.cshtml" />
+    <Content Include="Views\LIquidacionCompra\View.cshtml" />
+    <Content Include="Views\NotaDebito\Index.cshtml" />
+    <Content Include="Views\NotaDebito\Create.cshtml" />
+    <Content Include="Views\NotaDebito\SeleccionarFactura.cshtml" />
+    <Content Include="Views\GuiaRemision\Index.cshtml" />
+    <Content Include="Views\GuiaRemision\Create.cshtml" />
+    <Content Include="Views\GuiaRemision\Edit.cshtml" />
+    <Content Include="Views\NotaDebito\AgregarPago.cshtml" />
+    <Content Include="Views\NotaDebito\AgregarAdicional.cshtml" />
+    <Content Include="Views\NotaDebito\View.cshtml" />
+    <Content Include="Views\GuiaRemision\AgregarDestinatario.cshtml" />
+    <Content Include="Views\GuiaRemision\AgregarProducto.cshtml" />
+    <Content Include="Views\GuiaRemision\AgregarAdicional.cshtml" />
+    <Content Include="Views\GuiaRemision\View.cshtml" />
+    <Content Include="Views\Impresion\Index.cshtml" />
+    <Content Include="Views\Factura\Impresion.cshtml" />
+    <Content Include="Views\Factura\PreImpresion.cshtml" />
+    <Content Include="Views\NotaCredito\PreImpresion.cshtml" />
+    <Content Include="Views\NotaCredito\Impresion.cshtml" />
+    <Content Include="Views\LIquidacionCompra\PreImpresion.cshtml" />
+    <Content Include="Views\LIquidacionCompra\Impresion.cshtml" />
+    <Content Include="Views\NotaDebito\PreImpresion.cshtml" />
+    <Content Include="Views\NotaDebito\Impresion.cshtml" />
+    <Content Include="Views\GuiaRemision\Impresion.cshtml" />
+    <Content Include="Views\GuiaRemision\PreImpresion.cshtml" />
+    <Content Include="Views\Retencion\Impresion.cshtml" />
+    <Content Include="Views\Retencion\PreImpresion.cshtml" />
+    <Content Include="Views\CuentaCorreo\Index.cshtml" />
+    <Content Include="Views\Admin\Imagenes.cshtml" />
+    <Content Include="Views\Login\RecuperarClave.cshtml" />
+    <Content Include="Views\Login\ActualizarClave.cshtml" />
+    <Content Include="Views\Producto\Importar.cshtml" />
+    <Content Include="Views\Emisor\Index.cshtml" />
+    <Content Include="Views\Emisor\Configurar.cshtml" />
+    <Content Include="Views\GuiaRemision\EditarDestinatario.cshtml" />
+    <Content Include="Views\Admin\Listado.cshtml" />
+    <Content Include="Views\Proforma\Index.cshtml" />
+    <Content Include="Views\Proforma\Create.cshtml" />
+    <Content Include="Views\Proforma\Edit.cshtml" />
+    <Content Include="Views\Proforma\AgregarProducto.cshtml" />
+    <Content Include="Views\Admin\Menu.cshtml" />
+    <Content Include="Views\Usuario\Index.cshtml" />
+    <Content Include="Views\CuentaCorreo\Details.cshtml" />
+    <Content Include="Views\Fallidos\Comprobantes.cshtml" />
+    <Content Include="Views\Compra\Index.cshtml" />
+    <Content Include="Views\Compra\Create.cshtml" />
+    <Content Include="Views\Cliente\Notas.cshtml" />
+    <Content Include="Views\Cliente\CreateNota.cshtml" />
+    <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
+    <Content Include="Scripts\jquery-3.4.1.min.map" />
+    <Content Include="Views\Login\RecuperarUsuario.cshtml" />
+    <Content Include="Views\Cliente\Importar.cshtml" />
+    <Content Include="Views\Aviso\Create.cshtml" />
+    <Content Include="Views\Aviso\Delete.cshtml" />
+    <Content Include="Views\Aviso\Edit.cshtml" />
+    <Content Include="Views\Aviso\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>52327</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:44370/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

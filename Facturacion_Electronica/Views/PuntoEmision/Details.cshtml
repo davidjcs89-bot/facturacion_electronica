@@ -1,0 +1,67 @@
+﻿@model Facturacion_Electronica.Puntos_emisior
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Puntos_emisior</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Id_emisor)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Id_emisor)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Numero_establecimiento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Numero_establecimiento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Numero_emision)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Numero_emision)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Direccion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Direccion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_creacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_creacion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_modificacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_modificacion)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

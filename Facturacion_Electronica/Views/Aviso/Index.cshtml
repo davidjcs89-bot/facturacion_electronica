@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Facturacion_Electronica.Avisos>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Avisos</h2>
+
+<p>
+    @Html.ActionLink("Nuevo Aviso", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Aviso
+        </th>
+        <th>
+            Fecha de Creaci&oacute;n
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Message)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.CreateOn)
+        </td>
+        <td>
+
+            <a href='@Url.Action("Edit", "Aviso", new { id = item.Id })' class="btn btn-warning btn-editar">Editar</a>
+            <a href='@Url.Action("Delete", "Aviso", new { id = item.Id })' class="btn btn-danger">Eliminar</a>
+        </td>
+    </tr>
+}
+
+</table>

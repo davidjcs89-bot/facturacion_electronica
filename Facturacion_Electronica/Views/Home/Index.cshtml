@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Facturacion Electronica";
+
+
+
+    <link href="~/Content/bootstrap-car.min.css" rel="stylesheet" />
+    <p style="text-align: center;">&nbsp;</p>
+    <hr />
+    <h1 style="text-align: center;"><strong>Sistema de Facturacion Electronica del Ecuador</strong></h1>
+    <hr /><p style="text-align: left;">&nbsp;</p>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+            </div>
+
+            <div class="col-md-4">
+                <div class="row text-center">
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-default" style="border-radius: 10px 10px; font-size: 30px; border: 1px solid black;" onclick="location.href='/Login/Login'">Iniciar Sesion</button>
+                    </div>
+                    <div class="col-md-12" style="height:15px"></div>
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-success" style="border-radius:10px 10px;font-size:30px" onclick="location.href='/Usuario/Create'">Crear Cuenta<br />Registrarse</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+
+            </div>
+        </div>
+
+        @if (ViewBag.Avisos != null)
+        {
+            <div class="card" style="font-size:14px;margin-top:100px">
+                <div class="card-header">
+                    Avisos
+                </div>
+                @foreach (string aviso in ViewBag.Avisos)
+                {
+                    <div class="card-body">
+                        <p class="card-text">* @aviso</p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+}

@@ -1,0 +1,151 @@
+﻿
+@model Facturacion_Electronica.Models.Proforma.ModeloBuscarProforma
+
+@{
+    ViewBag.Title = "Proforma";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>
+    Proformas
+</h2>
+<p>
+    <button type="button" id="nuevaProforma" class="btn btn-success" data-target="#nuevaProforma" onclick="location.href='/Proforma/Create'">
+        Crear nueva Proforma
+    </button>
+</p>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Busqueda de Proformas
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <fieldset>
+
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNombreCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorNombreCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorIdCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorIdCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>
+                    N&uacute;mero
+                </th>
+                <th>
+                    Fecha Creacion
+                </th>
+                <th>
+                    Fecha Emision
+                </th>
+                <th>
+                    Total
+                </th>
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    jajja
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Proformas)
+            {
+
+                <tr>
+                    <td>
+                        @item.numero
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item.fecha_creacion).ToString("dd/MM/yyyy HH:mm")
+                    </td>
+                    <td>
+                        @Convert.ToDateTime(item.fecha_emision).ToString("dd/MM/yyyy HH:mm")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.total)
+                    </td>
+                    @{
+                        var cliente = item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente;
+                    }
+                    <td>
+                        @Html.Raw(cliente)
+                    </td>
+                    <td>
+                        <button type="button" id="editarProforma" class="btn btn-info btn-editar" data-target="#editarProforma" onclick="location.href='/Proforma/Edit/@item.id'">
+                            Editar
+                        </button>
+                    </td>
+
+                </tr>
+            }
+
+        </table>
+    </div>
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+}
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")

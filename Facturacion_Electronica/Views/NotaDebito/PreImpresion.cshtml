@@ -1,0 +1,20 @@
+﻿@model Facturacion_Electronica.Models.NotaDebito.ModeloImpresionNotaDebito
+@{
+
+}
+
+@Html.HiddenFor(model => model.NotaDebito.id, new { id = "nota-id", Value = Model.NotaDebito.id})
+
+@Scripts.Render("~/bundles/jquery")
+<script type="text/javascript">
+    $(document).ready(function () {
+        PrintSale();
+    });
+
+    function PrintSale() {
+        var id = $("#nota-id").val();
+        window.open("/NotaDebito/Index/", "_self");
+        window.open("/NotaDebito/Impresion/" + id, "", 1200, 1000);
+        return false;
+    }
+</script>

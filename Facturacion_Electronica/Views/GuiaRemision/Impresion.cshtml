@@ -1,0 +1,139 @@
+﻿@model Facturacion_Electronica.Models.GuiaRemision.ModeloImpresionGuiaRemision
+@{
+    Layout = null;
+}
+<html>
+<body onload="window.print();">
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        @Model.GuiaRemision.Emisor.Razon_social
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        RUC: @Model.GuiaRemision.Emisor.Ruc
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Guia Remision#: @Model.GuiaRemision.Numero_comprobante
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Clave Acceso:
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: small">
+                        @Model.GuiaRemision.Clave_acceso
+                    </td>
+                </tr>>
+            </table>
+            <table>
+                <tr>
+                    @{
+                        var dateIni = Model.GuiaRemision.Fecha_inicio_transporte.ToString("dd/MM/yyyy");
+                    }
+                    <td>Fecha Incio: @Html.DisplayFor(model => dateIni)</td>
+                </tr>
+                <tr>
+                    @{
+                        var dateFin = Model.GuiaRemision.Fecha_fin_transporte.ToString("dd/MM/yyyy");
+                    }
+                    <td>Fecha Fin: @Html.DisplayFor(model => dateFin)</td>
+                </tr>
+                <tr>
+                    <td>
+                        Id Transportista: @Html.DisplayFor(model => model.GuiaRemision.Transportistas.Numero_identificacion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nombre Transportista: @Html.DisplayFor(model => model.GuiaRemision.Transportistas.Nombre)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Dir. Partida: @Html.DisplayFor(model => Model.GuiaRemision.Direccion_partida)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        Destinatarios
+        @foreach (var destinaraio in Model.GuiaRemision.Guia_remision_destinatario.ToList())
+        {
+            <table>
+                <tr>
+                    <td>
+                        Id Cliente: @destinaraio.Clientes.identificacion
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nombre Cliente: @destinaraio.Clientes.nombre_cliente
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Direccion: @destinaraio.Clientes.Direccion
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Email: @destinaraio.Clientes.correo
+                    </td>
+                </tr>
+
+            </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            Código
+                        </th>
+                        <th>
+                            Producto
+                        </th>
+                        <th>
+                            Qty
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in destinaraio.Detalles_guia_remision.ToList())
+                    {
+                        <tr>
+                            <td style="text-align: center">
+                                @Html.DisplayFor(model => item.Producto.Codigo)
+                            </td>
+                            <td style="text-align: center">
+                                @Html.DisplayFor(model => item.Producto.Nombre)
+                            </td>
+                            <td style="text-align: center">
+                                @Html.DisplayFor(model => item.Cantidad)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        
+        <br />
+        <div style="font-size: small">
+            @Html.Raw(Model.Impresion.mensajes)
+        </div>
+
+        @if (Model.Impresion.firma)
+        {
+            <div>
+                <p>----------------------------------------------------------</p>
+                Firma
+            </div>
+        }
+    </div>
+</body>
+</html>

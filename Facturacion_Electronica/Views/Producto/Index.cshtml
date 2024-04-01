@@ -1,0 +1,182 @@
+﻿@model Facturacion_Electronica.Models.Producto.ModeloBuscarProducto
+
+@{
+    ViewBag.Title = "Producto";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Producto</h2>
+
+<td>
+    <button type="button" id="nuevoCliente" class="btn btn-success" data-target="#editarCliete" onclick="location.href='/Producto/Create'">
+        Crear Nuevo Producto
+    </button>
+    <a href='@Url.Action("Importar", "Producto")' class="btn btn-info">Importar Excel</a>
+</td>
+<br />
+<br />
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Busqueda de Productos
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse-in">
+                    <div class="accordion-inner">
+                        <fieldset>
+
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorCodigo, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorCodigo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorEstilo, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorEstilo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorNombre, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                @Html.LabelFor(model => model.BuscarTodos, htmlAttributes: new { @class = "control-label", @style = "padding-right: 10px" })
+
+                                                @Html.EditorFor(model => model.BuscarTodos)
+
+                                            </div>
+                                            <div class="col-md-5">
+
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>
+                    Codigo
+                </th>
+                <th>
+                    Estilo
+                </th>
+                <th>
+                    Tipo Producto
+                </th>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Precio
+                </th>
+                <th>
+                    impuesto IVA
+                </th>
+                <th>
+                    Impuesto ICE
+                </th>
+                <th>
+                    Impuesto IRBPNR
+                </th>
+                <th>
+                    Fecha Creacion
+                </th>
+                <th>
+                    Fecha Modificacion
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Productos)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Codigo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Codigo_auxiliar)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Tipo_producto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Precio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto2.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto1.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.fecha_creacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_modificacion)
+                    </td>
+                    <td>
+                        @*<button type="button" id="editarProducto" class="btn btn-info btn-editar" data-target="#editarCliete" onclick="location.href='/Producto/Edit/@item.id','_blank'">
+                            Editar
+                        </button>*@
+                        
+                        <button type="button" id="editarProducto" class="btn btn-info btn-editar" data-target="#editarCliete" onclick="window.open('@Url.Action("Edit", "Producto", new { id= item.id, target = "_blank" })')">
+                            Editar
+                        </button>
+                    </td>
+                    <td>
+                        <button type="button" id="eliminarProducto" class="btn btn-danger" data-target="#editarCliete" onclick="location.href='/Producto/Delete/@item.id'">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+
+        </table>
+    </div>
+}

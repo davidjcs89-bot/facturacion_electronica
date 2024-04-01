@@ -1,0 +1,205 @@
+﻿
+@model Facturacion_Electronica.Models.Retencion.ModeloBuscarRetencion
+@{
+    ViewBag.Title = "Retención";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>
+    Retenciones
+</h2>
+<p>
+    <button type="button" id="nuevaRetencion" class="btn btn-success" data-target="#nuevaRetencion" onclick="location.href='/Retencion/Create'">
+        Crear nueva Retenci&oacute;n
+    </button>
+</p>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Busqueda de Retenciones
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <fieldset>
+
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNumero, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorNumero, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNombreCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorNombreCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorIdCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorIdCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>Estado</th>
+                <th>
+                    Fecha Creacion
+                </th>
+                <th>
+                    Fecha Modificacion
+                </th>
+                <th>
+                    Fecha Emision
+                </th>
+                <th>
+                    Numero
+                </th>
+                <th>
+                    Cliente
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model.Retenciones)
+            {
+                var colorFila = item.estado == 1 ? "#faaa99" : "white";
+
+                <tr style="background-color:@colorFila">
+                    @switch (item.estado)
+                    {
+                        case 1:
+                            <td>
+                                <p>PENDIENTE</p>
+                            </td>
+                            break;
+                        case 2:
+                            <td>
+                                <p>PAGADO</p>
+                            </td>
+                            break;
+                        case 3:
+                            <td>
+                                <p>FINALIZADO</p>
+                            </td>
+                            break;
+                        case 4:
+                            <td>
+                                <p>RECIBIDO</p>
+                            </td>
+                            break;
+                        case 5:
+                            <td>
+                                <p>NO_RECIBIDO</p>
+                            </td>
+                            break;
+                        case 6:
+                            <td>
+                                <p>AUTORIZADO</p>
+                            </td>
+                            break;
+                        case 7:
+                            <td>
+                                <p>NO_AUTORIZADO</p>
+                            </td>
+                            break;
+                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_creacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_Modificacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.fecha_emision)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.numero)
+                    </td>
+                    @{
+                        var cliente = item.Clientes != null ? item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente : "";
+                    }
+                    <td>
+                        @Html.Raw(cliente)
+                    </td>
+                    @if (item.estado != 3 && item.estado != 6)
+                    {
+                        <td>
+                            <button type="button" id="editarRetencion" class="btn btn-info btn-editar" data-target="#editarRetencion" onclick="location.href='/Retencion/Edit/@item.id'">
+                                Editar
+                            </button>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <button type="button" id="editarRetencion" class="btn btn-info btn-editar" data-target="#editarRetencion" onclick="location.href='/Retencion/View/@item.id'">
+                                Ver
+                            </button>
+                        </td>
+                    }
+
+                </tr>
+            }
+
+        </table>
+    </div>
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+}
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")

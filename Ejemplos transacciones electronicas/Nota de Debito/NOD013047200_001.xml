@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<autorizacion><estado>AUTORIZADO</estado><numeroAutorizacion>2509202005016005002000120010030071561511021201512</numeroAutorizacion><fechaAutorizacion>2020-09-26T07:01:59</fechaAutorizacion><ambiente>PRODUCCIÓN</ambiente><comprobante><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<notaDebito id="comprobante" version="1.0.0">
+	<infoTributaria>
+		<ambiente>2</ambiente>
+		<tipoEmision>1</tipoEmision>
+		<razonSocial>EMPRESA PÚBLICA MUNICIPAL DE TELECOMUNICACIONES, AGUA POTABLE, ALCANTARILLADO Y SANEAMIENTO DE CUENCA - ETAPA EP</razonSocial>
+		<ruc>0160050020001</ruc>
+		<claveAcceso>2509202005016005002000120010030071561511021201512</claveAcceso>
+		<codDoc>05</codDoc>
+		<estab>001</estab>
+		<ptoEmi>003</ptoEmi>
+		<secuencial>007156151</secuencial>
+		<dirMatriz>BENIGNO MALO 7-78 Y MARISCAL SUCRE</dirMatriz>
+	</infoTributaria>
+	<infoNotaDebito>
+		<fechaEmision>25/09/2020</fechaEmision>
+		<tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+		<razonSocialComprador>CONTRERAS SOLIS DAVID JOSUE</razonSocialComprador>
+		<identificacionComprador>0103957536</identificacionComprador>
+		<contribuyenteEspecial>3257</contribuyenteEspecial>
+		<obligadoContabilidad>SI</obligadoContabilidad>
+		<codDocModificado>01</codDocModificado>
+		<numDocModificado>001-003-027595898</numDocModificado>
+		<fechaEmisionDocSustento>05/02/2020</fechaEmisionDocSustento>
+		<totalSinImpuestos>0.35</totalSinImpuestos>
+		<impuestos>
+			<impuesto>
+				<codigo>2</codigo>
+				<codigoPorcentaje>6</codigoPorcentaje>
+				<tarifa>0</tarifa>
+				<baseImponible>0.35</baseImponible>
+				<valor>0.00</valor>
+			</impuesto>
+		</impuestos>
+		<valorTotal>0.35</valorTotal>
+	</infoNotaDebito>
+	<motivos>
+		<motivo>
+			<razon>INTERES POR MORA</razon>
+			<valor>0.35</valor>
+		</motivo>
+	</motivos>
+	<infoAdicional>
+		<campoAdicional nombre="Instalacion">T0158600</campoAdicional>
+		<campoAdicional nombre="Telefono">2800219</campoAdicional>
+		<campoAdicional nombre="Dir Instal">EMILIANO ZAPATA  Y CALLE 3</campoAdicional>
+	</infoAdicional>
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:etsi="http://uri.etsi.org/01903/v1.3.2#" Id="Signature373814">
+<ds:SignedInfo Id="Signature-SignedInfo95108">
+<ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+<ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+<ds:Reference Id="SignedPropertiesID290838" Type="http://uri.etsi.org/01903#SignedProperties" URI="#Signature373814-SignedProperties526605">
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>ew2rPRgdmBIc1i8Z4Q0v9zcoUpA=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference URI="#Certificate11000201">
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>Z3Ll+7bl7ABw5mg3F0QmucyvMRI=</ds:DigestValue>
+</ds:Reference>
+<ds:Reference Id="Reference-ID-554629" URI="#comprobante">
+<ds:Transforms>
+<ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+</ds:Transforms>
+<ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+<ds:DigestValue>5QMfEtQGEUZd6bP8y/7jR1N3HOQ=</ds:DigestValue>
+</ds:Reference>
+</ds:SignedInfo>
+<ds:SignatureValue Id="SignatureValue995598">
+VFXffeuZCNGJ/v9Z4xqqXLQiFdrcYhey7toC758Np0p66G9fjJEk0umOogWj+i7iIKVPi80ift9w
+DRjoGYOdbVKhuaP96REII960y0YxMjYJrqAWdIHq/a5wDOngtShcmZRrRM817LdIis3+czBm7LvG
+PcJ0drWDOQfP3dMDnjJL+Eo9oTCA2Ue8+oRmWX8tMeustp2M4C8Po33CSH/TXBLoJ63+nwSEQZZX
+zPoo3B8G2v7OSpjMRGZHgeLUX/8kdh6hpozSEroRW8fdwOVt9iZGgNZbEExTMQFuaEKf3DnMaLu+
+aq84X3+Qdm36SPbUX4pAHx/Bncv6GTewmJ6Y2Q==
+</ds:SignatureValue>
+<ds:KeyInfo Id="Certificate11000201">
+<ds:X509Data>
+<ds:X509Certificate>
+MIIJpjCCB46gAwIBAgIEW2MfkDANBgkqhkiG9w0BAQsFADCBoTELMAkGA1UEBhMCRUMxIjAgBgNV
+BAoTGUJBTkNPIENFTlRSQUwgREVMIEVDVUFET1IxNzA1BgNVBAsTLkVOVElEQUQgREUgQ0VSVElG
+SUNBQ0lPTiBERSBJTkZPUk1BQ0lPTi1FQ0lCQ0UxDjAMBgNVBAcTBVFVSVRPMSUwIwYDVQQDExxB
+QyBCQU5DTyBDRU5UUkFMIERFTCBFQ1VBRE9SMB4XDTIwMDQyNDIxMzIxOFoXDTIyMDQyNDIyMDIx
+OFowga0xCzAJBgNVBAYTAkVDMSIwIAYDVQQKExlCQU5DTyBDRU5UUkFMIERFTCBFQ1VBRE9SMTcw
+NQYDVQQLEy5FTlRJREFEIERFIENFUlRJRklDQUNJT04gREUgSU5GT1JNQUNJT04tRUNJQkNFMQ4w
+DAYDVQQHEwVRVUlUTzExMBEGA1UEBRMKMDAwMDQ1MjQ3OTAcBgNVBAMTFU1BWCBKT1ZBTlkgTEVP
+TiBCVUVOTzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKPrwLdPzqF/dX2Rnd2iHLoZ
+xsn5oK8RiaW+HMn4wU5QHK2kUvRdf9lYcur1+o1P31HXE+qeA0NEds0kgfkPo+cP9cv2EJF08leF
+MVufZOLpS2qmmfBVFwSQAPFbREDMkcbEHzMgdaZR8ZPFKz8Pq2Irw+mtwlcTeeY02dk1YyuBDD48
+ov4JPLmin+ClN6h+vb/EV02bvCS+DhBg8k1anbF1psC/R2QlRrHjsr/dlfPPZWWPHW7Pb8R7pkfF
+9En/8FSqjGM9Y4dqzZsuw98WS4NVzNcaal3PeOg0LhUqzJwAAr7AqwJobqbSofg2h1MYEim8dJsF
+VPYcKO5H1/+JIw0CAwEAAaOCBNYwggTSMAsGA1UdDwQEAwIFIDCBkQYIKwYBBQUHAQEEgYQwgYEw
+PgYIKwYBBQUHMAGGMmh0dHA6Ly9vY3NwLmVjaS5iY2UuZWMvZWpiY2EvcHVibGljd2ViL3N0YXR1
+cy9vY3NwMD8GCCsGAQUFBzABhjNodHRwOi8vb2NzcDEuZWNpLmJjZS5lYy9lamJjYS9wdWJsaWN3
+ZWIvc3RhdHVzL29jc3AwfQYKKwYBBAGCqDsDCgRvE21FTVBSRVNBIFBVQkxJQ0EgTVVOSUNJUEFM
+IERFIFRFTEVDT01VTklDQUNJT05FUyBBR1VBIFBPVEFCTEUgQUxDQU5UQVJJTExBRE8gWSBTQU5F
+QU1JRU5UTyBERSBDVUVOQ0EgIEVUQVBBIEVQMB0GCisGAQQBgqg7AwsEDxMNMDE2MDA1MDAyMDAw
+MTAaBgorBgEEAYKoOwMBBAwTCjAxMDE2OTY0MzMwGgYKKwYBBAGCqDsDAgQMEwpNQVggSk9WQU5Z
+MBQGCisGAQQBgqg7AwMEBhMETEVPTjAVBgorBgEEAYKoOwMEBAcTBUJVRU5PMDkGCisGAQQBgqg7
+AwUEKxMpQURNSU5JU1RSQURPUiBERVBBUlRBTUVOVE8gREUgRkFDVFVSQUNJT04wGwYKKwYBBAGC
+qDsDBwQNEwtCRU5JR08gTUFMTzAZBgorBgEEAYKoOwMIBAsTCTA3MjgzMTkwMDAWBgorBgEEAYKo
+OwMJBAgTBkN1ZW5jYTAXBgorBgEEAYKoOwMMBAkTB0VDVUFET1IwIAYKKwYBBAGCqDsDMwQSExBT
+T0ZUV0FSRS1BUkNISVZPMB0GA1UdEQQWMBSBEmdsZW9uQGV0YXBhLm5ldC5lYzCCAd8GA1UdHwSC
+AdYwggHSMIIBzqCCAcqgggHGhoHVbGRhcDovL2JjZXFsZGFwc3VicDEuYmNlLmVjL2NuPUNSTDk0
+OCxjbj1BQyUyMEJBTkNPJTIwQ0VOVFJBTCUyMERFTCUyMEVDVUFET1IsbD1RVUlUTyxvdT1FTlRJ
+REFEJTIwREUlMjBDRVJUSUZJQ0FDSU9OJTIwREUlMjBJTkZPUk1BQ0lPTi1FQ0lCQ0Usbz1CQU5D
+TyUyMENFTlRSQUwlMjBERUwlMjBFQ1VBRE9SLGM9RUM/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGlz
+dD9iYXNlhjRodHRwOi8vd3d3LmVjaS5iY2UuZWMvQ1JML2VjaV9iY2VfZWNfY3JsZmlsZWNvbWIu
+Y3JspIG1MIGyMQswCQYDVQQGEwJFQzEiMCAGA1UEChMZQkFOQ08gQ0VOVFJBTCBERUwgRUNVQURP
+UjE3MDUGA1UECxMuRU5USURBRCBERSBDRVJUSUZJQ0FDSU9OIERFIElORk9STUFDSU9OLUVDSUJD
+RTEOMAwGA1UEBxMFUVVJVE8xJTAjBgNVBAMTHEFDIEJBTkNPIENFTlRSQUwgREVMIEVDVUFET1Ix
+DzANBgNVBAMTBkNSTDk0ODAfBgNVHSMEGDAWgBRIot8jHx34LFF6jAPNSTKlCcGUqzAdBgNVHQ4E
+FgQU3A/R6ASkqTWWF9pE0MTapQ1LB3YwCQYDVR0TBAIwADAZBgkqhkiG9n0HQQAEDDAKGwRWOC4x
+AwIEsDANBgkqhkiG9w0BAQsFAAOCAgEAlqoYkneQZCG7VmvuB+PZj6LTKLBjhZHRML+PFhwiCH88
+zq+PUS66xrB4dVGXBnEMSrCNweHG+dm3gVTwq3nJUt4AMxKGipggrYjWT24piabwHpfYEXrcyNfg
+IDfRS/ehhDptTGt2kJ4XiKDbE3ewaGA9IOLz/M+i2fdqD4XZpSJit9x4xVY7jkf9soyM/wAxSPis
+7vivwdLJhD01FBGsEc4pTR1XvGFaup+qnef8m7t4plTLpKMaV5WdZzIl9+cDn6uZLNU3Sx8PsLB9
+qLnrNYhzWlSn126DZk+xXQ7mpPwoYpOLbGmUz/J7u1qkAoBcaW9CfIhe9S3wAPqNSadZJmuMPydQ
+wdIxX4iVO5ppHsZF8atfbBq9odaVdnhevr2klGSM14zzHwv1/OiDWlKHpXWtIoQaZ6jAn3QQv7MV
+CPBn/MO7cuwy0ncPcASqruTj+JXQg8cuBsmI/pSVr0oiXzQUlZxoNQTEAX5D1b+/+o2tbgZFaO4i
+7rWAYE0Sf6kyJzyM4BNghMXpIRRvR/ArDcaf/g7iwL+1Tv9Lv1lhnHQ2ds5Z93T8ugI9q0IDEmo4
+PjyVOkOkCEyA7im688uwpN4fhiGQwyMneTqVSbU0v4kzzFd+f6SBDobOovvV0gKtEgfc3vRtY1qx
+PHBTP2QVamZuWXe9aVOjE42jFdLYQSc=
+</ds:X509Certificate>
+</ds:X509Data>
+<ds:KeyValue>
+<ds:RSAKeyValue>
+<ds:Modulus>
+o+vAt0/OoX91fZGd3aIcuhnGyfmgrxGJpb4cyfjBTlAcraRS9F1/2Vhy6vX6jU/fUdcT6p4DQ0R2
+zSSB+Q+j5w/1y/YQkXTyV4UxW59k4ulLaqaZ8FUXBJAA8VtEQMyRxsQfMyB1plHxk8UrPw+rYivD
+6a3CVxN55jTZ2TVjK4EMPjyi/gk8uaKf4KU3qH69v8RXTZu8JL4OEGDyTVqdsXWmwL9HZCVGseOy
+v92V889lZY8dbs9vxHumR8X0Sf/wVKqMYz1jh2rNmy7D3xZLg1XM1xpqXc946DQuFSrMnAACvsCr
+AmhuptKh+DaHUxgSKbx0mwVU9hwo7kfX/4kjDQ==
+</ds:Modulus>
+<ds:Exponent>AQAB</ds:Exponent>
+</ds:RSAKeyValue>
+</ds:KeyValue>
+</ds:KeyInfo>
+<ds:Object Id="Signature373814-Object229780"><etsi:QualifyingProperties Target="#Signature373814"><etsi:SignedProperties Id="Signature373814-SignedProperties526605"><etsi:SignedSignatureProperties><etsi:SigningTime>2020-09-26T07:01:17-05:00</etsi:SigningTime><etsi:SigningCertificate><etsi:Cert><etsi:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>qbz/zKNUJujFp+vr5xak3TOxVrs=</ds:DigestValue></etsi:CertDigest><etsi:IssuerSerial><ds:X509IssuerName>CN=AC BANCO CENTRAL DEL ECUADOR,L=QUITO,OU=ENTIDAD DE CERTIFICACION DE INFORMACION-ECIBCE,O=BANCO CENTRAL DEL ECUADOR,C=EC</ds:X509IssuerName><ds:X509SerialNumber>1533222800</ds:X509SerialNumber></etsi:IssuerSerial></etsi:Cert></etsi:SigningCertificate></etsi:SignedSignatureProperties><etsi:SignedDataObjectProperties><etsi:DataObjectFormat ObjectReference="#Reference-ID-554629"><etsi:Description>contenido comprobante</etsi:Description><etsi:MimeType>text/xml</etsi:MimeType></etsi:DataObjectFormat></etsi:SignedDataObjectProperties></etsi:SignedProperties></etsi:QualifyingProperties></ds:Object></ds:Signature></notaDebito>]]></comprobante><mensajes /></autorizacion>

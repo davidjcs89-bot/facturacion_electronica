@@ -1,0 +1,179 @@
+﻿@model Facturacion_Electronica.Models.Usuario.ModeloBuscarUsuario
+
+@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Usuarios</h2>
+
+<br />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+
+        <fieldset>
+            <legend>Busqueda de Usuarios</legend>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorNombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorNombre, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorApellido, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorApellido, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorEmail, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorEmail, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-7">
+                                @Html.LabelFor(model => model.BuscarTodos, htmlAttributes: new { @class = "control-label", @style = "padding-right: 10px" })
+
+                                @Html.EditorFor(model => model.BuscarTodos)
+
+                            </div>
+                            <div class="col-md-5">
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>
+                    Nombre Usuario
+                </th>
+                <th>
+                    Nombre
+                </th>
+                <th>
+                    Apellido
+                </th>
+                <th>
+                   Correo
+                </th>
+                <th>
+                    Número Telefonico
+                </th>
+                <th>
+                    Dirección
+                </th>
+                <th>
+                    Ciudad
+                </th>
+                <th>
+                    Provincia
+                </th>
+                <th>
+                    Fecha Creación
+                </th>
+                <th>
+                    Fecha Modificación
+                </th>
+                <th>
+                    Estado
+                </th>
+                <th>
+                    Notificaciones
+                </th>
+                <th>
+                    Categoria
+                </th>
+                <th>
+                    Emisor
+                </th>
+                <th>
+                    Rol
+                </th>
+            </tr>
+
+            @foreach (var item in Model.Usuarios)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre_usuario)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Apellido)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Correo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Numero_telefono)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Direccion_Dom_cuenta)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Ciudad)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Provincia)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_creacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_modificacion)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Estado)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Notificaciones)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Categoria_usuarios.Descripcion)
+                    </td>
+                    <td>
+                        @{
+                            var emisor = "No configurado";
+                            if (item.Emisor != null)
+                            {
+                                emisor = item.Emisor.Ruc + "<br/>" + item.Emisor.Nombre_comercial;
+                            }
+                        }
+                    <td>
+                        @Html.Raw(emisor)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Rol_Usuario.nombre)
+                    </td>
+                </tr>
+                            }
+
+        </table>
+    </div>
+
+                            }

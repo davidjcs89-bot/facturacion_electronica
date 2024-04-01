@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<guiaRemision id="comprobante" version="1.1.0">
+  <infoTributaria>
+    <ambiente>2</ambiente>
+    <tipoEmision>1</tipoEmision>
+    <razonSocial>GRAIMAN CIA. LTDA.</razonSocial>
+    <nombreComercial>GRAIMAN CIA. LTDA.</nombreComercial>
+    <ruc>0190122271001</ruc>
+    <claveAcceso>0903202006019012227100120065030000339240186111810</claveAcceso>
+    <codDoc>06</codDoc>
+    <estab>006</estab>
+    <ptoEmi>503</ptoEmi>
+    <secuencial>000033924</secuencial>
+    <dirMatriz>PANAMERICANA NORTE KM 4 1/2 S/N PARQUE INDUSTRIAL</dirMatriz>
+  </infoTributaria>
+  <infoGuiaRemision>
+    <dirEstablecimiento>Ave.Hurtado de Mendoza s/n y Ave.Paseo de los Cañaris</dirEstablecimiento>
+    <dirPartida>GRAIMAN CIA. LTDA. (BODEGA TOTORACOCHA)</dirPartida>
+    <razonSocialTransportista>ORELLANA TAPIA JAIME</razonSocialTransportista>
+    <tipoIdentificacionTransportista>05</tipoIdentificacionTransportista>
+    <rucTransportista>0105306815</rucTransportista>
+    <contribuyenteEspecial>3257</contribuyenteEspecial>
+    <fechaIniTransporte>09/03/2020</fechaIniTransporte>
+    <fechaFinTransporte>09/03/2020</fechaFinTransporte>
+    <placa>UCA-0961</placa>
+  </infoGuiaRemision>
+  <destinatarios>
+    <destinatario>
+      <identificacionDestinatario>0190422135001</identificacionDestinatario>
+      <razonSocialDestinatario>DIVAD CLOSET CIA. LTDA.</razonSocialDestinatario>
+      <dirDestinatario>FELIPE II Y CIRCUMVALACION SUR</dirDestinatario>
+      <motivoTraslado>VENTA DE PRODUCTOS</motivoTraslado>
+      <codDocSustento>01</codDocSustento>
+      <numDocSustento>006-502-000056086</numDocSustento>
+      <numAutDocSustento>0703202001019012227100120065020000560860186041117</numAutDocSustento>
+      <fechaEmisionDocSustento>07/03/2020</fechaEmisionDocSustento>
+      <detalles>
+        <detalle>
+          <codigoInterno>G-PT0001</codigoInterno>
+          <descripcion>PEGANTE GRAIMAN STANDARD</descripcion>
+          <cantidad>30.0000</cantidad>
+          <detallesAdicionales>
+            <detAdicional nombre="Unidad Medida" valor="UN" />
+          </detallesAdicionales>
+        </detalle>
+        <detalle>
+          <codigoInterno>L1623</codigoInterno>
+          <descripcion>BLANCO HUESO S/A</descripcion>
+          <cantidad>9.0000</cantidad>
+          <detallesAdicionales>
+            <detAdicional nombre="Unidad Medida" valor="UN" />
+          </detallesAdicionales>
+        </detalle>
+        <detalle>
+          <codigoInterno>721791S</codigoInterno>
+          <descripcion>CONTEMPO 30X60 WHITE</descripcion>
+          <cantidad>87.4800</cantidad>
+          <detallesAdicionales>
+            <detAdicional nombre="Unidad Medida" valor="M2" />
+          </detallesAdicionales>
+        </detalle>
+      </detalles>
+    </destinatario>
+  </destinatarios>
+  <infoAdicional>
+    <campoAdicional nombre="Dirección">FELIPE II Y CIRCUMVALACION SUR</campoAdicional>
+    <campoAdicional nombre="Email">divadcloset@gmail.com</campoAdicional>
+    <campoAdicional nombre="EnviarEmail">0</campoAdicional>
+    <campoAdicional nombre="PdfDocument">1</campoAdicional>
+  </infoAdicional>
+</guiaRemision>
+

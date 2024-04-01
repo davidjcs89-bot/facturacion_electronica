@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<autorizacion>
+<estado>AUTORIZADO</estado>
+<numeroAutorizacion>3009202003019033329900120011000000000120000001218</numeroAutorizacion>
+<fechaAutorizacion>2020-10-06T16:15:14-05:00</fechaAutorizacion>
+<ambiente>PRODUCCIÓN</ambiente>
+<comprobante><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+<liquidacionCompra id="comprobante" version="1.0.0">
+	<infoTributaria>
+		<ambiente>2</ambiente>
+		<tipoEmision>1</tipoEmision>
+		<razonSocial>DENTAL PEREZ AVILES CIA LTDA</razonSocial>
+		<nombreComercial>DENTAL PEREZ AVILES CIA LTDA</nombreComercial>
+		<ruc>0190333299001</ruc>
+		<claveAcceso>3009202003019033329900120011000000000120000001218</claveAcceso>
+		<codDoc>03</codDoc>
+		<estab>001</estab>
+		<ptoEmi>100</ptoEmi>
+		<secuencial>000000012</secuencial>
+		<dirMatriz>BOLIVAR 4 56 Y V MACHUCA</dirMatriz>
+	</infoTributaria>
+	<infoLiquidacionCompra>
+		<fechaEmision>30/09/2020</fechaEmision>
+		<dirEstablecimiento>BOLIVAR 4 56 Y V MACHUCA</dirEstablecimiento>
+		<obligadoContabilidad>SI</obligadoContabilidad>
+		<tipoIdentificacionProveedor>05</tipoIdentificacionProveedor>
+		<razonSocialProveedor>CALDAS AVILA DARWIN NICOLAS</razonSocialProveedor>
+		<identificacionProveedor>0105015580</identificacionProveedor>
+		<direccionProveedor>RICAURTE CORDILLERA DEL CONDOR Y GENERAL CAMILLA</direccionProveedor>
+		<totalSinImpuestos>161.79</totalSinImpuestos>
+		<totalDescuento>0.00</totalDescuento>
+		<totalConImpuestos>
+			<totalImpuesto>
+				<codigo>2</codigo>
+				<codigoPorcentaje>2</codigoPorcentaje>
+				<baseImponible>93.02</baseImponible>
+				<tarifa>12.00</tarifa>
+				<valor>11.16</valor>
+			</totalImpuesto>
+			<totalImpuesto>
+				<codigo>2</codigo>
+				<codigoPorcentaje>0</codigoPorcentaje>
+				<baseImponible>68.77</baseImponible>
+				<tarifa>0.00</tarifa>
+				<valor>0.00</valor>
+			</totalImpuesto>
+		</totalConImpuestos>
+		<importeTotal>172.95</importeTotal>
+		<moneda>DOLAR</moneda>
+		<pagos>
+			<pago>
+				<formaPago>01</formaPago>
+				<total>172.95</total>
+				<plazo>0</plazo>
+				<unidadTiempo>dias</unidadTiempo>
+			</pago>
+		</pagos>
+	</infoLiquidacionCompra>
+	<detalles>
+		<detalle>
+			<codigoPrincipal>LC000012</codigoPrincipal>
+			<descripcion>REEMBOLSO DE GASTOS POR VIATICOS</descripcion>
+			<cantidad>1.00</cantidad>
+			<precioUnitario>93.02</precioUnitario>
+			<descuento>0.00</descuento>
+			<precioTotalSinImpuesto>93.02</precioTotalSinImpuesto>
+			<impuestos>
+				<impuesto>
+					<codigo>2</codigo>
+					<codigoPorcentaje>2</codigoPorcentaje>
+					<tarifa>12.00</tarifa>
+					<baseImponible>93.02</baseImponible>
+					<valor>11.16</valor>
+				</impuesto>
+			</impuestos>
+		</detalle>
+		<detalle>
+			<codigoPrincipal>LC000012-2</codigoPrincipal>
+			<descripcion>REEMBOLSO DE GASTOS POR VIATICOS-2</descripcion>
+			<cantidad>1.00</cantidad>
+			<precioUnitario>68.77</precioUnitario>
+			<descuento>0.00</descuento>
+			<precioTotalSinImpuesto>68.77</precioTotalSinImpuesto>
+			<impuestos>
+				<impuesto>
+					<codigo>2</codigo>
+					<codigoPorcentaje>0</codigoPorcentaje>
+					<tarifa>0.00</tarifa>
+					<baseImponible>68.77</baseImponible>
+					<valor>0.00</valor>
+				</impuesto>
+			</impuestos>
+		</detalle>
+	</detalles>
+	<infoAdicional>
+		<campoAdicional nombre="Direccion">RICAURTE CORDILLERA DEL CONDOR Y GENERAL CAMILLA</campoAdicional>
+		<campoAdicional nombre="Telefono">99999999</campoAdicional>
+		<campoAdicional nombre="Forma de pago">Sin Utilizacion Del Sistema Financiero</campoAdicional>
+		<campoAdicional nombre="AGENTE DE RETENCION">RESOLUCION No. NAC-DNCRASC20-00000001</campoAdicional>
+	</infoAdicional>
+<ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Id="Signature-53578a4d-4665-496b-9364-862485007357"><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><ds:Reference Id="Reference-5905483d-3c40-4737-8fa8-55a6ad7b6313" URI="#comprobante"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><ds:DigestValue>ET97O6ExaZoNzfYFPQiFEq6tmH6VkOm/321RbY8zKXA=</ds:DigestValue></ds:Reference><ds:Reference Id="ReferenceKeyInfo" URI="#KeyInfoId-Signature-53578a4d-4665-496b-9364-862485007357"><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><ds:DigestValue>bZbDCki4gEaSpNRL76Yo5C9nGg94JuljphlHuvjD6Rk=</ds:DigestValue></ds:Reference><ds:Reference Type="http://uri.etsi.org/01903#SignedProperties" URI="#SignedProperties-Signature-53578a4d-4665-496b-9364-862485007357"><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><ds:DigestValue>E2CaDjpz2WNSxEmuOezbk77UjM9wpVASt8TfLxH5h7o=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue Id="SignatureValue-53578a4d-4665-496b-9364-862485007357">dxX1o6khJ8pDfRP0Ct0Tyz0EKq+DC0Jm3d5tRKHIteKGq3ZZ3/v7yGLVExY4oYUF9SMEvLw8rujtwxc9kJuU8YE9VOJRRWwk4O3NrsBgflNos/yBJj0vKCIitiAQIi1Ps8dWW5AAdKmtVu03tJ2/sr21yr82hOcpYcfyEK84AhoIzLTVRObn1OaHF/5RR/YHEBodz7GSumvyQ+F6OnXHgElM5jmIYgH/0VIsyHvx6Ps0D2SP2wcfo9axzOX9qz+EXnLIdy958haIdrt3aO9ueqnzqHNTDkSuTSAbzykhlO7uB2Byzdo2ix7qldhX44EFxI1EcjfGcZys+GxHB86fJQ==</ds:SignatureValue><ds:KeyInfo Id="KeyInfoId-Signature-53578a4d-4665-496b-9364-862485007357"><ds:X509Data><ds:X509Certificate>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</ds:X509Certificate></ds:X509Data><ds:KeyValue><ds:RSAKeyValue><ds:Modulus>6CBshQcxNvsr7iykLA/Pvmnr3s6wup3dL4XGITlIwxpsBQScJPxgoXuJ46UGRB7DNVSnNouFRsYOU8paMsivqDJ8LSzRXJ/ozp+gas5b3sT6DvmIxcnE+7QwLs7nwS1kO/zIAihmBM0KyObIrXYVAaCXUWJh+Me71xna26i1HRuXbenEkuCKfREvg0Jgd3d/NZCClJJy3624V5gQGos14gSs2Avi8h4ndlqq4E8gAtyGlZoVAKW+h6+dB8pnmZUwzkn55mUV5pbQd20VC1W2o2SZvsx1C6RpJz4/uZAv3cHwyNdB4c2N/l2GgBQI8MLMPy+6GSqNv7v0v1BXmvl6pQ==</ds:Modulus><ds:Exponent>AQAB</ds:Exponent></ds:RSAKeyValue></ds:KeyValue></ds:KeyInfo><ds:Object Id="XadesObjectId-be972fa5-84ed-4d05-bc9e-fab1418f12d2"><xades:QualifyingProperties xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" Id="QualifyingProperties-6a34f462-050c-432d-acc6-1ede938bf0df" Target="#Signature-53578a4d-4665-496b-9364-862485007357"><xades:SignedProperties Id="SignedProperties-Signature-53578a4d-4665-496b-9364-862485007357"><xades:SignedSignatureProperties><xades:SigningTime>2020-10-06T16:15:28-05:00</xades:SigningTime><xades:SigningCertificate><xades:Cert><xades:CertDigest><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" /><ds:DigestValue>cMy+fDY3+007yaBLgTHU726Ny0yStbUCrtHskVdCv0k=</ds:DigestValue></xades:CertDigest><xades:IssuerSerial><ds:X509IssuerName>CN=AC BANCO CENTRAL DEL ECUADOR, L=QUITO, OU=ENTIDAD DE CERTIFICACION DE INFORMACION-ECIBCE, O=BANCO CENTRAL DEL ECUADOR, C=EC</ds:X509IssuerName><ds:X509SerialNumber>1533160246</ds:X509SerialNumber></xades:IssuerSerial></xades:Cert></xades:SigningCertificate></xades:SignedSignatureProperties><xades:SignedDataObjectProperties><xades:DataObjectFormat ObjectReference="#Reference-5905483d-3c40-4737-8fa8-55a6ad7b6313"><xades:MimeType>text/xml</xades:MimeType><xades:Encoding>UTF-8</xades:Encoding></xades:DataObjectFormat></xades:SignedDataObjectProperties></xades:SignedProperties></xades:QualifyingProperties></ds:Object></ds:Signature></liquidacionCompra>
+]]></comprobante>
+<mensajes/>
+</autorizacion>
+

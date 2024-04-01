@@ -1,0 +1,107 @@
+﻿@model bool
+@{
+    Layout = null;
+}
+
+@if (Model)
+{
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        @Html.ActionLink("Noticias", "Listado", "Admin", new { area = "" }, new { @class = "navbar-brand" })
+
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Comprobantes<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("Proforma", "Index", "Proforma", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Factura", "Index", "Factura", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Nota de Credito", "Index", "NotaCredito", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Guia de Remision", "Index", "GuiaRemision", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Compra", "Index", "Compra", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Liquidacion de Compra", "Index", "LiquidacionCompra", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Nota de Debito", "Index", "NotaDebito", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Comp. de Retencion Cliente", "Index", "Retencion", null, new { target = "_blank" })</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administracion<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("Clientes", "Index", "Cliente", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Productos", "Index", "Producto", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Transportitas", "Index", "Transportista", null, new { target = "_blank" })</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Observaciones<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("No Autorizados", "Comprobantes", "Fallidos", null, new { target = "_blank" })</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuracion<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("Emisor", "Create", "Emisor", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("P. Emsion Num. y Sec.", "Index", "PuntoEmision", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Correos Electronicos", "Details", "CuentaCorreo", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Impresion", "Index", "Impresion")</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cuenta<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("Cerrar Sesion", "Logout", "Login")</li>
+                </ul>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav">
+             @{ 
+                 string usuario = ViewBag.UsuarioAutenticado??"No determinado";
+             }
+
+            <li>@Html.ActionLink(usuario, "Index", "Admin")</li>
+        </ul>
+
+    </div>
+
+}
+else
+{
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        @Html.ActionLink("Noticias", "Index", "Admin", new { area = "" }, new { @class = "navbar-brand" })
+    </div>
+    <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuracion<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("Avisos", "Index", "Aviso")</li>
+                    <li>@Html.ActionLink("Emisores", "Index", "Emisor")</li>
+                    <li>@Html.ActionLink("Usuarios", "Index", "Usuario")</li>
+                    <li>@Html.ActionLink("Correos Electronicos", "Index", "CuentaCorreo")</li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cuenta<b class="caret"></b></a>
+                <ul class="dropdown-menu ">
+                    <li>@Html.ActionLink("Cerrar Sesion", "Logout", "Login")</li>
+                </ul>
+            </li>
+        </ul>
+
+    </div>
+}
+
+
+

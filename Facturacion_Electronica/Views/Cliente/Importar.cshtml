@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "Importar Clientes";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Importar Clientes</h2>
+<br />
+@using (Html.BeginForm("Importar", "Cliente", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <a href='@Url.Action("DescargarPlantillaImportacion", "Cliente")' class="btn btn-info">Descargar Plantilla</a>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label class="control-label col-md-2">Seleccionar Archivo:</label>
+            <div class="col-md-7">
+                <input type="file" id="archivo" name="archivo" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                @if (ViewBag.Error != null)
+                {
+                    <label class="control-label text-danger">@ViewBag.Error</label>
+                }
+
+            </div>
+            <div class="col-md-3 pull-right">
+                <button type="submit" class="btn btn-info">Cargar</button>
+            </div>
+        </div>
+    </div>
+}

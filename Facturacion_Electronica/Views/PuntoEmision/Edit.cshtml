@@ -1,0 +1,87 @@
+﻿@model Facturacion_Electronica.Models.Secuencias.ModeloSecuenciacomprobante
+
+
+@{
+    ViewBag.Title = "Punto de emision";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Editar punto de emision</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        <div class="form-group">
+            @Html.LabelFor(model => model.NumeroComprobante, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NumeroComprobante, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NumeroComprobante, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NumeroPuntoEmision, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NumeroPuntoEmision, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.NumeroPuntoEmision, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Direccion, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Direccion, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">
+                            <h5>Documento</h5>
+                        </th>
+                        <th style="text-align: center">
+                            <h5>Secuencia</h5>
+                        </th>
+                    </tr>
+                </thead>
+                @for (var i = 0; i < Model.Secuencias.Count; i++)
+                {
+                    <tr>
+                        @Html.HiddenFor(model => model.Secuencias[i].Id)
+                        <td>
+                            <label class="control-label">@Model.Secuencias[i].Documento</label>
+                            @Html.HiddenFor(model => model.Secuencias[i].IdDocumento)
+                            @Html.HiddenFor(model => model.Secuencias[i].Documento)
+                        </td>
+                        <td>
+
+                            @Html.EditorFor(model => model.Secuencias[i].Secuencial, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Secuencias[i].Secuencial, "", new { @class = "text-danger" })
+
+                        </td>
+                    </tr>
+
+                }
+            </table>
+        </div>
+
+
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Guardar" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Regresar a listado", "Index")
+</div>

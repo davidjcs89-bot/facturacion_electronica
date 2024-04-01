@@ -1,0 +1,40 @@
+﻿@model Facturacion_Electronica.Avisos
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Eliminar Aviso</h2>
+
+<h3>Desea eliminar este aviso?</h3>
+<div>
+
+    <dl class="dl-horizontal">
+        <dt>
+            Mensaje
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Message)
+        </dd>
+
+        <dt>
+            Fecha de Creacion
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreateOn)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+            @Html.ActionLink("Regresar", "Index")
+        </div>
+    }
+</div>
