@@ -21,7 +21,4 @@ $(document).ready(function () {
             $("#txt-num-ctr-especial").prop("disabled", true);
         }
     });
-
-
-
 });

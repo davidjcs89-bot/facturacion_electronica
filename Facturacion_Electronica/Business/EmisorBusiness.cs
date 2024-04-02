@@ -1,6 +1,7 @@
 ﻿using Facturacion_Electronica.Models.Emisor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -148,6 +149,30 @@ namespace Facturacion_Electronica.Business
         public void ActualizarEmisor(ModeloEmisor modeloEmisor)
         {
             var emisor = _db.Emisor.Find(modeloEmisor.Id);
+            //SE CONTROLA LAS POSIBLES EXCEPCIONES QUE SALGAN
+            try
+            {
+                //SE EXTRAE LOS PRODUCTOS POR DEFECTO (PRODUCTO Y SERVICIO) MEDIANTE EL ID
+                var productosDefault = _db.Producto.Where(p => p.id == 870 || p.id == 871);
+
+                //SE VALIDA QUE HAYA PRODUCTOS PARA PODER HACER LOS CAMBIOS
+                if (productosDefault != null || productosDefault.ToArray().Length > 0)
+                {
+                    //SE RECORRE LA LISTA DE PRODUCTOS POR DEFECTO
+                    foreach (var producto in productosDefault)
+                    {
+                        //SE ACTUALIZA EL CODIGO DEL IMPUESTO DEL PRODUCTO
+                        producto.Codigo_iva = modeloEmisor.IdImpuestoIva;
+                    }
+                }
+
+            }
+            catch(Exception ex)
+            {
+                //SE MUESTRA UN MENSAJE EN LA CONSOLA DE DEPURACION
+                Debug.WriteLine("EXEPTION "+ ex.Message);
+            }
+
 
             if (emisor == null)
             {
