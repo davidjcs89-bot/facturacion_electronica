@@ -98,6 +98,9 @@ namespace Facturacion_Electronica
             bundles.Add(new StyleBundle("~/bundles/LoginCSS").Include(
             "~/Content/Login/LoginStyles.css"));
 
+            bundles.Add(new StyleBundle("~/bundles/HomeCSS").Include(
+            "~/Content/Home/HomeStyles.css"));
+
             BundleTable.EnableOptimizations = true;
         }
         

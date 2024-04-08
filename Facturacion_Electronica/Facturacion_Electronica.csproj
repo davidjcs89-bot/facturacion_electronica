@@ -680,8 +680,12 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\fonts\fontawesome\css\font-awesome.min.css" />
     <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\Home\HomeStyles.css" />
     <Content Include="Content\Imagenes\arrow-back.svg" />
+    <Content Include="Content\Imagenes\favicon-si-do-it-64px.png" />
+    <Content Include="Content\Imagenes\invoice-banner.svg" />
     <Content Include="Content\Imagenes\i_sidoit.png" />
+    <Content Include="Content\Imagenes\logo.png" />
     <Content Include="Content\Login\LoginStyles.css" />
     <Content Include="Content\Usuario.css" />
     <Content Include="DocumentosElectronicos\ComprobanteFirmado.xml" />
