@@ -243,20 +243,20 @@ namespace Proformacion_Electronica.Business
             var ice = detalle.Producto.Porcentaje_impuesto_producto;
             var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
 
-            //detalle.precio = nuevoPrecio;
-            //detalle.sub_total = detalle.precio * detalle.cantidad;
-            //detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
-            //detalle.sub_total -= detalle.descuento;
-            //detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
-            //detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
-            //detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
-
-
-
-            detalle.precio = (decimal)Convert.ToDouble(nuevoPrecio) / (decimal)Convert.ToDouble(1.12);
+            detalle.precio = nuevoPrecio;
             detalle.sub_total = detalle.precio * detalle.cantidad;
+            detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
+            detalle.sub_total -= detalle.descuento;
+            detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
+            detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
             detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
             detalle.total = detalle.sub_total + detalle.valor_iva;
+
+
+            /*detalle.precio = (decimal)Convert.ToDouble(nuevoPrecio) / (decimal)Convert.ToDouble(1.12);
+            detalle.sub_total = detalle.precio * detalle.cantidad;
+            detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
+            detalle.total = detalle.sub_total + detalle.valor_iva;*/
 
             Actutalizartotales(proforma);
             db.SaveChanges();

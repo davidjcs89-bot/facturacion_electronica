@@ -139,6 +139,9 @@
                         <p>Nro Celular: <strong>@Model.Cliente.Celular</strong></p>
                     }
 
+
+
+
                 </fieldset>
             </div>
         </div>
@@ -162,7 +165,14 @@
                             Adicional
                         </th>
                         <th>
-                            Precio U+IVA
+                            @if (@Model.ValorIva > 0)
+                            {
+                                <text>Precio U + IVA</text>
+                            }
+                            else
+                            {
+                                <text>Precio</text>
+                            }
                         </th>
                         <th>
                             Cantidad
