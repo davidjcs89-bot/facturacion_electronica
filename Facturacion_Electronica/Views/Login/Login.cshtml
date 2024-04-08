@@ -4,50 +4,66 @@
     ViewBag.Title = "Iniciar Sesion";
 }
 
-<h2>Iniciar Sesion</h2>
-
-
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-        <a href='@Url.Action("Index", "Home")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Regresar</a>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Usuario, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Usuario, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "text-danger" })
+    <div class="general-container">
+        <div class="form-container">
+            
+            <div class="button-back">
+                <a href='@Url.Action("Index", "Home")' style="color:#1982fc" class="icon-block">
+                    <img src="~/Content/Imagenes/arrow-back.svg" width="40px" alt="backto" />
+                </a>
             </div>
-        </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.Clave, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.PasswordFor(model => model.Clave, new { @class = "form-control", @id = "txtClave" })
-                <input type="checkbox" id="ver" class="ver" onChange="hideOrShowPassword()" />
-                <label class="text">Mostrar contraseña</label>
-                <br />
-                @Html.ValidationMessageFor(model => model.Clave, "", new { @class = "text-danger" })
+            <div class="header-login">
+                <h2>Iniciar Sesion</h2>
             </div>
-        </div>
+            <hr class="dropdown-divider">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
 
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Ingresar" class="btn btn-default" />
-                <a href='@Url.Action("RecuperarUsuario", "Login")' class="btn btn-default">Recuperar Usuario</a>
-                <a href='@Url.Action("RecuperarClave", "Login")' class="btn btn-default">Recuperar Clave</a>
+            <div class="container form">
+                <div class="row">
+                    <div class="col-6 col-md-3">
+                        <label for="user" class="col-form-label">Usuario</label>
+                    </div>
+                    <div class="col-sm-6 col-md-8" id="user">
+                        <input type="text" class="form-control" id="Usuario" name="Usuario">
+                        <span class="text-danger">@Html.ValidationMessageFor(model => model.Usuario)</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 col-md-3">
+                        <label for="password" class="col-form-label">Contraseña</label>
+                    </div>
+                    <div class="col-sm-6 col-md-8" id="password">
+                        <input type="password" class="form-control" id="txtClave" name="Clave">
+                        <input type="checkbox" id="ver" class="ver" onChange="hideOrShowPassword()" />
+                        <label class="text">Mostrar contraseña</label>
+                        <span class="text-danger">@Html.ValidationMessageFor(model => model.Clave)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-footer">
+                <button type="submit" class="btn btn-primary">Ingresar</button>
+                <div class="options">
+                    <div>
+                        <a href='@Url.Action("RecuperarUsuario", "Login")'>Recuperar Usuario</a>
+                    </div>
+                    <div>
+                        <a href='@Url.Action("RecuperarClave", "Login")'>Recuperar Clave</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 }
 @section Styles {
     @Styles.Render("~/bundles/SweetAlertCss")
+    @Styles.Render("~/bundles/LoginCSS")
 }
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/SweetAlert")
