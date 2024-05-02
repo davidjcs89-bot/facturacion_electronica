@@ -91,11 +91,84 @@
                                         <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" /></span>
                                         <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearCliente();" /></span>
                                         <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
+                                        <span><input type="button" id="btn-editar" value="Buscar por Nombre" data-toggle="modal" data-target="#miModal" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
                                     </span>
                                     @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
                                 </div>
-
                             </div>
+
+                            <div class="modal fade" id="miModal" tabindex="-1" role="dialog" aria-labelledby="miModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="miModalLabel">Título del Modal</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row p-5">
+                                                <!-- BUSCAR POR NOMBRE -->
+                                                <div class="col-md-1"></div>
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.RazonSocial, "Buscar por Nombre", htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="col-md-12">
+                                                        @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                                        @Html.EditorFor(model => model.Cliente.RazonSocial, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente-name" } })
+                                                        <div class="btn-group" role="group">
+                                                            <button type="button" id="btn-buscar" class="btn btn-default" onclick="BuscarClienteByNombre();">Buscar por nombre</button>
+                                                            <button type="button" id="btn-crear" class="btn btn-default" data-target="#nuevoCliete" onclick="CargarCrearCliente();">Nuevo</button>
+                                                            <button type="button" id="btn-editar" class="btn btn-info btn-editar" data-target="#editarCliete" onclick="CargarEditarCliente();">Editar</button>
+                                                        </div>
+                                                        @Html.ValidationMessageFor(model => model.Cliente.RazonSocial, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Tabla -->
+                                            <div class="modal-body row p-5">
+                                                <div class="col-md-1"></div>
+                                                <div class="col-md-12">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th scope="col">Razon social</th>
+                                                                <th scope="col">Identificación</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @if (Model.Clientes != null)
+                                                            {
+                                                                foreach (var cliente in Model.Clientes)
+                                                                {
+                                        <tr>
+                                            <td>@cliente.RazonSocial</td>
+                                            <td>@cliente.NumeroIdentificacion</td>
+                                        </tr> }
+                                                            }
+                                                            else
+                                                            {
+                                        <tr>
+                                            <td colspan="3">No hay clientes disponibles.</td>
+                                        </tr>}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                            <button type="button" class="btn btn-primary">Guardar cambios</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
                             <div class="row">
                                 <div class="col-md-1"></div>
                                 <div class="col-md-5">

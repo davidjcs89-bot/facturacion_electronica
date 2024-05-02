@@ -1,0 +1,147 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.navbar-home {
+    background-color: #333;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+
+.navbar-icon {
+    padding: 10px;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.navbar-icon a{
+    text-decoration: none;
+    color: white;
+}
+
+.navbar-links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navbar-links li {
+    margin-right: 20px;
+}
+
+.navbar-links li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+
+/* Estilos para el banner */
+.banner {
+    position: relative;
+    width: 100%;
+    height: auto; /* ajusta la altura según sea necesario */
+
+    color: white;
+    padding-top: 50px; /* Ajusta el espacio superior para el texto */
+}
+
+.banner-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.banner-content {
+    width: fit-content;
+    padding: 5%;
+    padding-left: 10%;
+}
+
+.banner-img {
+    padding: 5%;
+    padding-right: 10%;
+}
+
+.banner-img img{
+    width: 30vw;
+}
+/* Estilos para el texto */
+.banner-content h1 {
+    font-size: 36px;
+    font-weight: bold;
+    color: #455A64;
+    margin-bottom: 20px;
+}
+
+.banner-content p {
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #455A64;
+}
+
+/* Estilos para los botones */
+.banner-content button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin: 0 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.btn-register {
+    background-color: #35B358;
+    border: none;
+    color: white;
+    transition: transform 0.3s;
+}
+
+.btn-signin {
+    background-color: transparent;
+    border: 2px solid #35B358;
+    color: #455A64;
+    transition: transform 0.3s;
+}
+
+.btn-register:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.btn-signin:hover {
+    transform: scale(1.1, 1.1);
+}
+
+.notices {
+    margin-bottom: 100px;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #f0f0f0;
+    padding: 20px;
+    text-align: center;
+}
+
+
+
+/* Media query para pantallas de celulares */
+@media only screen and (max-width: 600px) {
+    .banner-img {
+        display: none; /* Hace que la imagen desaparezca en pantallas de celulares */
+    }
+
+    .notices {
+        margin-top: 30px;
+    }
+
+}

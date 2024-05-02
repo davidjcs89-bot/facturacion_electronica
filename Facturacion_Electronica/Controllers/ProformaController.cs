@@ -379,6 +379,40 @@ namespace Facturacion_Electronica.Controllers
             return Json(new { existeCliente = true, id = cliente.Id, identificacion = cliente.NumeroIdentificacion, nombre = cliente.RazonSocial, direccion = cliente.Direccion, email = cliente.Email, celular = cliente.Celular }, JsonRequestBehavior.AllowGet);
         }
 
+        [HttpGet]
+        public ActionResult BuscarClienteByNombre(string nombre, int idProforma)
+        {
+            if (!HttpContext.Request.IsAjaxRequest()) return null;
+
+            int idEmisor = GetUsuarioLogeado().IdEmisor;
+            var clientes = clienteBusiness.BuscarClientesFacturaByNombre(nombre, GetUsuarioLogeado().IdEmisor);
+
+            if (clientes == null || !clientes.Any())
+            {
+                TempData["identificacionBuscada"] = nombre;
+                return Json(new { existeCliente = false }, JsonRequestBehavior.AllowGet);
+            }
+
+            var clientesData = new List<object>();
+            foreach (var cliente in clientes)
+            {
+                clientesData.Add(new
+                {
+                    existeCliente = true,
+                    id = cliente.Id,
+                    identificacion = cliente.NumeroIdentificacion,
+                    nombre = cliente.RazonSocial,
+                    direccion = cliente.Direccion,
+                    email = cliente.Email,
+                    celular = cliente.Celular
+                });
+            }
+
+            //proformaBusiness.ActualizarCliente(clientes.First().Id, idProforma, idEmisor);
+
+            return Json(clientesData, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public ActionResult EnviarProforma(int id)
         {

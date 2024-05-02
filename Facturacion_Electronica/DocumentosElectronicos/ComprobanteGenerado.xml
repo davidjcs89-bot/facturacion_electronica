@@ -5,56 +5,56 @@
     <razonSocial>GALARZA CONTRERAS JUAN ANDRES</razonSocial>
     <nombreComercial>GRUN PADEL</nombreComercial>
     <ruc>0915845994001</ruc>
-    <claveAcceso>3001202401091584599400120010030000017998370901319</claveAcceso>
+    <claveAcceso>0205202401091584599400120010040000003554496114219</claveAcceso>
     <codDoc>01</codDoc>
     <estab>001</estab>
-    <ptoEmi>003</ptoEmi>
-    <secuencial>000001799</secuencial>
+    <ptoEmi>004</ptoEmi>
+    <secuencial>000000355</secuencial>
     <dirMatriz>AV. LEON FEBRES CORDERO KM 14.5</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>30/01/2024</fechaEmision>
+    <fechaEmision>02/05/2024</fechaEmision>
     <dirEstablecimiento>AV LEON FEBRES CORDERO KM 14.5</dirEstablecimiento>
     <obligadoContabilidad>NO</obligadoContabilidad>
     <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
-    <razonSocialComprador>COELLO LAURA</razonSocialComprador>
-    <identificacionComprador>0705286136</identificacionComprador>
+    <razonSocialComprador>GENCON LUIS</razonSocialComprador>
+    <identificacionComprador>1311505695</identificacionComprador>
     <direccionComprador>SIN DIRECCION</direccionComprador>
-    <totalSinImpuestos>28.58</totalSinImpuestos>
+    <totalSinImpuestos>34.78</totalSinImpuestos>
     <totalDescuento>0.00</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
-        <codigoPorcentaje>2</codigoPorcentaje>
-        <baseImponible>28.58</baseImponible>
-        <valor>3.42</valor>
+        <codigoPorcentaje>4</codigoPorcentaje>
+        <baseImponible>34.78</baseImponible>
+        <valor>5.21</valor>
       </totalImpuesto>
     </totalConImpuestos>
     <propina>0.00</propina>
-    <importeTotal>32.00</importeTotal>
+    <importeTotal>40.00</importeTotal>
     <moneda>USD</moneda>
     <pagos>
       <pago>
         <formaPago>19</formaPago>
-        <total>32.00</total>
+        <total>40.00</total>
       </pago>
     </pagos>
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>LV90N</codigoPrincipal>
-      <descripcion>ALQUILER DE CANCHA DE PADEL DE LUNES A VIERNES 90 MIN NOCHE</descripcion>
+      <codigoPrincipal>ADIDAS1</codigoPrincipal>
+      <descripcion>ALQUILER DE CANCHA ADIDAS NOCHE </descripcion>
       <cantidad>1</cantidad>
-      <precioUnitario>28.580</precioUnitario>
+      <precioUnitario>34.785</precioUnitario>
       <descuento>0.00</descuento>
-      <precioTotalSinImpuesto>28.58</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>34.78</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
-          <codigoPorcentaje>2</codigoPorcentaje>
-          <tarifa>12.000</tarifa>
-          <baseImponible>28.58</baseImponible>
-          <valor>3.42</valor>
+          <codigoPorcentaje>4</codigoPorcentaje>
+          <tarifa>15.000</tarifa>
+          <baseImponible>34.78</baseImponible>
+          <valor>5.21</valor>
         </impuesto>
       </impuestos>
     </detalle>
