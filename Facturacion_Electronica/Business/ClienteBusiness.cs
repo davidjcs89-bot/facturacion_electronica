@@ -82,7 +82,7 @@ namespace Facturacion_Electronica.Business
 
         }
 
-        public ModeloCliente BuscarClienteFactura(string identificacion, int idEmisor)
+       public ModeloCliente BuscarClienteFactura(string identificacion, int idEmisor)
         {
             var cliente = _db.Clientes.FirstOrDefault(x => x.id_emisor == idEmisor && x.tipo_cliente == EnumTipoCliente.CLIENTE && x.identificacion == identificacion);
             if (cliente == null)
@@ -90,6 +90,28 @@ namespace Facturacion_Electronica.Business
                 return null;
             }
             return this.GenerarModeloCliente(cliente.id);
+        }
+
+        public List<ModeloCliente> BuscarClientesFacturaByNombre(string nombreCliente, int idEmisor)
+        {
+            var clientes = _db.Clientes
+                .Where(x => x.id_emisor == idEmisor &&
+                            x.tipo_cliente == EnumTipoCliente.CLIENTE &&
+                            x.nombre_cliente.Contains(nombreCliente))
+                .ToList();
+
+            if (clientes == null || clientes.Count == 0)
+            {
+                return null;
+            }
+
+            var modelosClientes = new List<ModeloCliente>();
+            foreach (var cliente in clientes)
+            {
+                modelosClientes.Add(this.GenerarModeloCliente(cliente.id));
+            }
+
+            return modelosClientes;
         }
 
         public ModeloCliente BuscarClienteRetencion(string identificacion, int idEmisor)

@@ -20,6 +20,10 @@ namespace Facturacion_Electronica.Models.Proforma
         [Display(Name = "Consumidor Final")]
         public bool EsConsumidorFinal { get; set; }
         public ModeloCliente Cliente { get; set; }
+
+        // Aquí defines un array de objetos ModeloCliente
+        public ModeloCliente[] Clientes { get; set; }
+
         public string DireccionSucursal { get; set; }
         public decimal SubtotalSinImpuestos { get; set; }
         public decimal SubtotalIva { get; set; }

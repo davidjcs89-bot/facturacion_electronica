@@ -6,6 +6,7 @@ using iTextSharp.text.html;
 using iTextSharp.text.pdf;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -227,6 +228,12 @@ namespace Proformacion_Electronica.Business
 
         public void ActualizarPrecioDetalle(int id, int idProforma, int idEmisor, decimal nuevoPrecio)
         {
+            Debug.WriteLine("IDS RECIBIDOS");
+
+            Debug.WriteLine("ID "+ id);
+            Debug.WriteLine("idProforma "+ idProforma);
+            Debug.WriteLine("idEmisor "+ idEmisor);
+
             var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
             if (proforma == null)
             {
@@ -242,14 +249,24 @@ namespace Proformacion_Electronica.Business
             var iva = detalle.Producto.Porcentaje_impuesto_producto2;
             var ice = detalle.Producto.Porcentaje_impuesto_producto;
             var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+            Debug.WriteLine("iva " + iva.Porcentaje / 100);
+            var precioSinIva = (decimal)Convert.ToDouble(nuevoPrecio) / (iva.Porcentaje / 100);
+            
+            Debug.WriteLine("precioSinIva " + precioSinIva);
 
-            detalle.precio = nuevoPrecio;
+            detalle.precio = precioSinIva;
+
             detalle.sub_total = detalle.precio * detalle.cantidad;
+
             detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
+
             detalle.sub_total -= detalle.descuento;
+
             detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
             detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
+
             detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
+
             detalle.total = detalle.sub_total + detalle.valor_iva;
 
 

@@ -1,10 +1,26 @@
-﻿.suscripcion-desc {
-    color:red;
+﻿/* Estilos para el contenedor del formulario */
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-#mostrar-descr-suscrip {
-    width:200px;
-    height:200px;
-    background-image: url('Imagenes/i_sidoit.png');
+/* Estilos para la sombra del formulario */
+.form-shadow {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
 }
 
+/* Estilos para el contenido del formulario */
+.form-content {
+    max-width: 600px;
+    margin: auto;
+}
+
+/* Estilos para los campos de entrada */
+.form-control {
+    width: 100%;
+}
+
+/* Estilos adicionales según sea necesario */

@@ -150,6 +150,70 @@ function BuscarCliente() {
     });
 }
 
+/*BUSCAR POR NOMBRE AL CLIENTE*/
+function BuscarClienteByNombre() {
+    console.log('AQUI INGRESO AHORA');
+    $(".loading").show();
+
+    $.ajax({
+        type: "GET",
+        url: "/Proforma/BuscarClienteByNombre/"
+        data: { nombre: $('#id-cliente-name').val(), idProforma: $("#id-proforma").val() }, // Enviamos el nombre
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (resultado) {
+            $(".loading").hide();
+
+            if (resultado.length > 0) { // Si hay clientes coincidentes
+                $('#btn-editar').attr('disabled', false);
+
+                // Aquí puedes mostrar una lista de los clientes coincidentes
+                // y permitir al usuario seleccionar uno
+                var clientesEncontrados = resultado.map(function (cliente) {
+                    return cliente.nombre + " (" + cliente.identificacion + ")";
+                }).join("<br>");
+
+                swal({
+                    title: "Clientes encontrados",
+                    html: clientesEncontrados,
+                    showCancelButton: true,
+                    cancelButtonText: "Cancelar",
+                    confirmButtonText: "Seleccionar"
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        // El usuario ha seleccionado un cliente
+                        var clienteSeleccionado = resultado.find(function (cliente) {
+                            return cliente.nombre + " (" + cliente.identificacion + ")" === result.value;
+                        });
+
+                        $('#id').val(clienteSeleccionado.id);
+                        $('#id-cliente').val(clienteSeleccionado.identificacion);
+                        $('#nombre-cliente').val(clienteSeleccionado.nombre);
+                        $('#direccion-cliente').val(clienteSeleccionado.direccion);
+                        $('#email-cliente').val(clienteSeleccionado.email);
+                        $('#celular-cliente').val(clienteSeleccionado.celular);
+                    }
+                });
+            } else {
+                $('#btn-editar').attr('disabled', true);
+                $('#nombre-cliente').val("");
+                $('#direccion-cliente').val("");
+                $('#email-cliente').val("");
+                $('#celular-cliente').val("");
+                swal("No se encontraron clientes");
+            }
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+
 function CargarCrearCliente() {
     $(".loading").show();
     $("#vistaNuevoCliente").empty();
@@ -504,6 +568,9 @@ function GenerarFactura() {
     });
 }
 
-function calculoNuevo() {
-
+function actualizarDetalle(id, selectObject) {
+    this.ActualizarPrecioDetalle(id, selectObject);
+    this.ActualizarAdicionalDetalle(id, selectObject)
+    this.ActualizarCantidadDetalle(id, selectObject);
+    this.ActualizarPorcentajeDescuentoDetalle(id, selectObject);
 }
