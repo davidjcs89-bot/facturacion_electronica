@@ -117,3 +117,17 @@ function EditarCliente() {
         }
     });
 }
+
+function validarNumeroIdentificacion() {
+    var cedulaValue = "2";
+    var numeroIdentificacionInput = document.getElementById("numeroIdentificacionInput");
+    var tipoIdentificacionDropdown = document.getElementById("tipoIdentificacionDropdown");
+    var regex = /^\d{10}$/;
+
+    if (tipoIdentificacionDropdown.value === cedulaValue) {
+        if (!regex.test(numeroIdentificacionInput.value)) {
+            // Eliminar cualquier carácter que no sea un dígito
+            numeroIdentificacionInput.value = numeroIdentificacionInput.value.replace(/\D/g, '').slice(0, 10);
+        }
+    }
+}
