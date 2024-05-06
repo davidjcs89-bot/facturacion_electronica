@@ -513,6 +513,7 @@
       <DependentUpon>ModeloFacturacion.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\Cliente\DatosAdicionalesCliente.cs" />
+    <Compile Include="Models\Cliente\ModelClienteSeleccionado.cs" />
     <Compile Include="Models\Cliente\ModeloBuscarClientes.cs" />
     <Compile Include="Models\Cliente\ModeloCliente.cs" />
     <Compile Include="Models\Compra\ModeloCompra.cs" />
@@ -738,6 +739,7 @@
     <Content Include="Scripts\eonasdan-bootstrap-datetimepicker\build\css\bootstrap-datetimepicker.min.css" />
     <Content Include="Scripts\eonasdan-bootstrap-datetimepicker\build\js\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\Factura\Factura.js" />
+    <Content Include="Scripts\General\AccionesGenerales.js" />
     <Content Include="Scripts\GuiaRemision\GuiaRemision.js" />
     <Content Include="Scripts\Impresion\Impresion.js" />
     <None Include="Properties\PublishProfiles\comprobantes-electronicos - Web Deploy.pubxml" />

@@ -1,4 +1,5 @@
 ﻿using Facturacion_Electronica.Business;
+using Facturacion_Electronica.Models.Cliente;
 using Facturacion_Electronica.Models.Producto;
 using Facturacion_Electronica.Models.Proforma;
 using Facturacion_Electronica.Models.Usuario;
@@ -381,7 +382,7 @@ namespace Facturacion_Electronica.Controllers
         }
 
         [HttpGet]
-        public ActionResult BuscarClienteByNombre(string nombre, int idProforma)
+        public ActionResult BuscarClienteByNombre(string nombre)
         {
             if (!HttpContext.Request.IsAjaxRequest()) return null;
 
@@ -414,12 +415,19 @@ namespace Facturacion_Electronica.Controllers
             return Json(clientesData, JsonRequestBehavior.AllowGet);
         }
 
-        [HttpGet]
-        public ActionResult ActualizarClienteSelecionado(Models.Cliente.ModeloCliente cliente, int idProforma)
+        [HttpPost]
+        public ActionResult ActualizarClienteSelecionado(ModelClienteSeleccionado cliente, int idProforma)
         {
+            if (cliente is null)
+            {
+                TempData["identificacionBuscada"] = cliente;
+                return Json(new { existeCliente = false }, JsonRequestBehavior.AllowGet);
+            }
+
             int idEmisor = GetUsuarioLogeado().IdEmisor;
+
             proformaBusiness.ActualizarCliente(cliente.Id, idProforma, idEmisor);
-            return Json(new { existeCliente = true, id = cliente.Id, identificacion = cliente.NumeroIdentificacion, nombre = cliente.RazonSocial, direccion = cliente.Direccion, email = cliente.Email, celular = cliente.Celular }, JsonRequestBehavior.AllowGet);
+            return Json(new { existeCliente = true, id = cliente.Id, identificacion = cliente.Identificacion, nombre = cliente.Nombre, direccion = cliente.Direccion, email = cliente.Email, celular = cliente.Celular }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]

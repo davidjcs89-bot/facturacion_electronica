@@ -161,13 +161,12 @@ function BuscarCliente() {
 var clientesEncontrados = [];
 
 function BuscarClienteByNombre() {
-    console.log('AQUI INGRESO AHORA');
     $(".loading").show();
 
     $.ajax({
         type: "GET",
         url: "/Proforma/BuscarClienteByNombre/",
-        data: { nombre: $('#cliente-name').val(), idProforma: $("#id-proforma").val() },
+        data: { nombre: $('#cliente-name').val() },
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (resultado) {
@@ -205,48 +204,44 @@ function BuscarClienteByNombre() {
     });
 }
 
-// Función para manejar el clic en el botón de selección
 $(document).on('click', '.btn-seleccionar', function (event) {
-
-    // Evitar el comportamiento predeterminado del botón (que es recargar la página)
     event.preventDefault();
-
     var idCliente = $(this).data('id');
-
-    // Buscar el cliente seleccionado en la variable global
     var clienteSeleccionado = clientesEncontrados.find(function (cliente) {
         return cliente.id === idCliente;
     });
 
     $(".loading").show();
+
     $.ajax({
-        type: "GET",
-        url: "/Proforma/BuscarCliente/",
-        data: { identificacion: clienteSeleccionado.id, idProforma: $("#id-proforma").val() },
+        type: "POST",
+        url: "/Proforma/ActualizarClienteSelecionado/",
+        data: JSON.stringify({ cliente: clienteSeleccionado, idProforma: $("#id-proforma").val() }), // Enviar el objeto clienteSeleccionado en el cuerpo de la solicitud
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (resultado) {
             $(".loading").hide();
 
-            // Establecer los valores en los campos de entrada correspondientes
-            $('#btn-editar').attr('disabled', false);
-            $('#id').val(clienteSeleccionado.id);
-            $('#id-cliente').val(clienteSeleccionado.identificacion);
-            $('#nombre-cliente').val(clienteSeleccionado.nombre);
-            $('#direccion-cliente').val(clienteSeleccionado.direccion);
-            $('#email-cliente').val(clienteSeleccionado.email);
-            $('#celular-cliente').val(clienteSeleccionado.celular);
+            if (resultado.existeCliente) {
+                // Establecer los valores en los campos de entrada correspondientes
+                $('#btn-editar').attr('disabled', false);
+                $('#id').val(resultado.id);
+                $('#id-cliente').val(resultado.identificacion);
+                $('#nombre-cliente').val(resultado.nombre);
+                $('#direccion-cliente').val(resultado.direccion);
+                $('#email-cliente').val(resultado.email);
+                $('#celular-cliente').val(resultado.celular);
 
-            // Cerrar el modal
-            $('#modalBuscarporNombre').modal('hide');
-
+                // Cerrar el modal
+                $('#modalBuscarporNombre').modal('hide');
+            } else {
+                // Manejar el caso cuando el cliente no existe
+                alert("El cliente no existe");
+            }
         },
-        failure: function (response) {
-            alert(response.responseText);
-            alert("error ");
-        },
-        error: function (response) {
-            alert(response.responseText);
+        error: function (xhr, status, error) {
+            // Manejar errores de la solicitud AJAX
+            alert("Error: " + error);
         }
     });
 });

@@ -120,30 +120,69 @@
                                 @if (Model.PermiteEditarCliente)
                                 {
                                     <div class="form-horizontal">
-                                        <div class="form-group">
-                                            @Html.LabelFor(model => model.EsConsumidorFinal, htmlAttributes: new { @class = "control-label col-md-2" })
-                                            <div class="col-md-6">
+                                        <div class="checkbox-container">
+                                            <div class="form-group">
                                                 <div class="checkbox">
+                                                    @Html.LabelFor(model => model.EsConsumidorFinal, htmlAttributes: new { @class = "control-label col-md-2" })
                                                     @Html.EditorFor(model => model.EsConsumidorFinal, new { htmlAttributes = new { @id = "consumidor-final", @style = "margin-left:0px" } })
-                                                    <br />
-                                                    Recuerda que a partir de $50 no se puede emitir una factura como Consumidor Final
+                                                </div>
+                                                <div class="info-warning">
+                                                    <img src="~/Content/Imagenes/warning-icon.svg" alt="warning" />
+                                                    <p>Recuerda que a partir de $200 no se puede emitir una proforma como Consumidor Final.</p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="form-group">
-                                            @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
-                                            <div class="col-md-4 ">
-                                                @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
-                                                @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
-                                                <span>
-                                                    <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" /></span>
-                                                    <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearCliente();" /></span>
-                                                    <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
-                                                </span>
-                                                @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
-                                            </div>
 
+                                        <!--CARGAR DATOS DEL CLIENTE-->
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-5">
+                                                <div class="form-group search-client">
+                                                    <div class="control-container">
+                                                        @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label" })
+                                                        @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                                        @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+                                                        @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <div class="button-container">
+                                                        <!--BOTON BUSCAR POR NUMERO DE IDENTIDAD-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Búsqueda por la identificación del cliente.">
+                                                            <input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" />
+                                                        </span>
+                                                        <!--BOTON BUSCAR POR NOMBRE DE CLIENTE-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Este tipo de búsqueda es poco específico y puede tener más de una coincidencia">
+                                                            <input type="button" id="btn-buscar-nombre" value="Buscar por Nombre" data-toggle="modal" data-target="#modalBuscarporNombre" class="btn btn-primary" />
+                                                        </span>
+                                                        <!--BOTON CREAR CLIENTE-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Puedes agregar un cliente si no esta registrado aún.">
+                                                            <input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-success" onclick="CargarCrearCliente();" />
+                                                        </span>
+                                                        <!--BOTON EDITAR CLIENTE-->
+                                                        <span>
+                                                            <input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+
+
+                                        @*<div class="form-group">
+                                                @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                <div class="col-md-4 ">
+                                                    @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                                    @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+                                                    <span>
+                                                        <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" /></span>
+                                                        <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearCliente();" /></span>
+                                                        <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
+                                                    </span>
+                                                    @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
+                                                </div>
+
+                                            </div>*@
+
+
                                         <div class="row">
                                             <div class="col-md-1"></div>
                                             <div class="col-md-5">
@@ -548,11 +587,68 @@
             </div>
         </div>
     </div>
+
+    <!--MODAL PARA BUSCAR A CLIENTE POR NOMBRE-->
+    <div class="modal fade" id="modalBuscarporNombre" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Buscar Cliente por Nombre</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- BUSCAR POR NOMBRE -->
+                    <div class="form-group">
+                        <div class="control-search-name">
+                            @Html.LabelFor(model => model.Cliente.RazonSocial, "Buscar por Nombre", htmlAttributes: new { @class = "control-label" })
+                            <div class="input-group">
+                                @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                @Html.EditorFor(model => model.Cliente.RazonSocial, new { htmlAttributes = new { @class = "form-control", @id = "cliente-name" } })
+                                <div class="input-group-append">
+                                    <button type="button" id="btn-buscar" class="btn btn-default" onclick="BuscarClienteByNombre();">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Tabla -->
+                    <div class="modal-body row p-5">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-12">
+                            <table id="tabla-clientes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Razon social</th>
+                                        <th scope="col">Identificación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" class="no-data">No hay clientes disponibles.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 }
 
 @section Styles {
     @Styles.Render("~/bundles/datetimePickerCss")
     @Styles.Render("~/bundles/SweetAlertCss")
+    @Styles.Render("~/bundles/ProformaCSS")
 }
 
 @Scripts.Render("~/bundles/moment")
@@ -560,3 +656,4 @@
 @Scripts.Render("~/bundles/datetimePicker")
 @Scripts.Render("~/bundles/SweetAlert")
 @Scripts.Render("~/bundles/FacturaJs")
+@Scripts.Render("~/bundles/GeneralJS")

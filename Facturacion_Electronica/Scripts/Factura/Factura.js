@@ -1,4 +1,8 @@
 ﻿$(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+$(document).ready(function () {
     check = document.getElementById("consumidor-final");
 
     if (check.checked === true) // Si consumidor-final está activado
@@ -7,6 +11,7 @@
         $('#btn-buscar').attr('disabled', true);
         $('#btn-crear').attr('disabled', true);
         $('#btn-editar').attr('disabled', true);
+        $('#btn-buscar-nombre').attr('disabled', true);
     }
     else // Si no está activada
     {
@@ -23,6 +28,7 @@
             $('#btn-buscar').attr('disabled', true);
             $('#btn-crear').attr('disabled', true);
             $('#btn-editar').attr('disabled', true);
+            $('#btn-buscar-nombre').attr('disabled', true);
         }
         else // Si no está activada
         {
@@ -30,6 +36,7 @@
             $('#btn-crear').attr('disabled', false);
             $('#btn-buscar').attr('disabled', false);
             $('#btn-editar').attr('disabled', true);
+            $('#btn-buscar-nombre').attr('disabled', false);
             $('#id-cliente').val("");
             $('#nombre-cliente').val("");
             $('#direccion-cliente').val("");
@@ -180,6 +187,98 @@ function BuscarCliente() {
         }
     });
 }
+
+/*BUSCAR POR NOMBRE AL CLIENTE*/
+// Variable global para almacenar los clientes
+var clientesEncontrados = [];
+
+function BuscarClienteByNombre() {
+    $(".loading").show();
+
+    $.ajax({
+        type: "GET",
+        url: "/Factura/BuscarClienteByNombre/",
+        data: { nombre: $('#cliente-name').val() },
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (resultado) {
+            $(".loading").hide();
+
+            if (resultado.length > 0) {
+
+                // Almacenar los clientes obtenidos en la variable global
+                clientesEncontrados = resultado;
+
+                // Limpiar la tabla antes de cargar los nuevos datos
+                $('#tabla-clientes tbody').empty();
+
+                // Llenar la tabla con los clientes encontrados
+                resultado.forEach(function (cliente) {
+                    var fila = '<tr data-id="' + cliente.id + '">' +
+                        '<td>' + cliente.nombre + '</td>' +
+                        '<td>' + cliente.identificacion + '</td>' +
+                        '<td><button class="btn btn-primary btn-seleccionar" data-id="' + cliente.id + '">Seleccionar</button></td>' +
+                        '</tr>';
+                    $('#tabla-clientes tbody').append(fila);
+                });
+            } else {
+                $('.no-data').show(); // Mostrar la fila de "No hay clientes disponibles"
+                swal("No se encontraron clientes");
+            }
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+$(document).on('click', '.btn-seleccionar', function (event) {
+    event.preventDefault();
+    var idCliente = $(this).data('id');
+    var clienteSeleccionado = clientesEncontrados.find(function (cliente) {
+        return cliente.id === idCliente;
+    });
+
+    $(".loading").show();
+
+    $.ajax({
+        type: "POST",
+        url: "/Factura/ActualizarClienteSelecionado/",
+        data: JSON.stringify({ cliente: clienteSeleccionado, idFactura: $("#id-factura").val() }), // Enviar el objeto clienteSeleccionado en el cuerpo de la solicitud
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (resultado) {
+            $(".loading").hide();
+
+            if (resultado.existeCliente) {
+                // Establecer los valores en los campos de entrada correspondientes
+                $('#btn-editar').attr('disabled', false);
+                $('#id').val(resultado.id);
+                $('#id-cliente').val(resultado.identificacion);
+                $('#nombre-cliente').val(resultado.nombre);
+                $('#direccion-cliente').val(resultado.direccion);
+                $('#email-cliente').val(resultado.email);
+                $('#celular-cliente').val(resultado.celular);
+
+                // Cerrar el modal
+                $('#modalBuscarporNombre').modal('hide');
+            } else {
+                // Manejar el caso cuando el cliente no existe
+                alert("El cliente no existe");
+            }
+        },
+        error: function (xhr, status, error) {
+            // Manejar errores de la solicitud AJAX
+            alert("Error: " + error);
+        }
+    });
+});
+
+
 
 function CargarCrearCliente() {
     $("#vistaNuevoCliente").empty();

@@ -94,6 +94,9 @@ namespace Facturacion_Electronica
             bundles.Add(new ScriptBundle("~/bundles/ComprobantesJS").Include(
             "~/Scripts/Comprobantes/Comprobantes.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/GeneralJS").Include(
+            "~/Scripts/General/AccionesGenerales.js"));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/LoginCSS").Include(
             "~/Content/Login/LoginStyles.css"));

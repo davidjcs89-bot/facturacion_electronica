@@ -1,9 +1,11 @@
 ﻿using Facturacion_Electronica.Business;
+using Facturacion_Electronica.Models.Cliente;
 using Facturacion_Electronica.Models.Factura;
 using Facturacion_Electronica.Models.Producto;
 using Facturacion_Electronica.Models.Usuario;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -455,6 +457,58 @@ namespace Facturacion_Electronica.Controllers
             facturaBusiness.ActualizarCliente(cliente.Id, idFactura, idEmisor);
             return Json(new { existeCliente = true, id = cliente.Id, identificacion = cliente.NumeroIdentificacion, nombre = cliente.RazonSocial, direccion = cliente.Direccion , email = cliente.Email, celular = cliente.Celular }, JsonRequestBehavior.AllowGet);
         }
+
+
+        [HttpGet]
+        public ActionResult BuscarClienteByNombre(string nombre)
+        {
+            if (!HttpContext.Request.IsAjaxRequest()) return null;
+
+            //int idEmisor = GetUsuarioLogeado().IdEmisor;
+            var clientes = clienteBusiness.BuscarClientesFacturaByNombre(nombre, GetUsuarioLogeado().IdEmisor);
+
+            if (clientes == null || !clientes.Any())
+            {
+                TempData["identificacionBuscada"] = nombre;
+                return Json(new { existeCliente = false }, JsonRequestBehavior.AllowGet);
+            }
+
+            var clientesData = new List<object>();
+            foreach (var cliente in clientes)
+            {
+                clientesData.Add(new
+                {
+                    existeCliente = true,
+                    id = cliente.Id,
+                    identificacion = cliente.NumeroIdentificacion,
+                    nombre = cliente.RazonSocial,
+                    direccion = cliente.Direccion,
+                    email = cliente.Email,
+                    celular = cliente.Celular
+                });
+            }
+
+            //proformaBusiness.ActualizarCliente(clientes.First().Id, idProforma, idEmisor);
+
+            return Json(clientesData, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult ActualizarClienteSelecionado(ModelClienteSeleccionado cliente, int idFactura)
+        {
+            Debug.WriteLine("HOLA HOLA HOLA HOLA HOLA HOLA HOLA");
+            if (cliente is null)
+            {
+                TempData["identificacionBuscada"] = cliente;
+                return Json(new { existeCliente = false }, JsonRequestBehavior.AllowGet);
+            }
+
+            int idEmisor = GetUsuarioLogeado().IdEmisor;
+
+            facturaBusiness.ActualizarCliente(cliente.Id, idFactura, idEmisor);
+            return Json(new { existeCliente = true, id = cliente.Id, identificacion = cliente.Identificacion, nombre = cliente.Nombre, direccion = cliente.Direccion, email = cliente.Email, celular = cliente.Celular }, JsonRequestBehavior.AllowGet);
+        }
+
 
         public ActionResult AgregarPago(int id)
         {
