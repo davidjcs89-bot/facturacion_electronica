@@ -72,11 +72,11 @@
                     @if (Model.PermiteEditarCliente)
                     {
                         <div class="form-horizontal">
-                            <div class="form-group">
-                                @Html.LabelFor(model => model.EsConsumidorFinal, htmlAttributes: new { @class = "control-label col-md-2" })
-                                <div class="checkbox-container">
+                            <div class="checkbox-container">
+                                <div class="form-group">
                                     <div class="checkbox">
-                                        @Html.EditorFor(model => model.EsConsumidorFinal, new { htmlAttributes = new { @id = "consumidor-final", @style = "margin-left:0px" } }) 
+                                        @Html.LabelFor(model => model.EsConsumidorFinal, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        @Html.EditorFor(model => model.EsConsumidorFinal, new { htmlAttributes = new { @id = "consumidor-final", @style = "margin-left:0px" } })
                                     </div>
                                     <div class="info-warning">
                                         <img src="~/Content/Imagenes/warning-icon.svg" alt="warning" />

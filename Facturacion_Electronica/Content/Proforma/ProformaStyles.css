@@ -56,3 +56,15 @@
 .info-warning img {
     width: 20px;
 }
+
+/* Estilos para pantallas pequeñas */
+@media screen and (max-width: 600px) {
+    .checkbox-container {
+        flex-direction: column-reverse;
+        padding: 10px;
+    }
+
+    .info-warning {
+        margin: 10px;
+    }
+}
