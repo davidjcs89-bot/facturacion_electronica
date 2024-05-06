@@ -101,6 +101,10 @@ namespace Facturacion_Electronica
             bundles.Add(new StyleBundle("~/bundles/HomeCSS").Include(
             "~/Content/Home/HomeStyles.css"));
 
+            bundles.Add(new StyleBundle("~/bundles/ProformaCSS").Include(
+            "~/Content/Proforma/ProformaStyles.css"));
+
+
             BundleTable.EnableOptimizations = true;
         }
         

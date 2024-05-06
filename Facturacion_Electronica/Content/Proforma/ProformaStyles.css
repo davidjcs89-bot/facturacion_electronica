@@ -1,0 +1,58 @@
+﻿body {
+}
+
+.search-client {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: fit-content;
+    padding: 15px;
+}
+
+.button-container {
+    margin-top: 10px;
+}
+
+.control-container {
+    width: 100%;
+}
+
+/*ESTILOS DE MODAL DE BUSQUEDA POR NOMBRE*/
+
+.input-group {
+    display: flex;
+    align-items: center;
+}
+
+.input-group-append {
+    margin-left: 10px; /* Ajusta el margen izquierdo según sea necesario */
+}
+
+
+.checkbox-container {
+    display: flex;
+    align-content: center;
+    gap: 50px;
+}
+
+.info-warning {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    padding: 15px;
+    background-color: #FEFCE9;
+    border: 1px solid #FDE68A;
+    border-radius: 10px;
+}
+
+.info-warning p {
+    color: #E1BC68;
+    font-size: 15px;
+    font-weight: 300;
+    margin: 0;
+}
+
+.info-warning img {
+    width: 20px;
+}

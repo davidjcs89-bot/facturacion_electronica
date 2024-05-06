@@ -686,7 +686,9 @@
     <Content Include="Content\Imagenes\invoice-banner.svg" />
     <Content Include="Content\Imagenes\i_sidoit.png" />
     <Content Include="Content\Imagenes\logo.png" />
+    <Content Include="Content\Imagenes\warning-icon.svg" />
     <Content Include="Content\Login\LoginStyles.css" />
+    <Content Include="Content\Proforma\ProformaStyles.css" />
     <Content Include="Content\Usuario.css" />
     <Content Include="DocumentosElectronicos\ComprobanteFirmado.xml" />
     <Content Include="favicon.ico" />
