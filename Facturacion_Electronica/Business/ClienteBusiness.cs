@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 
@@ -104,7 +105,7 @@ namespace Facturacion_Electronica.Business
             {
                 return null;
             }
-
+         
             var modelosClientes = new List<ModeloCliente>();
             foreach (var cliente in clientes)
             {
@@ -224,8 +225,6 @@ namespace Facturacion_Electronica.Business
                 notas = 0;
                 notasDescripcion = "<html><head><style>table, th, td {border: 1px solid black;border-collapse: collapse;}</style></style></head><body><table><thead><tr><th>Cliente</th><th>Nota</th><th>Fecha/Hora</th></tr></thead><tbody>";
             }
-
-
         }
     }
 }

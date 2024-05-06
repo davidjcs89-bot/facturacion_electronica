@@ -1,4 +1,7 @@
-﻿
+﻿$(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
 $(document).ready(function () {
     check = document.getElementById("consumidor-final");
 
@@ -8,6 +11,7 @@ $(document).ready(function () {
         $('#btn-buscar').attr('disabled', true);
         $('#btn-crear').attr('disabled', true);
         $('#btn-editar').attr('disabled', true);
+        $('#btn-buscar-nombre').attr('disabled', true);
     }
     else // Si no está activada
     {
@@ -24,6 +28,7 @@ $(document).ready(function () {
             $('#btn-buscar').attr('disabled', true);
             $('#btn-crear').attr('disabled', true);
             $('#btn-editar').attr('disabled', true);
+            $('#btn-buscar-nombre').attr('disabled', true);
         }
         else // Si no está activada
         {
@@ -31,6 +36,7 @@ $(document).ready(function () {
             $('#btn-crear').attr('disabled', false);
             $('#btn-buscar').attr('disabled', false);
             $('#btn-editar').attr('disabled', true);
+            $('#btn-buscar-nombre').attr('disabled', false);
             $('#id-cliente').val("");
             $('#nombre-cliente').val("");
             $('#direccion-cliente').val("");
@@ -151,55 +157,41 @@ function BuscarCliente() {
 }
 
 /*BUSCAR POR NOMBRE AL CLIENTE*/
+// Variable global para almacenar los clientes
+var clientesEncontrados = [];
+
 function BuscarClienteByNombre() {
     console.log('AQUI INGRESO AHORA');
     $(".loading").show();
 
     $.ajax({
         type: "GET",
-        url: "/Proforma/BuscarClienteByNombre/"
-        data: { nombre: $('#id-cliente-name').val(), idProforma: $("#id-proforma").val() }, // Enviamos el nombre
+        url: "/Proforma/BuscarClienteByNombre/",
+        data: { nombre: $('#cliente-name').val(), idProforma: $("#id-proforma").val() },
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (resultado) {
             $(".loading").hide();
 
-            if (resultado.length > 0) { // Si hay clientes coincidentes
-                $('#btn-editar').attr('disabled', false);
+            if (resultado.length > 0) {
 
-                // Aquí puedes mostrar una lista de los clientes coincidentes
-                // y permitir al usuario seleccionar uno
-                var clientesEncontrados = resultado.map(function (cliente) {
-                    return cliente.nombre + " (" + cliente.identificacion + ")";
-                }).join("<br>");
+                // Almacenar los clientes obtenidos en la variable global
+                clientesEncontrados = resultado;
 
-                swal({
-                    title: "Clientes encontrados",
-                    html: clientesEncontrados,
-                    showCancelButton: true,
-                    cancelButtonText: "Cancelar",
-                    confirmButtonText: "Seleccionar"
-                }).then(function (result) {
-                    if (result.isConfirmed) {
-                        // El usuario ha seleccionado un cliente
-                        var clienteSeleccionado = resultado.find(function (cliente) {
-                            return cliente.nombre + " (" + cliente.identificacion + ")" === result.value;
-                        });
+                // Limpiar la tabla antes de cargar los nuevos datos
+                $('#tabla-clientes tbody').empty();
 
-                        $('#id').val(clienteSeleccionado.id);
-                        $('#id-cliente').val(clienteSeleccionado.identificacion);
-                        $('#nombre-cliente').val(clienteSeleccionado.nombre);
-                        $('#direccion-cliente').val(clienteSeleccionado.direccion);
-                        $('#email-cliente').val(clienteSeleccionado.email);
-                        $('#celular-cliente').val(clienteSeleccionado.celular);
-                    }
+                // Llenar la tabla con los clientes encontrados
+                resultado.forEach(function (cliente) {
+                    var fila = '<tr data-id="' + cliente.id + '">' +
+                        '<td>' + cliente.nombre + '</td>' +
+                        '<td>' + cliente.identificacion + '</td>' +
+                        '<td><button class="btn btn-primary btn-seleccionar" data-id="' + cliente.id + '">Seleccionar</button></td>' +
+                        '</tr>';
+                    $('#tabla-clientes tbody').append(fila);
                 });
             } else {
-                $('#btn-editar').attr('disabled', true);
-                $('#nombre-cliente').val("");
-                $('#direccion-cliente').val("");
-                $('#email-cliente').val("");
-                $('#celular-cliente').val("");
+                $('.no-data').show(); // Mostrar la fila de "No hay clientes disponibles"
                 swal("No se encontraron clientes");
             }
         },
@@ -212,6 +204,53 @@ function BuscarClienteByNombre() {
         }
     });
 }
+
+// Función para manejar el clic en el botón de selección
+$(document).on('click', '.btn-seleccionar', function (event) {
+
+    // Evitar el comportamiento predeterminado del botón (que es recargar la página)
+    event.preventDefault();
+
+    var idCliente = $(this).data('id');
+
+    // Buscar el cliente seleccionado en la variable global
+    var clienteSeleccionado = clientesEncontrados.find(function (cliente) {
+        return cliente.id === idCliente;
+    });
+
+    $(".loading").show();
+    $.ajax({
+        type: "GET",
+        url: "/Proforma/BuscarCliente/",
+        data: { identificacion: clienteSeleccionado.id, idProforma: $("#id-proforma").val() },
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (resultado) {
+            $(".loading").hide();
+
+            // Establecer los valores en los campos de entrada correspondientes
+            $('#btn-editar').attr('disabled', false);
+            $('#id').val(clienteSeleccionado.id);
+            $('#id-cliente').val(clienteSeleccionado.identificacion);
+            $('#nombre-cliente').val(clienteSeleccionado.nombre);
+            $('#direccion-cliente').val(clienteSeleccionado.direccion);
+            $('#email-cliente').val(clienteSeleccionado.email);
+            $('#celular-cliente').val(clienteSeleccionado.celular);
+
+            // Cerrar el modal
+            $('#modalBuscarporNombre').modal('hide');
+
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+});
+
 
 
 function CargarCrearCliente() {

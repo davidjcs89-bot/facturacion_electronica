@@ -5,6 +5,7 @@ using Facturacion_Electronica.Models.Usuario;
 using Proformacion_Electronica.Business;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -384,7 +385,7 @@ namespace Facturacion_Electronica.Controllers
         {
             if (!HttpContext.Request.IsAjaxRequest()) return null;
 
-            int idEmisor = GetUsuarioLogeado().IdEmisor;
+            //int idEmisor = GetUsuarioLogeado().IdEmisor;
             var clientes = clienteBusiness.BuscarClientesFacturaByNombre(nombre, GetUsuarioLogeado().IdEmisor);
 
             if (clientes == null || !clientes.Any())
@@ -411,6 +412,14 @@ namespace Facturacion_Electronica.Controllers
             //proformaBusiness.ActualizarCliente(clientes.First().Id, idProforma, idEmisor);
 
             return Json(clientesData, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public ActionResult ActualizarClienteSelecionado(Models.Cliente.ModeloCliente cliente, int idProforma)
+        {
+            int idEmisor = GetUsuarioLogeado().IdEmisor;
+            proformaBusiness.ActualizarCliente(cliente.Id, idProforma, idEmisor);
+            return Json(new { existeCliente = true, id = cliente.Id, identificacion = cliente.NumeroIdentificacion, nombre = cliente.RazonSocial, direccion = cliente.Direccion, email = cliente.Email, celular = cliente.Celular }, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
