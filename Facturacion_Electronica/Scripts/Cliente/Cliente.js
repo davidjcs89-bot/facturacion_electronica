@@ -17,6 +17,7 @@ function CargarVistaCrearCliente() {
             $("#vistaNuevoCliente").html("");
             $("#vistaNuevoCliente").html(response);
             $("#nuevoCliete").appendTo("body").modal("show");
+            validarTipoIdentificacion();
         },
         failure: function (response) {
             alert(response.responseText);
@@ -116,6 +117,20 @@ function EditarCliente() {
             alert(response.responseText);
         }
     });
+}
+
+function validarTipoIdentificacion() {
+    var tipoIdentificacionDropdown = document.getElementById("tipoIdentificacionDropdown");
+    var cedulaValue = "2";
+    var numeroIdentificacionInput = document.getElementById("numeroIdentificacionInput");
+    var numeroIdentificacionError = document.getElementById("numeroIdentificacionError");
+
+    if (tipoIdentificacionDropdown.value === cedulaValue) {
+        numeroIdentificacionInput.addEventListener("input", validarNumeroIdentificacion);
+        numeroIdentificacionError.textContent = "PARA LA CÉDULA SOLO PUEDE INGRESAR 10 DÍGITOS NUMÉRICOS";
+    } else {
+        numeroIdentificacionError.textContent = "";
+    }
 }
 
 function validarNumeroIdentificacion() {

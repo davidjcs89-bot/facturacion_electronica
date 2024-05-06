@@ -23,7 +23,7 @@
             <div class="form-group">
                 <div class="col-md-12">
                     @Html.LabelFor(model => model.TipoIdentificacionId, htmlAttributes: new { @class = "control-label" })
-                    @Html.DropDownListFor(model => model.TipoIdentificacionId, (IEnumerable<SelectListItem>)ViewBag.TipoIdentificacion, null, new { @class = "form-control", id = "tipoIdentificacionDropdown" })
+                    @Html.DropDownListFor(model => model.TipoIdentificacionId, (IEnumerable<SelectListItem>)ViewBag.TipoIdentificacion, null, new { @class = "form-control", id = "tipoIdentificacionDropdown", onchange = "validarTipoIdentificacion()" })
                     @Html.ValidationMessageFor(model => model.TipoIdentificacionId, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -32,6 +32,7 @@
                 <div class="col-md-12">
                     @Html.LabelFor(model => model.NumeroIdentificacion, htmlAttributes: new { @class = "control-label" })
                     @Html.EditorFor(model => model.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", id = "numeroIdentificacionInput", oninput = "validarNumeroIdentificacion()" } })
+                    <span id="numeroIdentificacionError" class="text-danger"></span>
                     @Html.ValidationMessageFor(model => model.NumeroIdentificacion, "", new { @class = "text-danger" })
                 </div>
             </div>

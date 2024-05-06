@@ -2,59 +2,63 @@
   <infoTributaria>
     <ambiente>2</ambiente>
     <tipoEmision>1</tipoEmision>
-    <razonSocial>GALARZA CONTRERAS JUAN ANDRES</razonSocial>
-    <nombreComercial>GRUN PADEL</nombreComercial>
-    <ruc>0915845994001</ruc>
-    <claveAcceso>0205202401091584599400120010040000003554496114219</claveAcceso>
+    <razonSocial>CONTRERAS DIEGO</razonSocial>
+    <nombreComercial>VPINK</nombreComercial>
+    <ruc>0102648466001</ruc>
+    <claveAcceso>0605202401010264846600120030010000231412024757811</claveAcceso>
     <codDoc>01</codDoc>
-    <estab>001</estab>
-    <ptoEmi>004</ptoEmi>
-    <secuencial>000000355</secuencial>
-    <dirMatriz>AV. LEON FEBRES CORDERO KM 14.5</dirMatriz>
+    <estab>003</estab>
+    <ptoEmi>001</ptoEmi>
+    <secuencial>000023141</secuencial>
+    <dirMatriz>ELIA LIUT SN Y CALLE VIEJA</dirMatriz>
   </infoTributaria>
   <infoFactura>
-    <fechaEmision>02/05/2024</fechaEmision>
-    <dirEstablecimiento>AV LEON FEBRES CORDERO KM 14.5</dirEstablecimiento>
+    <fechaEmision>06/05/2024</fechaEmision>
+    <dirEstablecimiento>CC EL VERGEL A14</dirEstablecimiento>
     <obligadoContabilidad>NO</obligadoContabilidad>
     <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
-    <razonSocialComprador>GENCON LUIS</razonSocialComprador>
-    <identificacionComprador>1311505695</identificacionComprador>
-    <direccionComprador>SIN DIRECCION</direccionComprador>
-    <totalSinImpuestos>34.78</totalSinImpuestos>
+    <razonSocialComprador>PRISCILA NAJERA</razonSocialComprador>
+    <identificacionComprador>0102972585</identificacionComprador>
+    <direccionComprador>RACAURTE</direccionComprador>
+    <totalSinImpuestos>139.13</totalSinImpuestos>
     <totalDescuento>0.00</totalDescuento>
     <totalConImpuestos>
       <totalImpuesto>
         <codigo>2</codigo>
         <codigoPorcentaje>4</codigoPorcentaje>
-        <baseImponible>34.78</baseImponible>
-        <valor>5.21</valor>
+        <baseImponible>139.13</baseImponible>
+        <valor>20.86</valor>
       </totalImpuesto>
     </totalConImpuestos>
     <propina>0.00</propina>
-    <importeTotal>40.00</importeTotal>
+    <importeTotal>160.00</importeTotal>
     <moneda>USD</moneda>
     <pagos>
       <pago>
+        <formaPago>17</formaPago>
+        <total>100.00</total>
+      </pago>
+      <pago>
         <formaPago>19</formaPago>
-        <total>40.00</total>
+        <total>60.00</total>
       </pago>
     </pagos>
   </infoFactura>
   <detalles>
     <detalle>
-      <codigoPrincipal>ADIDAS1</codigoPrincipal>
-      <descripcion>ALQUILER DE CANCHA ADIDAS NOCHE </descripcion>
+      <codigoPrincipal>MF21709</codigoPrincipal>
+      <descripcion>VESTIDO MANIJU</descripcion>
       <cantidad>1</cantidad>
-      <precioUnitario>34.785</precioUnitario>
+      <precioUnitario>139.133</precioUnitario>
       <descuento>0.00</descuento>
-      <precioTotalSinImpuesto>34.78</precioTotalSinImpuesto>
+      <precioTotalSinImpuesto>139.13</precioTotalSinImpuesto>
       <impuestos>
         <impuesto>
           <codigo>2</codigo>
           <codigoPorcentaje>4</codigoPorcentaje>
           <tarifa>15.000</tarifa>
-          <baseImponible>34.78</baseImponible>
-          <valor>5.21</valor>
+          <baseImponible>139.13</baseImponible>
+          <valor>20.86</valor>
         </impuesto>
       </impuestos>
     </detalle>

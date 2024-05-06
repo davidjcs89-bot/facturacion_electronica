@@ -878,10 +878,9 @@ namespace Facturacion_Electronica.Business
                 }
 
                 xml.Add(items);
-
+                var extra = new XElement("infoAdicional");
                 foreach (var adicional in modelo.Datos_Adicionales_Factura.ToList())
-                {
-                    var extra = new XElement("infoAdicional");
+                {                    
                     extra.Add(new XElement("campoAdicional", adicional.Descripcion, new XAttribute("nombre", adicional.Nombre)));
                     xml.Add(extra);
                 }
