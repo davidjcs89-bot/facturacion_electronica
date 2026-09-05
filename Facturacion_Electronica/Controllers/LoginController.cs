@@ -38,6 +38,13 @@ namespace Facturacion_Electronica.Controllers
                         HostingEnvironment.QueueBackgroundWorkItem(
                             token => usuarioBusiness.EnviarEmailInicioSesion(modelo)
                         );
+
+                        // Si no tiene un emisor creado, redigir a crear emisor
+                        if (!usuarioBusiness.ValidarEmisorCreado(modelo) && !usuarioBusiness.validarEsAdmin(modelo))
+                        {
+                            return RedirectToAction("Create", "Emisor");
+                        }
+
                         return RedirectToAction("Index", "Admin");
                     }
                     else

@@ -1,0 +1,46 @@
+﻿@model IEnumerable<Facturacion_Electronica.Atributos_fichas_clientes>
+
+@{
+    ViewBag.Title = "Atributos Fichas Clientes";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Atributos de Fichas para Clientes</h2>
+
+<p>
+    @Html.ActionLink("Nuevo Atributo", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            C&oacute;digo
+        </th>
+        <th>
+            Nombre
+        </th>
+        <th></th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.id)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.nombre)
+    </td>
+    <td>
+        <button type="button" id="editar" class="btn bg-info" data-target="#editar" onclick="window.open('@Url.Action("Edit", "AtributosFichasClientes", new { id = item.id, target = "_blank" })')">
+            Editar
+        </button>
+    </td>
+    <td>
+        <button type="button" id="eliminar" class="btn bg-danger" data-target="#editar" onclick="window.open('@Url.Action("Delete", "AtributosFichasClientes", new { id = item.id, target = "_blank" })')">
+            Ficha
+        </button>
+    </td>
+</tr>
+}
+
+</table>

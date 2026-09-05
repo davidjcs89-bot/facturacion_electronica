@@ -14,7 +14,10 @@ namespace Facturacion_Electronica.Models.Usuario
         public string BuscarPorApellido { get; set; }
         [Display(Name = "Buscar por Email:")]
         public string BuscarPorEmail { get; set; }
+        [Display(Name = "Buscar por Estado:")]
+        public int BuscarPorEstado { get; set; }
         public List<Facturacion_Electronica.Usuario> Usuarios { get; set; }
+        [Display(Name = "Buscar Todos")]
         public bool BuscarTodos { get; set; }
     }
 }

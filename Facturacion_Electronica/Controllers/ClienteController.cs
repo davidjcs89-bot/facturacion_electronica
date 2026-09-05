@@ -142,6 +142,12 @@ namespace Facturacion_Electronica.Controllers
                     return View(modelo);
                 }
 
+                if (db.Clientes.Where(x => (x.id_emisor == idEmisor && x.codigo == modelo.Codigo)).Any())
+                {
+                    ModelState.AddModelError("Codigo", "Ya existe un cliente del mismo código registrado anteriormente");
+                    return View(modelo);
+                }
+
                 clienteBusiness.CrearCliente(modelo, GetUsuarioLogeado().IdEmisor);
                 return Json(new { clienteCreado = true, identificacion = modelo.NumeroIdentificacion, origen = modelo.OrigenPenticionNuevoCliente });
             }
@@ -239,6 +245,12 @@ namespace Facturacion_Electronica.Controllers
                 if (db.Clientes.Where(x => (x.id != modeloCliente.Id && x.id_emisor == idEmisor && x.tipo_cliente == modeloCliente.TipoClienteId &&  x.identificacion == modeloCliente.NumeroIdentificacion)).Any())
                 {
                     ModelState.AddModelError("Id", "Ya existe un cliente del mismo tipo y con la misma identificación registrado anteriormente");
+                    return View(modeloCliente);
+                }
+
+                if (db.Clientes.Where(x => (x.id != modeloCliente.Id && x.id_emisor == idEmisor && x.codigo == modeloCliente.Codigo)).Any())
+                {
+                    ModelState.AddModelError("Codigo", "Ya existe un cliente del mismo código registrado anteriormente");
                     return View(modeloCliente);
                 }
 
@@ -417,6 +429,101 @@ namespace Facturacion_Electronica.Controllers
                 }
             }
             return View();
+        }
+
+        public ActionResult Ficha(int id)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            if (idEmisor == 0)
+            {
+                ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
+                return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
+
+            var cliente = db.Clientes.FirstOrDefault(x=>x.id == id && x.id_emisor == idEmisor);
+            if (cliente == null)
+            {
+                ViewBag.MensajeError = "Cliente no encontrado";
+                return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
+
+
+                // Comprobar que existan atributos guardados
+                var atributos = db.Atributos_fichas_clientes.Where(x=>x.id_emisor == idEmisor).ToList();
+
+            if (atributos.Count == 0)
+            {
+                ViewBag.MensajeError = "No se han configurado atributos de fichas | Menú: Administración —> Atrb. Fichas clientes —> ";
+                return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
+
+            var atributosCliente = new ModeloFichaCliente { 
+                Id = id,
+                Cliente = cliente.identificacion + " - "+cliente.nombre_cliente,
+                Atributos = new List<ModeloValorAtributoFichaCliente>()
+            };
+
+            // Recorrer cada atributo y comprobar si existe almacenado un valor
+            foreach (var atributo in atributos)
+            {
+                var valorAtributo = db.Fichas_clientes.FirstOrDefault(x=> x.id_atributo == atributo.id && x.id_cliente == id);
+
+                // Agregar al arreglo
+                atributosCliente.Atributos.Add(new ModeloValorAtributoFichaCliente
+                {
+                    Id = valorAtributo != null ? valorAtributo.id : 0,
+                    IdAtributo = atributo.id,
+                    NombreAtributo = atributo.nombre,
+                    Valor = valorAtributo != null ? valorAtributo.valor : ""
+                });
+
+            }
+
+            return View(atributosCliente);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Ficha(ModeloFichaCliente modelo)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+
+            var cliente = db.Clientes.FirstOrDefault(x => x.id == modelo.Id && x.id_emisor == idEmisor);
+            if (cliente == null)
+            {
+                ViewBag.MensajeError = "Cliente no encontrado";
+                return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
+
+            if (ModelState.IsValid)
+            {
+                foreach (var atributo in modelo.Atributos)
+                {
+
+                    if (atributo.Id == 0)
+                    {
+                        cliente.Fichas_clientes.Add(new Fichas_clientes
+                        {
+                            id_atributo = atributo.IdAtributo,
+                            valor = atributo.Valor
+                        });
+                    }
+                    else
+                    {
+                        var atributoCliente = cliente.Fichas_clientes.FirstOrDefault(x => x.id == atributo.Id);
+                        if (atributoCliente != null)
+                        {
+                            atributoCliente.valor = atributo.Valor;
+                        }
+                    }
+
+                }
+
+                db.SaveChanges();
+                return RedirectToAction("Ficha", new { cliente.id });
+            }
+
+            return View(modelo);
         }
 
         protected override void Dispose(bool disposing)

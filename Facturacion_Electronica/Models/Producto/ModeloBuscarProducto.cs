@@ -17,6 +17,8 @@ namespace Facturacion_Electronica.Models.Producto
         public List<Facturacion_Electronica.Producto> Productos { get; set; }
         [Display(Name = "Ver todos los Productos")]
         public bool BuscarTodos { get; set; }
-
+        public int IdFactura { get; set; }
+        [Display(Name = "Nro. Registros")]
+        public int NumeroRegistros { get; set; }
     }
 }

@@ -87,27 +87,55 @@
         <table class="table">
             <tr>
                 <th>
+                    Indice
+                </th>
+                <th></th>
+                <th>
+                    Total $
+                </th>
+                <th>
+                    Total<br />Cantidad
+                </th>
+                <th>
                     N&uacute;mero
                 </th>
                 <th>
-                    Fecha Creacion
+                    Fecha<br />Creacion
                 </th>
                 <th>
-                    Fecha Emision
+                    Fecha<br />Emision
                 </th>
-                <th>
-                    Total
-                </th>
+
                 <th>
                     Cliente
                 </th>
-                <th></th>
+
             </tr>
+
+            @{
+                var indice = 1;
+            }
 
             @foreach (var item in Model.Proformas)
             {
 
                 <tr>
+                    <td>@indice</td>
+                    <td>
+                        <button type="button" id="editarProforma" class="btn btn-info btn-editar" data-target="#editarProforma" onclick="window.open('@Url.Action("Edit", "Proforma", new { id = item.id, target = "_blank" })')">
+                            Editar
+                        </button>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.total)
+                    </td>
+
+                    @{
+                        var totalCantidad = item.Detalle_Proforma.Sum(x => x.cantidad);
+                    }
+                    <td>
+                        @totalCantidad
+                    </td>
                     <td>
                         @item.numero
                     </td>
@@ -117,22 +145,18 @@
                     <td>
                         @Convert.ToDateTime(item.fecha_emision).ToString("dd/MM/yyyy HH:mm")
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.total)
-                    </td>
+
                     @{
                         var cliente = item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente;
                     }
                     <td>
                         @Html.Raw(cliente)
                     </td>
-                    <td>
-                        <button type="button" id="editarProforma" class="btn btn-info btn-editar" data-target="#editarProforma" onclick="location.href='/Proforma/Edit/@item.id'">
-                            Editar
-                        </button>
-                    </td>
 
                 </tr>
+               
+                    indice += 1;
+                
             }
 
         </table>

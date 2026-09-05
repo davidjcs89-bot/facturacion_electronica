@@ -4,7 +4,14 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Nueva Factura</h2>
+@if (Model.EsMayorista)
+{
+    <h2> Nueva Factura al por Mayor</h2>
+}
+else
+{
+    <h2> Nueva Factura </h2>
+}
 @using (Html.BeginForm())
 {
     @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-factura" })
@@ -112,7 +119,7 @@
                         </a>
                     </h4>
                 </div>
-                <div id="collapseThree" class="accordion-body collapse-in">
+                <div id="collapseThree" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <div class="table-responsive" style="border-style: solid;overflow:hidden">
                             <fieldset>
@@ -120,18 +127,18 @@
                                 @if (Model.PermiteEditarCliente)
                                 {
                                     <div class="form-horizontal">
-                                        <div class="checkbox-container">
-                                            <div class="form-group">
-                                                <div class="checkbox">
-                                                    @Html.LabelFor(model => model.EsConsumidorFinal, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <table>
+                                            <tr>
+                                                <td style="padding-left:20px">
+                                                    <label class="control-label">
+                                                        <span class="glyphicon glyphicon-info-sign"></span> Consumidor Final
+                                                    </label>
+                                                </td>
+                                                <td style="padding-left:10px">
                                                     @Html.EditorFor(model => model.EsConsumidorFinal, new { htmlAttributes = new { @id = "consumidor-final", @style = "margin-left:0px" } })
-                                                </div>
-                                                <div class="info-warning">
-                                                    <img src="~/Content/Imagenes/warning-icon.svg" alt="warning" />
-                                                    <p>Recuerda que a partir de $200 no se puede emitir una proforma como Consumidor Final.</p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                </td>
+                                            </tr>
+                                        </table>
 
                                         <!--CARGAR DATOS DEL CLIENTE-->
                                         <div class="row">
@@ -238,8 +245,21 @@
                 <legend>Datos de Producto</legend>
                 @if (Model.PermiteEditarDetalles)
                 {
-                    <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
-                        Agregar Nuevo Detalle
+                    if (!Model.EsMayorista)
+                    {
+                        <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
+                            Agregar Nuevo Detalle
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProductoMasivo()">
+                            Agregar Nuevo Detalle
+                        </button>
+                    }
+
+                    <button type="button" id="importar-detalle" class="btn bg-info" data-target="#importarDetalle" onclick="CargarImportarDetalle()">
+                        Importar Detalle Excel
                     </button>
                 }
 
@@ -255,16 +275,25 @@
                             Adicional
                         </th>
                         <th>
-                            Precio
+                            Precio + IVA
+                        </th>
+                        <th>
+                            Precio Uni
+                        </th>
+                        <th>
+                            Iva Uni
                         </th>
                         <th>
                             Cantidad
                         </th>
                         <th>
-                            %Descuento
+                            Subtotal
                         </th>
                         <th>
-                            Subtotal
+                            %Desc
+                        </th>
+                        <th>
+                            $Desc
                         </th>
                         <th>
                             IVA
@@ -278,6 +307,7 @@
                         <th>
                             Total
                         </th>
+                        <th></th>
                         <th></th>
                     </tr>
 
@@ -293,19 +323,28 @@
                             @if (Model.PermiteEditarDetalles)
                             {
                                 <td>
-                                    @Html.EditorFor(model => item.Adicional, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarAdicionalDetalle(" + item.Id + ",this)" } })
+                                    @Html.EditorFor(model => item.Adicional, new { htmlAttributes = new { @id = item.Id + "-adic", @class = "form-control", onchange = "ActualizarAdicionalDetalle(" + item.Id + ",this)" } })
                                     @Html.ValidationMessageFor(model => item.Adicional, "", new { @class = "text-danger" })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => item.PrecioUnitario, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPrecioDetalle(" + item.Id + ",this)" } })
-                                    @Html.ValidationMessageFor(model => item.PrecioUnitario, "", new { @class = "text-danger" })
+                                    @Html.EditorFor(model => item.PrecioConImpuestos, new { htmlAttributes = new { @id = item.Id + "-precio", @class = "form-control", onchange = "ActualizarPrecioDetalle(" + item.Id + ",this)" } })
+                                    @Html.ValidationMessageFor(model => item.PrecioConImpuestos, "", new { @class = "text-danger" })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => item.Cantidad, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarCantidadDetalle(" + item.Id + ",this)" } })
+                                    @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IvaUnitario)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => item.Cantidad, new { htmlAttributes = new { @id = item.Id + "-qty", @class = "form-control", onchange = "ActualizarCantidadDetalle(" + item.Id + ",this)" } })
                                     @Html.ValidationMessageFor(model => item.Cantidad, "", new { @class = "text-danger" })
                                 </td>
                                 <td>
-                                    @Html.EditorFor(model => item.Descuento, new { htmlAttributes = new { @class = "form-control", onchange = "ActualizarPorcentajeDescuentoDetalle(" + item.Id + ",this)" } })
+                                    @Html.DisplayFor(modelItem => item.Subtotal)
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => item.Descuento, new { htmlAttributes = new { @id = item.Id + "-desc", @class = "form-control", onchange = "ActualizarPorcentajeDescuentoDetalle(" + item.Id + ",this)" } })
                                     @Html.ValidationMessageFor(model => item.Descuento, "", new { @class = "text-danger" })
                                 </td>
                             }
@@ -315,18 +354,26 @@
                                     @Html.DisplayFor(modelItem => item.Adicional)
                                 </td>
                                 <td>
+                                    @Html.DisplayFor(modelItem => item.PrecioConImpuestos)
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.IvaUnitario)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Cantidad)
                                 </td>
                                 <td>
+                                    @Html.DisplayFor(modelItem => item.Subtotal)
+                                </td>
+                                <td>
                                     @Html.DisplayFor(modelItem => item.Descuento)
                                 </td>
                             }
-
                             <td>
-                                @Html.DisplayFor(modelItem => item.Subtotal)
+                                @Html.DisplayFor(modelItem => item.ValorDescuento)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.ValorIva)
@@ -343,8 +390,13 @@
                             @if (Model.PermiteEditarDetalles)
                             {
                                 <td>
+                                    <button type="button" id="eliminar-detalle" class="btn btn-success" onclick="ActualizarDetalleFactura(@item.Id)">
+                                        <span class="glyphicon glyphicon-floppy-saved"></span>
+                                    </button>
+                                </td>
+                                <td>
                                     <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarDetalle(@item.Id)">
-                                        Eliminar
+                                        <span class="glyphicon glyphicon-trash"></span>
                                     </button>
                                 </td>
                             }
@@ -588,6 +640,20 @@
         </div>
     </div>
 
+    <div id="importarDetalle" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Importar Detalle Excel</h4>
+                </div>
+                <div id="vistaImportarDetalle">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--MODAL PARA BUSCAR A CLIENTE POR NOMBRE-->
     <div class="modal fade" id="modalBuscarporNombre" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -637,7 +703,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary">Guardar cambios</button>
+                    <!-- <button type="button" class="btn btn-primary">Guardar cambios</button>-->
                 </div>
             </div>
         </div>

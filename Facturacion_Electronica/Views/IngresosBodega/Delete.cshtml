@@ -1,0 +1,49 @@
+﻿@model Facturacion_Electronica.Ingresos_bodega
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Ingresos_bodega</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.fecha)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.fecha)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Bodegas.codigo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Bodegas.codigo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Emisor.Ruc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Emisor.Ruc)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

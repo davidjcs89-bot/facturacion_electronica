@@ -32,9 +32,9 @@ namespace Facturacion_Electronica
         public string Motivo_traslado { get; set; }
         public string Ruta { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Detalles_guia_remision> Detalles_guia_remision { get; set; }
         public virtual Guia_remision Guia_remision { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

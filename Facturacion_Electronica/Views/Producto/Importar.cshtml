@@ -24,6 +24,22 @@
             <div class="col-md-3 pull-right">
                 <button type="submit" class="btn btn-info">Cargar</button>
             </div>
+
         </div>
     </div>
+}
+@section Styles {
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/SweetAlert")
+@{
+    if (ViewBag.Correcto != null)
+    {
+    <script type="text/javascript">
+        swal("Importación finalizada correctamente");
+    </script>
+    }
 }

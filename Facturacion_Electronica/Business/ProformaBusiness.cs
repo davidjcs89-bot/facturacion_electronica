@@ -119,35 +119,50 @@ namespace Proformacion_Electronica.Business
 
             foreach (var detalle in proforma.Detalle_Proforma.ToList())
             {
-                modelo.Detalles.Add(new ModeloProformaDetalle
+                var detalleModelo = new ModeloProformaDetalle();
+
+                detalleModelo.Id = detalle.Id;
+                detalleModelo.Cantidad = detalle.cantidad;
+                detalleModelo.Descuento = detalle.descuento_porcentaje;
+                detalleModelo.ValorDescuento = detalle.descuento;
+                detalleModelo.IdProducto = detalle.id_producto;
+                detalleModelo.Producto = productobusiness.GenerarModeloProducto(detalle.id_producto);
+                detalleModelo.PrecioUnitario = detalle.precio;
+                detalleModelo.IvaUnitario = detalle.valor_iva / detalle.cantidad;
+                detalleModelo.IceUnitrario = detalle.valor_ice / detalle.cantidad;
+                detalleModelo.IrbpnrUnitario = detalle.valor_irbpnr / detalle.cantidad;
+
+                //Aumentar el descuento, si es mayor a cero
+                if (detalle.descuento_porcentaje > 0)
                 {
-                    Id = detalle.Id,
-                    Cantidad = detalle.cantidad,
-                    Descuento = detalle.descuento,
-                    IdProducto = detalle.id_producto,
-                    Producto = productobusiness.GenerarModeloProducto(detalle.id_producto),
-                    PrecioUnitario = detalle.precio,
-                    ValorIva = detalle.valor_iva,
-                    ValorIce = detalle.valor_ice,
-                    ValorIrbpnr = detalle.valor_irbpnr,
-                    Subtotal = detalle.sub_total,
-                    Total = detalle.total,
-                    Adicional = detalle.adicional
-                });
+                    detalleModelo.IvaUnitario = detalleModelo.IvaUnitario * (1 + (detalle.descuento_porcentaje /100));
+                    detalleModelo.IceUnitrario = detalleModelo.IceUnitrario * (1 + (detalle.descuento_porcentaje / 100));
+                    detalleModelo.IrbpnrUnitario = detalleModelo.IrbpnrUnitario * (1 + (detalle.descuento_porcentaje / 100));
+                }
+
+                detalleModelo.ValorIva = detalle.valor_iva;
+                detalleModelo.ValorIce = detalle.valor_ice;
+                detalleModelo.ValorIrbpnr = detalle.valor_irbpnr;
+                detalleModelo.Subtotal = detalle.sub_total;
+                detalleModelo.Total = detalle.total;
+                detalleModelo.Adicional = detalle.adicional;
+                detalleModelo.PrecioConImpuestos = detalleModelo.PrecioUnitario + detalleModelo.IvaUnitario + detalleModelo.IceUnitrario + detalleModelo.IrbpnrUnitario;
+
+                modelo.Detalles.Add(detalleModelo);
             }
 
             return modelo;
 
         }
 
-        public void AgregarProducto(int idProforma, int idProducto, int idEmisor)
+        public String AgregarProducto(int idProforma, int idProducto, int idEmisor)
         {
             var producto = db.Producto.FirstOrDefault(x => x.id == idProducto && x.id_emisor == idEmisor);
 
             var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
             if (producto == null || proforma == null)
             {
-                return;
+                return "No existe el producto a agregarse";
             }
 
             var iva = producto.Porcentaje_impuesto_producto2;
@@ -204,80 +219,79 @@ namespace Proformacion_Electronica.Business
             proforma.total_descuento += detalle.descuento;
             proforma.total += detalle.total;
 
-            proforma.Detalle_Proforma.Add(detalle);
-            db.SaveChanges();
-        }
+            proforma.Detalle_Proforma.Add(detalle);           
 
-        public void ActualizarAdicionalDetalle(int id, int idProforma, int idEmisor, string adicional)
-        {
-            var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
-            if (proforma == null)
+            if (proforma.total > EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL && proforma.Clientes.identificacion == EnumDatosGenerales.NUMERO_IDENTIFICACION_CONSUMIDOR_FINAL)
             {
-                return;
+                return $"El total de la proforma sobrepasa los ${EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL}, permitido a Consumidor Final";
             }
-
-            var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
-            if (detalle == null && adicional != null)
-            {
-                return;
-            }
-            detalle.adicional = adicional;
 
             db.SaveChanges();
+
+            return null;
         }
 
-        public void ActualizarPrecioDetalle(int id, int idProforma, int idEmisor, decimal nuevoPrecio)
-        {
-            Debug.WriteLine("IDS RECIBIDOS");
+        //public void ActualizarAdicionalDetalle(int id, int idProforma, int idEmisor, string adicional)
+        //{
+        //    var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
+        //    if (proforma == null)
+        //    {
+        //        return;
+        //    }
 
-            Debug.WriteLine("ID "+ id);
-            Debug.WriteLine("idProforma "+ idProforma);
-            Debug.WriteLine("idEmisor "+ idEmisor);
+        //    var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
+        //    if (detalle == null && adicional != null)
+        //    {
+        //        return;
+        //    }
+        //    detalle.adicional = adicional;
 
-            var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
-            if (proforma == null)
-            {
-                return;
-            }
+        //    db.SaveChanges();
+        //}
 
-            var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
-            if (detalle == null)
-            {
-                return;
-            }
+        //public void ActualizarPrecioDetalle(int id, int idProforma, int idEmisor, decimal nuevoPrecio)
+        //{
+        //    var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
+        //    if (proforma == null)
+        //    {
+        //        return;
+        //    }
 
-            var iva = detalle.Producto.Porcentaje_impuesto_producto2;
-            var ice = detalle.Producto.Porcentaje_impuesto_producto;
-            var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
-            Debug.WriteLine("iva " + iva.Porcentaje / 100);
-            var precioSinIva = (decimal)Convert.ToDouble(nuevoPrecio) / (iva.Porcentaje / 100);
+        //    var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
+        //    if (detalle == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var iva = detalle.Producto.Porcentaje_impuesto_producto2;
+        //    var ice = detalle.Producto.Porcentaje_impuesto_producto;
+        //    var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+        //    var precioSinIva = Decimal.Round( (nuevoPrecio / ( 1+ (iva.Porcentaje / 100))),4);
             
-            Debug.WriteLine("precioSinIva " + precioSinIva);
+        //    detalle.precio = precioSinIva;
 
-            detalle.precio = precioSinIva;
+        //    detalle.sub_total = detalle.precio * detalle.cantidad;
 
-            detalle.sub_total = detalle.precio * detalle.cantidad;
+        //    detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
 
-            detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
+        //    detalle.sub_total -= detalle.descuento;
 
-            detalle.sub_total -= detalle.descuento;
+        //    detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
+        //    detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
 
-            detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
-            detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
+        //    detalle.valor_iva = Decimal.Round((detalle.sub_total * iva.Porcentaje / 100),2);
 
-            detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
-
-            detalle.total = detalle.sub_total + detalle.valor_iva;
+        //    detalle.total = detalle.sub_total + detalle.valor_iva;
 
 
-            /*detalle.precio = (decimal)Convert.ToDouble(nuevoPrecio) / (decimal)Convert.ToDouble(1.12);
-            detalle.sub_total = detalle.precio * detalle.cantidad;
-            detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
-            detalle.total = detalle.sub_total + detalle.valor_iva;*/
+        //    /*detalle.precio = (decimal)Convert.ToDouble(nuevoPrecio) / (decimal)Convert.ToDouble(1.12);
+        //    detalle.sub_total = detalle.precio * detalle.cantidad;
+        //    detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
+        //    detalle.total = detalle.sub_total + detalle.valor_iva;*/
 
-            Actutalizartotales(proforma);
-            db.SaveChanges();
-        }
+        //    Actutalizartotales(proforma);
+        //    db.SaveChanges();
+        //}
 
         public void ActualizarObservacionesProforma(int idProforma, int idEmisor, string observaciones)
         {
@@ -292,64 +306,121 @@ namespace Proformacion_Electronica.Business
             db.SaveChanges();
         }
 
-        public void ActualizarCantidadDetalle(int id, int idProforma, int idEmisor, int nuevacantidad)
+        //public void ActualizarCantidadDetalle(int id, int idProforma, int idEmisor, int nuevacantidad)
+        //{
+        //    var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
+        //    if (proforma == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
+        //    if (detalle == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var iva = detalle.Producto.Porcentaje_impuesto_producto2;
+        //    var ice = detalle.Producto.Porcentaje_impuesto_producto;
+        //    var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+
+        //    detalle.cantidad = nuevacantidad;
+        //    detalle.sub_total = detalle.precio * detalle.cantidad;
+        //    detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
+        //    detalle.sub_total -= detalle.descuento;
+        //    detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
+        //    detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
+        //    detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
+        //    detalle.total = detalle.sub_total + detalle.valor_ice + detalle.valor_irbpnr + detalle.valor_iva;
+        //    Actutalizartotales(proforma);
+        //    db.SaveChanges();
+        //}
+
+        //public void ActualizarPorcentajeDescuentoDetalle(int id, int idProforma, int idEmisor, decimal porcentaje)
+        //{
+        //    var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
+        //    if (proforma == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
+        //    if (detalle == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var iva = detalle.Producto.Porcentaje_impuesto_producto2;
+        //    var ice = detalle.Producto.Porcentaje_impuesto_producto;
+        //    var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+
+        //    detalle.descuento_porcentaje = porcentaje;
+        //    detalle.descuento = detalle.sub_total * (porcentaje / 100);
+        //    detalle.sub_total = detalle.precio * detalle.cantidad;
+        //    detalle.sub_total -= detalle.descuento;
+        //    detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
+        //    detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
+        //    detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
+        //    detalle.total = detalle.sub_total + detalle.valor_ice + detalle.valor_irbpnr + detalle.valor_iva;
+        //    Actutalizartotales(proforma);
+        //    db.SaveChanges();
+        //}
+
+        public String ActualizarDetalle(int id, int idProforma, int idEmisor, decimal nuevoPrecio, int nuevacantidad, decimal porcentajeDescuento, string adicional)
         {
             var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
             if (proforma == null)
             {
-                return;
+                return "No existe la proforma";
             }
 
             var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
             if (detalle == null)
             {
-                return;
+                return "No existe el detalle de la proforma a actualizar";
             }
 
             var iva = detalle.Producto.Porcentaje_impuesto_producto2;
             var ice = detalle.Producto.Porcentaje_impuesto_producto;
             var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
 
+            var precioSinIva = nuevoPrecio / (1 + (iva.Porcentaje / 100));
+            var subtotalSinIva = precioSinIva * nuevacantidad;
+
+            detalle.precio = Decimal.Round(precioSinIva,2);
+            detalle.descuento_porcentaje = porcentajeDescuento;
             detalle.cantidad = nuevacantidad;
-            detalle.sub_total = detalle.precio * detalle.cantidad;
-            detalle.descuento = detalle.sub_total * (detalle.descuento_porcentaje / 100);
-            detalle.sub_total -= detalle.descuento;
-            detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
-            detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
-            detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
-            detalle.total = detalle.sub_total + detalle.valor_ice + detalle.valor_irbpnr + detalle.valor_iva;
-            Actutalizartotales(proforma);
-            db.SaveChanges();
-        }
 
-        public void ActualizarPorcentajeDescuentoDetalle(int id, int idProforma, int idEmisor, decimal porcentaje)
-        {
-            var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma && x.id_emisor == idEmisor);
-            if (proforma == null)
+            detalle.sub_total = Decimal.Round(subtotalSinIva,2);
+
+            var subTotalDescontado = subtotalSinIva - (subtotalSinIva * (detalle.descuento_porcentaje / 100));
+
+            detalle.descuento = Decimal.Round(subtotalSinIva * (detalle.descuento_porcentaje / 100), 2);
+
+            detalle.sub_total -= detalle.descuento;
+
+            detalle.valor_ice = Decimal.Round(subTotalDescontado * ice.Porcentaje / 100,2);
+            detalle.valor_irbpnr = Decimal.Round(subTotalDescontado * irbpnr.Porcentaje / 100,2);
+
+            detalle.valor_iva = Decimal.Round(subTotalDescontado * iva.Porcentaje / 100, 2);
+
+            detalle.total = detalle.sub_total + detalle.valor_iva;
+
+            if (!string.IsNullOrEmpty(adicional))
             {
-                return;
+                detalle.adicional = adicional;
             }
 
-            var detalle = proforma.Detalle_Proforma.FirstOrDefault(x => x.Id == id);
-            if (detalle == null)
+            Actutalizartotales(proforma);
+
+            if (proforma.total > EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL && proforma.Clientes.identificacion == EnumDatosGenerales.NUMERO_IDENTIFICACION_CONSUMIDOR_FINAL)
             {
-                return;
+                return $"El total de la proforma sobrepasa los ${EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL}, permitido a Consumidor Final";
             }
 
-            var iva = detalle.Producto.Porcentaje_impuesto_producto2;
-            var ice = detalle.Producto.Porcentaje_impuesto_producto;
-            var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
-
-            detalle.descuento_porcentaje = porcentaje;
-            detalle.descuento = detalle.sub_total * (porcentaje / 100);
-            detalle.sub_total = detalle.precio * detalle.cantidad;
-            detalle.sub_total -= detalle.descuento;
-            detalle.valor_ice = (detalle.sub_total * ice.Porcentaje / 100);
-            detalle.valor_irbpnr = (detalle.sub_total * irbpnr.Porcentaje / 100);
-            detalle.valor_iva = (detalle.sub_total * iva.Porcentaje / 100);
-            detalle.total = detalle.sub_total + detalle.valor_ice + detalle.valor_irbpnr + detalle.valor_iva;
-            Actutalizartotales(proforma);
             db.SaveChanges();
+
+            return null;
         }
 
         public void EliminarDetalle(int id, int idProforma, int idEmisor)

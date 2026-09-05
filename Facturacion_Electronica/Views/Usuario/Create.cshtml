@@ -2,18 +2,22 @@
 @{
     ViewBag.Title = "Creacion de Nuevo Usuario";
 }
-
 <h2>Creaci&oacute;n de Nuevo Usuario</h2>
-<br />
-<a href='@Url.Action("Index", "Home")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Regresar</a>
-<br />
-<a href='@Url.Action("Login", "Login")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Iniciar Sesi&oacute;n</a>
+<div style="padding-left:20px">
+
+    <br />
+    <a href='@Url.Action("Index", "Home")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Regresar</a>
+    <br />
+    <br />
+    <a href='@Url.Action("Login", "Login")' style="color:#1982fc" class="icon-block"><i class="bi bi-arrow-left-short"></i>Iniciar Sesi&oacute;n</a>
+</div>
+
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
+    <div class="form-horizontal" style="padding-left:20px">
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">

@@ -131,7 +131,7 @@ function BuscarConsumidorFinal() {
                 $('#id-cliente').val(datos.identificacion);
                 $('#nombre-cliente').val(datos.nombre);
                 $('#direccion-cliente').val(datos.direccion);
-                $('#email-cliente').val(datos.email);
+                $('#email-cliente').val('hola@hola.com');
                 $('#celular-cliente').val(datos.celular);
             } else {
                 var check = document.getElementById("consumidor-final");
@@ -166,7 +166,8 @@ function BuscarCliente() {
                 $('#id-cliente').val(resultado.identificacion);
                 $('#nombre-cliente').val(resultado.nombre);
                 $('#direccion-cliente').val(resultado.direccion);
-                $('#email-cliente').val(resultado.email);
+                //$('#email-cliente').val(resultado.email);
+                $('#email-cliente').val('hola1');
                 $('#celular-cliente').val(resultado.celular);
             } else {
                 $('#btn-editar').attr('disabled', true);
@@ -331,7 +332,30 @@ function CargarAgregarProducto() {
     $.ajax({
         type: "GET",
         url: "/Factura/AgregarProducto/",
-        data: { },
+        data: { idFactura: $("#id-factura").val() },
+        contentType: "application/json; charset=utf-8",
+        dataType: "html",
+        success: function (response) {
+            $("#vistaAgregarProducto").html("");
+            $("#vistaAgregarProducto").html(response);
+            $("#agregarProducto").appendTo("body").modal("show");
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function CargarAgregarProductoMasivo() {
+    $("#vistaAgregarProducto").empty();
+    $.ajax({
+        type: "GET",
+        url: "/Factura/AgregarProductoMasivo/",
+        data: { idFactura: $("#id-factura").val() },
         contentType: "application/json; charset=utf-8",
         dataType: "html",
         success: function (response) {
@@ -369,15 +393,15 @@ function BuscarProducto() {
     });
 }
 
-function AgregarProducto(id) {
+function BuscarProductoMasivo() {
     $.ajax({
         type: "POST",
-        url: "/Factura/AgregarProductoFactura/",
+        url: "/Factura/AgregarProductoMasivo/",
         cache: false,
-        data: { id, idFactura: $("#id-factura").val()},
+        data: $("#frm-agregar-producto").serialize(),
         success: function (result) {
-            $("#agregarProducto").modal("hide");
-            location.reload(); 
+            $("#vistaAgregarProducto").html("");
+            $("#vistaAgregarProducto").html(result);
         },
         failure: function (response) {
             alert(response.responseText);
@@ -389,16 +413,80 @@ function AgregarProducto(id) {
     });
 }
 
-function ActualizarAdicionalDetalle(id, selectObject) {
-    var adiciona = selectObject.value;
-    if (adiciona !== null && adiciona !== undefined) {
+function AgregarProducto(id) {
+    $.ajax({
+        type: "POST",
+        url: "/Factura/AgregarProductoFactura/",
+        cache: false,
+        data: { id, idFactura: $("#id-factura").val()},
+        success: function (result) {
+            $("#agregarProducto").modal("hide");
+
+            if (result.detalleAgregado) {
+                location.reload();
+            } else {
+                swal(result.mensaje);
+            }
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function AgregarProductosMasivo() {
+    $.ajax({
+        type: "POST",
+        url: "/Factura/AgregarProductosMasivoFactura/",
+        cache: false,
+        data: $("#frm-agregar-producto").serialize(),
+        success: function (result) {
+            $("#agregarProducto").modal("hide");
+
+            if (result.detalleAgregado) {
+                location.reload();
+            } else {
+                swal(result.mensaje);
+            }
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function ActualizarDetalleFactura(id) {
+
+    var precio = $('#' + id + '-precio').val();
+    var qty = $('#' + id + '-qty').val();
+    var desc = $('#' + id + '-desc').val();
+    var adic = $('#' + id + '-adic').val();
+
+    if (Number(precio) >= 0 && Number(qty) >= 0 && Number(desc) >= 0) {
+        $(".loading").show();
         $.ajax({
             type: "POST",
-            url: "/Factura/ActualizarAdicionalDetalle/",
+            url: "/Factura/ActualizarDetalle/",
             cache: false,
-            data: { id, idFactura: $("#id-factura").val(), adicional: adiciona },
+            data: { id, idFactura: $("#id-factura").val(), nuevoPrecio: precio, nuevacantidad: qty, porcentajeDescuento: desc, adicional: adic },
             success: function (result) {
-                location.reload();
+                $(".loading").hide();
+
+                if (result.detalleActualizado) {
+                    location.reload();
+                } else {
+                    swal(result.mensaje);
+                }
+
+
             },
             failure: function (response) {
                 alert(response.responseText);
@@ -411,78 +499,106 @@ function ActualizarAdicionalDetalle(id, selectObject) {
     } else {
         location.reload();
     }
+}
+
+function ActualizarAdicionalDetalle(id, selectObject) {
+    return;
+    //var adiciona = selectObject.value;
+    //if (adiciona !== null && adiciona !== undefined) {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Factura/ActualizarAdicionalDetalle/",
+    //        cache: false,
+    //        data: { id, idFactura: $("#id-factura").val(), adicional: adiciona },
+    //        success: function (result) {
+    //            location.reload();
+    //        },
+    //        failure: function (response) {
+    //            alert(response.responseText);
+    //            alert("error ");
+    //        },
+    //        error: function (response) {
+    //            alert(response.responseText);
+    //        }
+    //    });
+    //} else {
+    //    location.reload();
+    //}
 }
 
 function ActualizarPrecioDetalle(id, selectObject) {
-    var precio = selectObject.value;
-    if (Number(precio) > 0) {
-        $.ajax({
-            type: "POST",
-            url: "/Factura/ActualizarPrecioDetalle/",
-            cache: false,
-            data: { id, idFactura: $("#id-factura").val(), nuevoPrecio: precio },
-            success: function (result) {
-                location.reload();
-            },
-            failure: function (response) {
-                alert(response.responseText);
-                alert("error ");
-            },
-            error: function (response) {
-                alert(response.responseText);
-            }
-        });
-    } else {
-        location.reload();
-    }
+    return;
+    //var precio = selectObject.value;
+    //if (Number(precio) > 0) {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Factura/ActualizarPrecioDetalle/",
+    //        cache: false,
+    //        data: { id, idFactura: $("#id-factura").val(), nuevoPrecio: precio },
+    //        success: function (result) {
+    //            location.reload();
+    //        },
+    //        failure: function (response) {
+    //            alert(response.responseText);
+    //            alert("error ");
+    //        },
+    //        error: function (response) {
+    //            alert(response.responseText);
+    //        }
+    //    });
+    //} else {
+    //    location.reload();
+    //}
 }
 
 function ActualizarCantidadDetalle(id, selectObject) {
-    var cantidad = selectObject.value;
-    if (Number(cantidad) > 0) {
-        $.ajax({
-            type: "POST",
-            url: "/Factura/ActualizarCantidadDetalle/",
-            cache: false,
-            data: { id, idFactura: $("#id-factura").val(), nuevaCantidad: cantidad },
-            success: function (result) {
-                location.reload();
-            },
-            failure: function (response) {
-                alert(response.responseText);
-                alert("error ");
-            },
-            error: function (response) {
-                alert(response.responseText);
-            }
-        });
-    } else {
-        location.reload();
-    }
+    return;
+    //var cantidad = selectObject.value;
+    //if (Number(cantidad) > 0) {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Factura/ActualizarCantidadDetalle/",
+    //        cache: false,
+    //        data: { id, idFactura: $("#id-factura").val(), nuevaCantidad: cantidad },
+    //        success: function (result) {
+    //            location.reload();
+    //        },
+    //        failure: function (response) {
+    //            alert(response.responseText);
+    //            alert("error ");
+    //        },
+    //        error: function (response) {
+    //            alert(response.responseText);
+    //        }
+    //    });
+    //} else {
+    //    location.reload();
+    //}
 }
 
 function ActualizarPorcentajeDescuentoDetalle(id, selectObject) {
-    var porcentaje = selectObject.value;
-    if (Number(porcentaje) >= 0) {
-        $.ajax({
-            type: "POST",
-            url: "/Factura/ActualizarPorcentajeDescuentoDetalle/",
-            cache: false,
-            data: { id, idFactura: $("#id-factura").val(), porcentaje: porcentaje },
-            success: function (result) {
-                location.reload();
-            },
-            failure: function (response) {
-                alert(response.responseText);
-                alert("error ");
-            },
-            error: function (response) {
-                alert(response.responseText);
-            }
-        });
-    } else {
-        location.reload();
-    }
+    return;
+    //var porcentaje = selectObject.value;
+    //if (Number(porcentaje) >= 0) {
+    //    $.ajax({
+    //        type: "POST",
+    //        url: "/Factura/ActualizarPorcentajeDescuentoDetalle/",
+    //        cache: false,
+    //        data: { id, idFactura: $("#id-factura").val(), porcentaje: porcentaje },
+    //        success: function (result) {
+    //            location.reload();
+    //        },
+    //        failure: function (response) {
+    //            alert(response.responseText);
+    //            alert("error ");
+    //        },
+    //        error: function (response) {
+    //            alert(response.responseText);
+    //        }
+    //    });
+    //} else {
+    //    location.reload();
+    //}
 }
 
 function EliminarDetalle(id) {
@@ -712,6 +828,97 @@ function GenerarComrprobante() {
                 swal(response.mensaje);
             }
 
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function RecalcularValores() {
+    $.ajax({
+        type: "POST",
+        url: "/Factura/RecualcularFactura/",
+        data: { idFactura: $("#id-factura").val() },
+        success: function (datos) {
+            location.reload();
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function Anular() {
+    $.ajax({
+        type: "POST",
+        url: "/Factura/AnularFactura/",
+        data: { idFactura: $("#id-factura").val() },
+        success: function (datos) {
+            location.reload();
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function CargarImportarDetalle() {
+    $("#vistaAgregarAdicional").empty();
+    $.ajax({
+        type: "GET",
+        url: "/Factura/ImportarDetalle/",
+        data: { id: $("#id-factura").val() },
+        contentType: "application/json; charset=utf-8",
+        dataType: "html",
+        success: function (response) {
+            $("#vistaImportarDetalle").html("");
+            $("#vistaImportarDetalle").html(response);
+            $("#importarDetalle").appendTo("body").modal("show");
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
+function ImportarDetalle() {
+
+    var formElement = document.getElementById("frm-importar-detalle");
+    var formData = new FormData(formElement);
+    console.log(formData instanceof FormData)
+
+    $.ajax({
+        type: "POST",
+        url: "/Factura/ImportarDetalle/",
+        cache: false,
+        data: formData,
+        processData: false, // CRITICAL: Prevents jQuery from trying to process the FormData object
+        contentType: false,
+        success: function (result) {
+            if (result.ingresoExitoso !== undefined && result.ingresoExitoso === true) {
+                $("#agregarAdicional").modal("hide");
+                location.reload();
+            } else {
+                $("#vistaAgregarAdicional").html("");
+                $("#vistaAgregarAdicional").html(result);
+            }
         },
         failure: function (response) {
             alert(response.responseText);

@@ -48,9 +48,15 @@ namespace Facturacion_Electronica.Models.Proforma
         public int IdProducto { get; set; }
         public ModeloProducto Producto { get; set; }
         public decimal PrecioUnitario { get; set; }
+        public decimal PrecioConImpuestos { get; set; }
+        public decimal IvaUnitario { get; set; }
+        public decimal IceUnitrario { get; set; }
+        public decimal IrbpnrUnitario { get; set; }
         public int Cantidad { get; set; }
         public string Adicional { get; set; }
         public decimal Descuento { get; set; }
+        public decimal ValorDescuento { get; set; }
+        public decimal ValorDescuentoUnitario { get; set; }
         public decimal Subtotal { get; set; }
         public decimal ValorIva { get; set; }
         public decimal ValorIce { get; set; }

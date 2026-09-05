@@ -31,13 +31,41 @@ namespace Facturacion_Electronica.Controllers
                 ViewBag.MensajeError = "Acceso Denegado";
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
             }
-            return View(new ModeloBuscarEmisor { Emisores = new List<Emisor>() });
+
+            Dictionary<int, string> estados = new Dictionary<int, string>
+            {
+                {  1, "ACTIVO" },
+                {  2, "INACTIVO" }
+            };
+
+            ViewBag.UsuariosActivos = db.Emisor.Count(x => x.estado == EnumEstadoUsuario.ACTIVO).ToString();
+            ViewBag.UsuariosInactivos = db.Emisor.Count(x => x.estado == EnumEstadoUsuario.INACTIVO).ToString();
+
+            ViewBag.estados = new SelectList(estados, "Key", "Value", 1);
+
+            var emisoresActivos = emisorBusiness.BuscarEmisores(new ModeloBuscarEmisor { 
+                BuscarPorEstadoUsuario = 1
+            });
+
+            return View(new ModeloBuscarEmisor { BuscarPorEstadoUsuario = 1, Emisores = emisoresActivos.OrderByDescending(x=>x.id).Take(10).ToList() });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(ModeloBuscarEmisor modelo)
         {
+
+            ViewBag.UsuariosActivos = db.Emisor.Count(x => x.estado == EnumEstadoUsuario.ACTIVO).ToString();
+            ViewBag.UsuariosInactivos = db.Emisor.Count(x => x.estado == EnumEstadoUsuario.INACTIVO).ToString();
+
+            Dictionary<int, string> estados = new Dictionary<int, string>
+            {
+                {  1, "ACTIVO" },
+                {  2, "INACTIVO" }
+            };
+
+            ViewBag.estados = new SelectList(estados, "Key", "Value", modelo.BuscarPorEstadoUsuario);
+
             var productos = emisorBusiness.BuscarEmisores(modelo);
             modelo.Emisores = productos;
             return View(modelo);
@@ -128,7 +156,7 @@ namespace Facturacion_Electronica.Controllers
             {
                 return RedirectToAction("Edit");
             }
-            ViewBag.ImpuestoIva = new SelectList(db.Porcentaje_impuesto_producto.Where(x => x.Id_impuesto == EnumImpuestoProducto.IVA || x.Id_impuesto == EnumImpuestoProducto.IVA_2024), "Id", "Descripcion", 2);
+            ViewBag.ImpuestoIva = new SelectList(db.Porcentaje_impuesto_producto.Where(x => x.Id_impuesto == EnumImpuestoProducto.IVA || x.Id_impuesto == EnumImpuestoProducto.IVA_2024), "Id", "Descripcion",  101);
             ViewBag.Tipo_ambiente = new SelectList(db.Tipo_ambientes, "id", "Descripcion_ambiente");
             return View();
         }
@@ -174,7 +202,8 @@ namespace Facturacion_Electronica.Controllers
 
                             emisorBusiness.GuardarEmisor(emisor, GetUsuarioLogeado().NombreUsuario);
                             TempData["accion"] = "crear";
-                            return RedirectToAction("Edit");
+
+                            return RedirectToAction("Create", "PuntoEmision");
 
 
                         }
@@ -239,7 +268,7 @@ namespace Facturacion_Electronica.Controllers
         // más información vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Exclude = "ContrasenaFirma")] ModeloEmisor emisor, HttpPostedFileBase logo, HttpPostedFileBase firma)
+        public ActionResult Edit(ModeloEmisor emisor, HttpPostedFileBase logo, HttpPostedFileBase firma)
         {
             if (ModelState.IsValid)
             {

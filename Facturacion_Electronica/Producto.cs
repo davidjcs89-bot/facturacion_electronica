@@ -23,6 +23,10 @@ namespace Facturacion_Electronica
             this.Detalle_nota_credito = new HashSet<Detalle_nota_credito>();
             this.Detalle_Proforma = new HashSet<Detalle_Proforma>();
             this.Detalles_guia_remision = new HashSet<Detalles_guia_remision>();
+            this.Ingresos_bodega_detalle = new HashSet<Ingresos_bodega_detalle>();
+            this.Productos_x_bodega = new HashSet<Productos_x_bodega>();
+            this.Detalle_Transferencia_Inventario = new HashSet<Detalle_Transferencia_Inventario>();
+            this.Detalle_pedido = new HashSet<Detalle_pedido>();
         }
     
         public int id { get; set; }
@@ -56,9 +60,17 @@ namespace Facturacion_Electronica
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Detalles_guia_remision> Detalles_guia_remision { get; set; }
         public virtual Emisor Emisor { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Ingresos_bodega_detalle> Ingresos_bodega_detalle { get; set; }
         public virtual Porcentaje_impuesto_producto Porcentaje_impuesto_producto { get; set; }
         public virtual Porcentaje_impuesto_producto Porcentaje_impuesto_producto1 { get; set; }
         public virtual Porcentaje_impuesto_producto Porcentaje_impuesto_producto2 { get; set; }
         public virtual Tipo_producto Tipo_producto1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Productos_x_bodega> Productos_x_bodega { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Detalle_Transferencia_Inventario> Detalle_Transferencia_Inventario { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Detalle_pedido> Detalle_pedido { get; set; }
     }
 }

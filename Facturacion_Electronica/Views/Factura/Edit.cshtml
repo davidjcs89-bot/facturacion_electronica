@@ -4,7 +4,16 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Facturación1</h2>
+
+@if (Model.EsMayorista)
+{
+    <h2> Facturación al por Mayor</h2>
+}
+else
+{
+    <h2> Facturación </h2>
+}
+
 @using (Html.BeginForm())
 {
     <div class="container">
@@ -68,9 +77,19 @@
     </div>
     <br />
     <div class="table-responsive" style="border-style: solid;">
-        <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
-            Agregar Nuevo Detalle
-        </button>
+        @if (!Model.EsMayorista)
+        {
+            <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
+                Agregar Nuevo Detalle
+            </button>
+        }
+        else
+        {
+            <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProductoMayorista()">
+                Agregar Nuevo Detalle
+            </button>
+        }
+
         <table class="table">
             <tr>
                 <th>

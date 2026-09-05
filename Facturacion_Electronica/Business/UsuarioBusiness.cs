@@ -73,6 +73,18 @@ namespace Facturacion_Electronica.Business
             }
         }
 
+        public bool validarEsAdmin(ModeloLogin modelo)
+        {
+            var usuario = _db.Usuario.Where(x => x.Nombre_usuario == modelo.Usuario).FirstOrDefault();
+            if (usuario == null)
+            {
+                return false;
+            }
+
+            return usuario.id_rol == EnumRolUsuario.ADMIN_SISTEMA;
+
+        }
+
         public bool ValidarEmisorHabilitado(ModeloLogin modelo)
         {
             var usuario = _db.Usuario.Where(x => x.Nombre_usuario == modelo.Usuario).FirstOrDefault();
@@ -81,6 +93,10 @@ namespace Facturacion_Electronica.Business
                 return false;
             }
 
+            if (usuario.Estado != 1)
+            {
+                return false;
+            }
 
             if (usuario.Emisor == null)
             {
@@ -93,6 +109,23 @@ namespace Facturacion_Electronica.Business
             }
 
             return habilitacion.fecha_desde <= DateTime.Now && habilitacion.fecha_hasta >= DateTime.Now;
+        }
+
+        public bool ValidarEmisorCreado(ModeloLogin modelo)
+        {
+            var usuario = _db.Usuario.Where(x => x.Nombre_usuario == modelo.Usuario).FirstOrDefault();
+            if (usuario == null)
+            {
+                return true;
+            }
+
+            if (usuario.Estado != 1)
+            {
+                return true;
+            }
+
+            return usuario.Emisor != null;
+
         }
 
         public void EnviarEmailInicioSesion(ModeloLogin modelo)
@@ -200,19 +233,23 @@ namespace Facturacion_Electronica.Business
         {
             if (modeloBuscar.BuscarTodos)
             {
-                return _db.Usuario.ToList();
+                return _db.Usuario.Where(x=>x.Estado != 3).OrderByDescending(x => x.id).ToList();
             }
             if (modeloBuscar.BuscarPorNombre != null && modeloBuscar.BuscarPorNombre.Trim().Length > 0)
             {
-                return _db.Usuario.Where(x => x.Nombre.ToUpper() == modeloBuscar.BuscarPorNombre.ToUpper()).ToList();
+                return _db.Usuario.Where(x => x.Nombre.ToUpper() == modeloBuscar.BuscarPorNombre.ToUpper() && x.Estado != 3).OrderByDescending(x => x.id).ToList();
             }
             if (modeloBuscar.BuscarPorApellido != null && modeloBuscar.BuscarPorApellido.Trim().Length > 0)
             {
-                return _db.Usuario.Where(x => x.Apellido.ToUpper() == modeloBuscar.BuscarPorApellido.ToUpper()).ToList();
+                return _db.Usuario.Where(x => x.Apellido.ToUpper() == modeloBuscar.BuscarPorApellido.ToUpper() && x.Estado != 3).OrderByDescending(x => x.id).ToList();
             }
             else if (modeloBuscar.BuscarPorEmail != null && modeloBuscar.BuscarPorEmail.Trim().Length > 0)
             {
-                return _db.Usuario.Where(x => x.Correo.ToUpper() == modeloBuscar.BuscarPorEmail.ToUpper()).ToList();
+                return _db.Usuario.Where(x => x.Correo.ToUpper() == modeloBuscar.BuscarPorEmail.ToUpper() && x.Estado != 3).OrderByDescending(x => x.id).ToList();
+            }
+            else if (modeloBuscar.BuscarPorEstado != 0)
+            {
+                return _db.Usuario.Where(x => x.Estado == modeloBuscar.BuscarPorEstado).OrderByDescending(x => x.id).ToList();
             }
             else
             {

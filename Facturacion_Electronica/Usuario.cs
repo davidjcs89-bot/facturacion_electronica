@@ -42,9 +42,9 @@ namespace Facturacion_Electronica
         public virtual Categoria_usuarios Categoria_usuarios { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<codigos_seguridad> codigos_seguridad { get; set; }
-        public virtual Emisor Emisor { get; set; }
-        public virtual Rol_Usuario Rol_Usuario { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Datos_Adicionales_Cliente> Datos_Adicionales_Cliente { get; set; }
+        public virtual Emisor Emisor { get; set; }
+        public virtual Rol_Usuario Rol_Usuario { get; set; }
     }
 }

@@ -484,11 +484,14 @@ namespace Facturacion_Electronica.Controllers
             }
 
             var documento = db.Documentos_Electronicos.Where(x => x.id_comprobante == id && x.id_tipo_comprobante == EnumTipoDocumento.RETENCION).OrderByDescending(x => x.id).Take(1).FirstOrDefault();
-            if (documento != null && documento.ride.Length > 0)
+            if (documento != null && documento.ride != null && documento.ride.Length > 0)
             {
                 return File(documento.ride, "application/pdf", nombreArchivo);
+            }else
+            {
+                return File(retencionBusiness.GenerarRide(retencion), nombreArchivo, "application/pdf");
             }
-            return File(new byte[0], nombreArchivo, "application/pdf");
+
         }
 
         public ActionResult DescargarXml(int id)

@@ -15,6 +15,9 @@ namespace Facturacion_Electronica.Models.Emisor
         [Display(Name = "Buscar por Email:")]
         public string BuscarPorEmail { get; set; }
         public List<Facturacion_Electronica.Emisor> Emisores { get; set; }
+        [Display(Name = "Buscar Todos:")]
         public bool BuscarTodos { get; set; }
+        [Display(Name = "Buscar por Estado:")]
+        public int BuscarPorEstadoUsuario { get; set; }
     }
 }

@@ -61,11 +61,17 @@ namespace Facturacion_Electronica
             bundles.Add(new ScriptBundle("~/bundles/FacturaJs").Include(
             "~/Scripts/Factura/Factura.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/PedidoJs").Include(
+            "~/Scripts/Pedido/Pedido.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/ProformaJs").Include(
             "~/Scripts/Proforma/Proforma.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/ClienteJs").Include(
             "~/Scripts/Cliente/Cliente.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/BodegaJs").Include(
+            "~/Scripts/Bodega/Bodega.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/TransportistaJs").Include(
             "~/Scripts/Transportista/Transportista.js"));
@@ -94,6 +100,15 @@ namespace Facturacion_Electronica
             bundles.Add(new ScriptBundle("~/bundles/ComprobantesJS").Include(
             "~/Scripts/Comprobantes/Comprobantes.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/IngresoBodegasJS").Include(
+            "~/Scripts/IngresoExistencias/IngresoExistencias.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/TransferenciaJs").Include(
+            "~/Scripts/Transferencia/Transferencia.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/ProductoJs").Include(
+            "~/Scripts/Producto/Producto.js"));
+
             bundles.Add(new ScriptBundle("~/bundles/GeneralJS").Include(
             "~/Scripts/General/AccionesGenerales.js"));
 
@@ -106,6 +121,9 @@ namespace Facturacion_Electronica
 
             bundles.Add(new StyleBundle("~/bundles/ProformaCSS").Include(
             "~/Content/Proforma/ProformaStyles.css"));
+
+            bundles.Add(new StyleBundle("~/bundles/ProductosCSS").Include(
+            "~/Content/Productos/ProductosStyles.css"));
 
 
             BundleTable.EnableOptimizations = true;

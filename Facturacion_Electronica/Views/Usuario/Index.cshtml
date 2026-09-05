@@ -1,4 +1,5 @@
-﻿@model Facturacion_Electronica.Models.Usuario.ModeloBuscarUsuario
+﻿@using Facturacion_Electronica.Business;
+@model Facturacion_Electronica.Models.Usuario.ModeloBuscarUsuario
 
 @{
     ViewBag.Title = "Usuarios";
@@ -6,6 +7,15 @@
 }
 
 <h2>Usuarios</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Usuarios Activos: @ViewBag.UsuariosActivos</h3>
+    </div>
+    <div class="col-md-6">
+        <h3>Usuarios Inactivos: @ViewBag.UsuariosInactivos</h3>
+    </div>
+</div>
 
 <br />
 @using (Html.BeginForm())
@@ -39,6 +49,13 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="control-label col-md-2">Buscar por Estado</label>
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.BuscarPorEstado, (IEnumerable<SelectListItem>)ViewBag.estados, null, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BuscarPorEstado, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="col-md-12">
                         <div class="row">
                             <div class="col-md-7">
@@ -66,8 +83,19 @@
     <div class="table-responsive">
         <table class="table">
             <tr>
+                <th></th>
+                <th>#</th>
                 <th>
                     Nombre Usuario
+                </th>
+                <th>
+                    Correo
+                </th>
+                <th>
+                    Número Telefonico
+                </th>
+                <th>
+                    Emisor
                 </th>
                 <th>
                     Nombre
@@ -76,19 +104,7 @@
                     Apellido
                 </th>
                 <th>
-                   Correo
-                </th>
-                <th>
-                    Número Telefonico
-                </th>
-                <th>
-                    Dirección
-                </th>
-                <th>
-                    Ciudad
-                </th>
-                <th>
-                    Provincia
+                    Estado
                 </th>
                 <th>
                     Fecha Creación
@@ -96,34 +112,32 @@
                 <th>
                     Fecha Modificación
                 </th>
-                <th>
-                    Estado
-                </th>
-                <th>
-                    Notificaciones
-                </th>
-                <th>
-                    Categoria
-                </th>
-                <th>
-                    Emisor
-                </th>
-                <th>
-                    Rol
-                </th>
+
             </tr>
+
+            @{
+                var indice = 1;
+            }
 
             @foreach (var item in Model.Usuarios)
             {
-                <tr>
+
+                var colorFila = "white";
+
+                if (item.Estado == 2)
+                {
+                    colorFila = "#faaa99";
+                }
+
+                <tr style="background-color:@colorFila">
+                    <td>
+                        <button type="button" id="editarUsuario" class="btn btn-info btn-editar" data-target="#editarProforma" onclick="window.open('@Url.Action("Edit", "Usuario", new { id = item.id, target = "_blank" })')">
+                            Editar
+                        </button>
+                    </td>
+                    <td>@indice</td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Nombre_usuario)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Nombre)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Apellido)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Correo)
@@ -131,15 +145,33 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Numero_telefono)
                     </td>
+
+                    @{
+                        var emisor = "No configurado";
+                        if (item.Emisor != null)
+                        {
+                            emisor = item.Emisor.Ruc + "<br/>" + item.Emisor.Nombre_comercial;
+                        }
+                    }
                     <td>
-                        @Html.DisplayFor(modelItem => item.Direccion_Dom_cuenta)
+                        @Html.Raw(emisor)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Ciudad)
+                        @Html.DisplayFor(modelItem => item.Nombre)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Provincia)
+                        @Html.DisplayFor(modelItem => item.Apellido)
                     </td>
+
+                    <td>
+                        @{
+                            var estadoDescr = item.Estado == (int)EnumEstadoUsuario.ACTIVO ? "ACTIVO" : "INACTIVO";
+                        }
+
+                        @Html.DisplayFor(modelItem => estadoDescr)
+                    </td>
+
+
                     <td>
                         @Html.DisplayFor(modelItem => item.Fecha_creacion)
                     </td>
@@ -147,33 +179,16 @@
                         @Html.DisplayFor(modelItem => item.Fecha_modificacion)
                     </td>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Estado)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Notificaciones)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Categoria_usuarios.Descripcion)
-                    </td>
-                    <td>
-                        @{
-                            var emisor = "No configurado";
-                            if (item.Emisor != null)
-                            {
-                                emisor = item.Emisor.Ruc + "<br/>" + item.Emisor.Nombre_comercial;
-                            }
-                        }
-                    <td>
-                        @Html.Raw(emisor)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Rol_Usuario.nombre)
-                    </td>
+
+
+
                 </tr>
-                            }
+
+                indice++;
+
+            }
 
         </table>
     </div>
 
-                            }
+}

@@ -1,0 +1,34 @@
+﻿@model Facturacion_Electronica.Models.Pedido.ModeloAbono
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AgregarAbono", "Pedido", null, FormMethod.Post, new { id = "frm-agregar-abono", autocomplete = "off" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        @Html.HiddenFor(modelo => modelo.IdPedido)
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.LabelFor(model => model.Monto, htmlAttributes: new { @class = "control-label" })
+                @Html.EditorFor(model => model.Monto, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Monto, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-12">
+                @Html.LabelFor(model => model.Descripcion, htmlAttributes: new { @class = "control-label" })
+                @Html.TextAreaFor(model => model.Descripcion, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="modal-footer" style="margin-top:15px">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="button" value="Agregar" class="btn btn-default" onclick="AgregarAbono();" />
+        </div>
+    </div>
+}
+

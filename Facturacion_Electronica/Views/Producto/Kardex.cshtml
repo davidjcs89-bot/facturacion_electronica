@@ -1,0 +1,80 @@
+﻿@model Facturacion_Electronica.Models.Producto.Kardex
+
+@{
+    ViewBag.Title = "Kardex Producto";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .form-control {
+        max-width:100%;
+    }
+</style>
+
+<h2>Kardex: @Model.producto.CodigoPrincipal - @Model.producto.Nombre</h2>
+<br />
+@using (Html.BeginForm("Kardex", "Producto", null, FormMethod.Post, new { id = "frm-busqueda" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.producto.Id)
+<div class="" style="border-style: solid;width:100%">
+
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <h4 class="mb-0">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Rango de Búsqueda
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="accordion-body collapse-in">
+                <div class="accordion-inner">
+                    <fieldset>
+
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Fecha Desde:</label>
+                                <div class="input-group date datePickerBasicDate col-md-3">
+                                    @Html.EditorFor(model => model.FechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.DateFrom, @type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-md-2">Fecha Hasta:</label>
+                                <div class="input-group date datePickerBasicDate col-md-3">
+                                    @Html.EditorFor(model => model.FechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.DateTo, @type = "text" } })
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-md-offset-2 col-md-10">
+                                    <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <br/>
+    <div class="table-responsive">
+        @Html.Raw(Model.KardexHtml)
+    </div>
+}
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+}
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")

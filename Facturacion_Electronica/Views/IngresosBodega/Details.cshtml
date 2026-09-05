@@ -1,0 +1,78 @@
+﻿@model Facturacion_Electronica.Models.Producto.ModeloIngresoExitencias
+
+@{
+    ViewBag.Title = "Ingreso de Existencias";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<br />
+<br />
+<div class="container">
+    <div class="col-md-12" style="border-style: solid;">
+        <fieldset>
+            <legend>Datos del Ingreso</legend>
+            <p>N&uacute;mero: <strong>@Model.Id</strong></p>
+            <p>Fecha de Ingreso: <strong>@Model.Fecha</strong></p>
+            <p>Bodega: <strong>@Model.Bodega</strong></p>
+        </fieldset>
+    </div>
+</div>
+<br />
+<div class="table-responsive" style="border-style: solid;">
+    <fieldset>
+        <legend>Detalle</legend>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        C&oacute;digo Producto
+                    </th>
+                    <th>
+                        Producto
+                    </th>
+                    <th>
+                        Cantidad
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.detalle)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.producto.CodigoPrincipal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.producto.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cantidad)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                        <strong>TOTAL</strong>
+                    </td>
+                    <td>
+                        @{
+                            var total = Model.detalle.Sum(x => x.Cantidad);
+                        }
+                        <strong>@total</strong>
+                    </td>
+
+                </tr>
+            </tfoot>
+        </table>
+    </fieldset>
+
+</div>
+<br />
+<p>
+    @Html.ActionLink("Regresar", "Index")
+</p>

@@ -12,6 +12,7 @@ using Facturacion_Electronica.Business;
 using Facturacion_Electronica.Models.Secuencias;
 using Facturacion_Electronica.Models.Usuario;
 using System.Web.Security;
+using System.Data.SqlClient;
 
 namespace Facturacion_Electronica.Controllers
 {
@@ -43,6 +44,21 @@ namespace Facturacion_Electronica.Controllers
                 ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
             }
+
+            ViewBag.Bodegas = new SelectList(db.Bodegas.Where(x=>x.id_emisor == idEmisor).ToList(), "id", "nombre");
+
+            if (TempData["accion"] != null)
+            {
+                if (TempData["accion"].ToString() == "crear")
+                {
+                    ViewBag.Mensaje = "Guardado Correctamente";
+                }
+                if (TempData["accion"].ToString() == "actualizar")
+                {
+                    ViewBag.Mensaje = "Actualizado Correctamente";
+                }
+            }
+
             return View(secucenciasBusiness.GenerarModeloNuevoPuntoEmision());
         }
 
@@ -54,6 +70,7 @@ namespace Facturacion_Electronica.Controllers
         public ActionResult Create(ModeloSecuenciacomprobante modelo)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
+            ViewBag.Bodegas = new SelectList(db.Bodegas.Where(x => x.id_emisor == idEmisor).ToList(), "id", "nombre",modelo.IdBodega);
             if (ModelState.IsValid)
             {
                 if(db.Puntos_emisior.Where(x=>x.Id_emisor == idEmisor && x.Numero_establecimiento == modelo.NumeroComprobante && x.Numero_emision == modelo.NumeroPuntoEmision).FirstOrDefault() == null)
@@ -77,6 +94,8 @@ namespace Facturacion_Electronica.Controllers
             {
                 return RedirectToAction("Ïndex");
             }
+
+            ViewBag.Bodegas = new SelectList(db.Bodegas.Where(x => x.id_emisor == idEmisor).ToList(), "id", "nombre", puntos_emisior.id_bodega);
             return View(secucenciasBusiness.ObtenerModeloPuntoEmision(id));
         }
 
@@ -88,6 +107,7 @@ namespace Facturacion_Electronica.Controllers
         public ActionResult Edit(ModeloSecuenciacomprobante modelo)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
+            ViewBag.Bodegas = new SelectList(db.Bodegas.Where(x => x.id_emisor == idEmisor).ToList(), "id", "nombre", modelo.IdBodega);
             if (ModelState.IsValid)
             {
                 if (db.Puntos_emisior.Where(x => x.Id_emisor == idEmisor && x.Numero_establecimiento == modelo.NumeroComprobante && x.Numero_emision == modelo.NumeroPuntoEmision && x.id != modelo.Id).FirstOrDefault() == null)
@@ -121,14 +141,23 @@ namespace Facturacion_Electronica.Controllers
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             Puntos_emisior puntos_emisior = await db.Puntos_emisior.FindAsync(id);
-            foreach(var secuencia in puntos_emisior.Secuencias.ToList())
-            {
-                db.Secuencias.Remove(secuencia);
-            }
 
-            db.Puntos_emisior.Remove(puntos_emisior);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
+            try
+            {
+                foreach (var secuencia in puntos_emisior.Secuencias.ToList())
+                {
+                    db.Secuencias.Remove(secuencia);
+                }
+
+                db.Puntos_emisior.Remove(puntos_emisior);
+                await db.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("id","No se puede eliminar este punto de emisión (posee comprobantes generados)");
+                return View("Delete",puntos_emisior);
+            }
         }
 
         protected override void Dispose(bool disposing)

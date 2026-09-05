@@ -199,7 +199,7 @@ function CambiarPuntoEmision() {
         data: { idRetencion: $("#id-retencion").val(), idPuntoEmision: $("#lista-punto-emision").val() },
         success: function (datos) {
             if (datos.actualizado === true) {
-                location.reload();
+                window.location.href = '/Retencion/Edit/' + $("#id-retencion").val();
             }
         },
         failure: function (response) {

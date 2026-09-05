@@ -17,6 +17,8 @@ namespace Facturacion_Electronica
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Clientes()
         {
+            this.Compra = new HashSet<Compra>();
+            this.Datos_Adicionales_Cliente = new HashSet<Datos_Adicionales_Cliente>();
             this.Factura = new HashSet<Factura>();
             this.Guia_remision_destinatario = new HashSet<Guia_remision_destinatario>();
             this.Liquidacion_Compra = new HashSet<Liquidacion_Compra>();
@@ -25,8 +27,8 @@ namespace Facturacion_Electronica
             this.Nota_debito = new HashSet<Nota_debito>();
             this.Proforma = new HashSet<Proforma>();
             this.Retencion = new HashSet<Retencion>();
-            this.Compra = new HashSet<Compra>();
-            this.Datos_Adicionales_Cliente = new HashSet<Datos_Adicionales_Cliente>();
+            this.Pedido = new HashSet<Pedido>();
+            this.Fichas_clientes = new HashSet<Fichas_clientes>();
         }
     
         public string nombre_cliente { get; set; }
@@ -41,10 +43,15 @@ namespace Facturacion_Electronica
         public int tipo_cliente { get; set; }
         public int id { get; set; }
         public int id_emisor { get; set; }
+        public string codigo { get; set; }
     
         public virtual Emisor Emisor { get; set; }
         public virtual Tipo_cliente Tipo_cliente1 { get; set; }
         public virtual Tipo_Identificacion Tipo_Identificacion1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Compra> Compra { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Datos_Adicionales_Cliente> Datos_Adicionales_Cliente { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Factura> Factura { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -62,8 +69,8 @@ namespace Facturacion_Electronica
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Retencion> Retencion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Compra> Compra { get; set; }
+        public virtual ICollection<Pedido> Pedido { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Datos_Adicionales_Cliente> Datos_Adicionales_Cliente { get; set; }
+        public virtual ICollection<Fichas_clientes> Fichas_clientes { get; set; }
     }
 }

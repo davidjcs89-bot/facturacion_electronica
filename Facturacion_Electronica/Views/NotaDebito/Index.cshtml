@@ -111,9 +111,36 @@
 
             @foreach (var item in Model.Notas)
             {
-                var colorFila = item.estado != 3 ? "#faaa99" : "white";
+                var colorFila = "";
+                var colorLetra = "black";
 
-                <tr style="background-color:@colorFila">
+                switch (item.estado)
+                {
+                    case 1:
+                        colorFila = "#faaa99";
+                        break;
+                    case 2:
+                        colorFila = "white";
+                        break;
+                    case 3:
+                        colorFila = "#f3130c";
+                        colorLetra = "white";
+                        break;
+                    case 4:
+                        colorFila = "white";
+                        break;
+                    case 5:
+                        colorFila = "white";
+                        break;
+                    case 6:
+                        colorFila = "white";
+                        break;
+                    case 7:
+                        colorFila = "white";
+                        break;
+                }
+
+                <tr style="background-color:@colorFila;color:@colorLetra">
                     @switch (item.estado)
                     {
                         case 1:

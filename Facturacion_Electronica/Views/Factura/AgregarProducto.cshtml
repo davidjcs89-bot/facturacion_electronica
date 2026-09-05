@@ -8,40 +8,41 @@
 {
 
     @Html.AntiForgeryToken()
-    <div class="container">
-        <fieldset>
-            <div class="form-horizontal">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(model => model.BuscarPorCodigo, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.BuscarPorCodigo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+<div class="container">
+    @Html.HiddenFor(modelo => modelo.IdFactura)
+    <fieldset>
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <div class="form-group">
+                @Html.LabelFor(model => model.BuscarPorCodigo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.BuscarPorCodigo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
 
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.BuscarPorEstilo, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.BuscarPorEstilo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
-
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.BuscarPorNombre, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.BuscarPorNombre, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
-                        <small style="font-style:italic">Ejm: Prod o Serv</small>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input id="btn-buscar" type="button" value="Buscar" class="btn btn-default" onclick="BuscarProducto()" />
-                    </div>
                 </div>
             </div>
-        </fieldset>
-    </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.BuscarPorEstilo, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.BuscarPorEstilo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.BuscarPorNombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.BuscarPorNombre, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+                    <small style="font-style:italic">Ejm: Prod o Serv</small>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input id="btn-buscar" type="button" value="Buscar" class="btn btn-default" onclick="BuscarProducto()" />
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
     <div class="table-responsive">
         <table class="table">
             <tr>
@@ -59,6 +60,9 @@
                     Precio
                 </th>
                 <th>
+                    Stock
+                </th>
+                <th>
                     %IVA
                 </th>
                 <th>
@@ -72,33 +76,36 @@
 
             @foreach (var item in Model.Productos)
             {
-                <tr>
-                    <td>
-                        <button type="button" class="btn btn-default" onclick="AgregarProducto(@item.id)">Seleccionar</button>
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Codigo)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Codigo_auxiliar)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Nombre)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Precio)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto2.Descripcion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto.Descripcion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto1.Descripcion)
-                    </td>
+        <tr>
+            <td>
+                <button type="button" class="btn btn-default" onclick="AgregarProducto(@item.id)">Seleccionar</button>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Codigo_auxiliar)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Precio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cantidad_producto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto2.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto1.Descripcion)
+            </td>
 
-                </tr>
+        </tr>
             }
 
         </table>

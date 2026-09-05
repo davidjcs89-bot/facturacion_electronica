@@ -15,6 +15,9 @@ using Facturacion_Electronica.Models.Producto;
 using System.IO;
 using ExcelDataReader;
 using System.Web.Hosting;
+using Facturacion_Electronica.Models.Factura;
+using System.Data.Entity.Core.Objects;
+using Newtonsoft.Json;
 
 namespace Facturacion_Electronica.Controllers
 {
@@ -41,7 +44,7 @@ namespace Facturacion_Electronica.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Index(ModeloBuscarProducto modelo)
         {
-            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor);
+            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor, 0);
             modelo.Productos = productos;
             return View(modelo);
         }
@@ -120,7 +123,7 @@ namespace Facturacion_Electronica.Controllers
                 }
 
                 productobusiness.CrearProducto(modeloProducto, idEmisor);
-                return RedirectToAction("Index");
+                return RedirectToAction("Edit", modeloProducto.Id);
             }
 
             return View(modeloProducto);
@@ -161,6 +164,7 @@ namespace Facturacion_Electronica.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(ModeloProducto modeloProducto, HttpPostedFileBase foto)
         {
+            bool actualizaImagen = false;
             var idEmisor = GetUsuarioLogeado().IdEmisor;
             ViewBag.FechaElavoracion = modeloProducto.FechaElavoracion.ToString("yyyy-MM-dd");
             ViewBag.FechaCaducidad = modeloProducto.FechaElavoracion.ToString("yyyy-MM-dd");
@@ -176,6 +180,7 @@ namespace Facturacion_Electronica.Controllers
                     if (db.Producto.Any(x => x.id_emisor == idEmisor && x.Codigo == modeloProducto.CodigoPrincipal && x.id != modeloProducto.Id))
                     {
                         ModelState.AddModelError("CodigoPrincipal", "Ya existe un producto con este código");
+                        modeloProducto = productobusiness.GenerarModeloProducto(modeloProducto.Id);
                         return View(modeloProducto);
                     }
                 }
@@ -190,31 +195,36 @@ namespace Facturacion_Electronica.Controllers
                                 using (var binaryReader = new BinaryReader(foto.InputStream))
                                 {
                                     modeloProducto.Imagen = binaryReader.ReadBytes(foto.ContentLength);
+                                    actualizaImagen = true;
                                 }
-
                             }
                             else
                             {
                                 ModelState.AddModelError("CodigoPrincipal", "Ya existe un producto con este código");
+                                modeloProducto = productobusiness.GenerarModeloProducto(modeloProducto.Id);
                                 return View(modeloProducto);
                             }
                         }
                         else
                         {
                             ModelState.AddModelError("Imagen", "El archivo de la imagen máxmio de 1MB");
+                            modeloProducto = productobusiness.GenerarModeloProducto(modeloProducto.Id);
                             return View(modeloProducto);
                         }
                     }
                     else
                     {
                         ModelState.AddModelError("Imagen", "El archivo de la imagen solo en formato jpg o png");
+                        modeloProducto = productobusiness.GenerarModeloProducto(modeloProducto.Id);
+                        return View(modeloProducto);
                     }
                 }
 
-                productobusiness.ActualizarProducto(modeloProducto);
-                return RedirectToAction("Index");
+                productobusiness.ActualizarProducto(modeloProducto, actualizaImagen);
+                return RedirectToAction("Edit",modeloProducto.Id);
             }
 
+            modeloProducto = productobusiness.GenerarModeloProducto(modeloProducto.Id);
             return View(modeloProducto);
         }
 
@@ -258,7 +268,7 @@ namespace Facturacion_Electronica.Controllers
         public FileResult DescargarPlantillaImportacion()
         {
             byte[] fileBytes = System.IO.File.ReadAllBytes(HostingEnvironment.MapPath("~/Adicionales/Plantilla.xlsx"));
-            string fileName = "Plantilla.xlsx";
+            string fileName = "1 Plantilla items sidoit.xlsx";
             return File(fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, fileName);
         }
 
@@ -273,7 +283,7 @@ namespace Facturacion_Electronica.Controllers
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
             }
 
-            var emisor = db.Emisor.FirstOrDefault(x=>x.id == idEmisor);
+            var emisor = db.Emisor.FirstOrDefault(x => x.id == idEmisor);
 
             if (emisor == null)
             {
@@ -326,9 +336,9 @@ namespace Facturacion_Electronica.Controllers
                                 return View();
                             }
 
-                            if (db.Producto.Any(x=>x.id_emisor == idEmisor && x.Codigo.Equals(codigo.ToString(), StringComparison.OrdinalIgnoreCase)))
+                            if (db.Producto.Any(x => x.id_emisor == idEmisor && x.Codigo.Equals(codigo.ToString(), StringComparison.OrdinalIgnoreCase)))
                             {
-                                ViewBag.Error = "Ya existe un producto con en código: "+codigo.ToString();
+                                ViewBag.Error = "Ya existe un producto con en código: " + codigo.ToString();
                                 return View();
                             }
 
@@ -354,7 +364,7 @@ namespace Facturacion_Electronica.Controllers
 
                             DateTime? fechaCaducidadDT;
 
-                            if (fechaCaducidad!=null)
+                            if (fechaCaducidad != null)
                             {
                                 fechaCaducidadDT = Convert.ToDateTime(fechaCaducidad);
                             }
@@ -376,13 +386,14 @@ namespace Facturacion_Electronica.Controllers
                             }
 
                             var tipoProdutoSt = 1;
-                            var tipoProductoDt = db.Tipo_producto.FirstOrDefault(x=>x.Descripcion.Equals(tipo.ToString(), StringComparison.OrdinalIgnoreCase));
+                            var tipoProductoDt = db.Tipo_producto.FirstOrDefault(x => x.Descripcion.Equals(tipo.ToString(), StringComparison.OrdinalIgnoreCase));
                             if (tipoProductoDt != null)
                             {
                                 tipoProdutoSt = tipoProductoDt.id;
                             }
 
-                            var producto = new Producto {
+                            var producto = new Producto
+                            {
                                 Codigo = codigo.ToString(),
                                 Codigo_auxiliar = codigoAuxiliar.ToString(),
                                 Nombre = nombre.ToString(),
@@ -406,12 +417,83 @@ namespace Facturacion_Electronica.Controllers
                     }
                     catch (Exception e)
                     {
-                        ViewBag.Error = "Los datos esta incorrectos<br/>"+e.Message;
+                        ViewBag.Error = "Los datos esta incorrectos<br/>" + e.Message;
                     }
 
                 }
             }
-                return View();
+
+            ViewBag.Correcto = "OK";
+
+            return View();
+        }
+
+        public ActionResult Kardex(string codigo)
+        {
+            string htmlKardex = "<h2>No posee movientos</h2>";
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            ViewBag.DateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = DateTime.Now.ToString("yyyy-MM-dd");
+
+            var producto = productobusiness.GenerarModeloProducto(codigo, idEmisor);
+
+            ObjectParameter res = new ObjectParameter("Report", typeof(string));
+            db.SP_Kardex_ultimas(producto.Id, DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd"), res);
+
+            var dataReport = JsonConvert.DeserializeObject<DataSet>(res.Value.ToString());
+
+            if (dataReport != null && dataReport.Tables[0].Rows.Count > 0)
+            {
+                htmlKardex = DataTableToHtml(dataReport.Tables[0]);
+            }
+
+            return View(new Kardex { producto= producto, KardexHtml = htmlKardex });
+        }
+
+        [HttpPost]
+        public ActionResult Kardex(Kardex modelo)
+        {
+            ObjectParameter res = new ObjectParameter("Report", typeof(string));
+            var producto = productobusiness.GenerarModeloProducto(modelo.producto.Id);
+
+            db.SP_Kardex_fechas(modelo.producto.Id, modelo.FechaDesde.ToString("yyyy-MM-dd"), modelo.FechaHasta.AddDays(1).ToString("yyyy-MM-dd"), res);
+
+            var dataReport = JsonConvert.DeserializeObject<DataSet>(res.Value.ToString());
+
+            if (dataReport != null && dataReport.Tables[0].Rows.Count >0)
+            {
+                modelo.KardexHtml = DataTableToHtml(dataReport.Tables[0]);
+            }
+            else
+            {
+                modelo.KardexHtml = "<h2>No existe datos de kardex entre las fechas consultadas</h2>";
+            }
+
+            ViewBag.DateFrom = modelo.FechaDesde.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = modelo.FechaHasta.ToString("yyyy-MM-dd");
+            modelo.producto = producto;
+            return View(modelo);
+        }
+
+        private String DataTableToHtml(DataTable table)
+        {
+            string html = "<table class=\"table\">";
+            //add header row
+            html += "<tr>";
+            for (int i = 0; i < table.Columns.Count; i++)
+                html += "<th>" + table.Columns[i].ColumnName.ToUpper() + "</th>";
+            html += "</tr>";
+            //add rows
+            for (int i = 0; i < table.Rows.Count; i++)
+            {
+                html += "<tr>";
+                for (int j = 0; j < table.Columns.Count; j++)
+                    html += "<td>" + table.Rows[i][j].ToString() + "</td>";
+                html += "</tr>";
+            }
+            html += "</table>";
+
+            return html;
         }
 
         protected override void Dispose(bool disposing)

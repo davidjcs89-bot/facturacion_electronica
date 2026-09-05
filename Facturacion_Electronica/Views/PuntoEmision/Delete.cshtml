@@ -1,27 +1,21 @@
 ﻿@model Facturacion_Electronica.Puntos_emisior
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Eliminar";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Delete</h2>
-
-<h3>Are you sure you want to delete this?</h3>
+<h3>Est&aacute;s seguro que deseas eliminar este Punto de Emisi&oacute;n?</h3>
 <div>
-    <h4>Puntos_emisior</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Id_emisor)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Id_emisor)
-        </dd>
+        @Html.ValidationMessageFor(model => model.id, "", new { @class = "text-danger" })
+
+        <hr />
 
         <dt>
-            @Html.DisplayNameFor(model => model.Numero_establecimiento)
+            N&uacute;mero de Establecimiento
         </dt>
 
         <dd>
@@ -29,7 +23,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Numero_emision)
+            N&uacute;mero de Emisi&oacute;n
         </dt>
 
         <dd>
@@ -37,7 +31,7 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Direccion)
+            Direcci&oacute;n
         </dt>
 
         <dd>
@@ -45,19 +39,25 @@
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Fecha_creacion)
+            Fecha de Creaci&oacute;n
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Fecha_creacion)
+            @{
+                string fechaCreacion = Model.Fecha_creacion.ToString("dd/MM/yyyy HH:mm");
+            }
+            @Html.DisplayFor(model => fechaCreacion)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Fecha_modificacion)
+            Fecha de Modificaci&oacute;n
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Fecha_modificacion)
+            @{
+                string fechaModificacion = Model.Fecha_modificacion.ToString("dd/MM/yyyy HH:mm");
+            }
+            @Html.DisplayFor(model => fechaModificacion)
         </dd>
 
     </dl>
@@ -66,8 +66,8 @@
         @Html.AntiForgeryToken()
 
         <div class="form-actions no-color">
-            <input type="submit" value="Delete" class="btn btn-default" /> |
-            @Html.ActionLink("Back to List", "Index")
+            <input type="submit" value="Eliminar" class="btn btn-default" /> |
+            @Html.ActionLink("Regresar", "Index")
         </div>
     }
 </div>

@@ -41,6 +41,15 @@
                 @Html.ValidationMessageFor(model => model.Direccion, "", new { @class = "text-danger" })
             </div>
         </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.IdBodega, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.IdBodega, (IEnumerable<SelectListItem>)ViewBag.Bodegas, null, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IdBodega, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
                 <thead>
@@ -86,3 +95,16 @@
 <div>
     @Html.ActionLink("Regresar a listado", "Index")
 </div>
+@section Styles {
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/SweetAlert")
+    @if (ViewBag.Mensaje != null)
+    {
+        <script type="text/javascript">
+            swal('@ViewBag.Mensaje');
+        </script>
+    }
+}

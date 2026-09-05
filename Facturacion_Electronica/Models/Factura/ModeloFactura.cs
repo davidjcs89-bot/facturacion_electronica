@@ -40,6 +40,8 @@ namespace Facturacion_Electronica.Models.Factura
         public decimal Propina { get; set; }
         public decimal Total { get; set; }
         public int Estado { get; set; }
+
+        public bool EsMayorista { get; set; }
         public bool PermiteEditarCliente { get; set; }
         public bool PermiteEditarDetalles { get; set; }
         public List<ModeloFacturaDetalle> Detalles { get; set; }
@@ -53,9 +55,15 @@ namespace Facturacion_Electronica.Models.Factura
         public int IdProducto { get; set; }
         public ModeloProducto Producto { get; set; }
         public decimal PrecioUnitario { get; set; }
+        public decimal PrecioConImpuestos { get; set; }
+        public decimal IvaUnitario { get; set; }
+        public decimal IceUnitrario { get; set; }
+        public decimal IrbpnrUnitario { get; set; }
         public int Cantidad { get; set; }
         public string Adicional { get; set; }
         public decimal Descuento { get; set; }
+        public decimal ValorDescuento { get; set; }
+        public decimal ValorDescuentoUnitario { get; set; }
         public decimal Subtotal { get; set; }
         public decimal ValorIva { get; set; }
         public decimal ValorIce { get; set; }

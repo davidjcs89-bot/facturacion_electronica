@@ -50,8 +50,8 @@ namespace Facturacion_Electronica
         public int Estado { get; set; }
         public Nullable<System.DateTime> fecha_autorizacion { get; set; }
         public bool desde_proforma { get; set; }
+        public bool es_mayorista { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Datos_Adicionales_Factura> Datos_Adicionales_Factura { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -64,5 +64,6 @@ namespace Facturacion_Electronica
         public virtual ICollection<Nota_credito> Nota_credito { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Nota_debito> Nota_debito { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

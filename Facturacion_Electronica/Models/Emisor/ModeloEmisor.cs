@@ -12,7 +12,7 @@ namespace Facturacion_Electronica.Models.Emisor
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Dato requerido.")]
-        [RegularExpression(@"^[0-9]{13}$", ErrorMessage = "Nota importante: permitidos solo numeros")]
+        [RegularExpression(@"^[0-9]{13}$", ErrorMessage = "El número de RUC debe contener 13 caracteres numéricos")]
         [Display(Name = "Numero de RUC:")]
         public string Ruc { get; set; }
 
@@ -64,6 +64,8 @@ namespace Facturacion_Electronica.Models.Emisor
 
         [Display(Name = "Adicionales en Comprobantes")]
         public string Adicionales { get; set; }
+        [Display(Name = "Facturar Bajo Control de Inventario")]
+        public bool ControlInventario { get; set; }
     }
 
     public class ModeloEmisorConfigAdmin

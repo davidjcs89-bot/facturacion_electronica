@@ -1,11 +1,22 @@
-﻿@model Facturacion_Electronica.Models.Emisor.ModeloBuscarEmisor
+﻿@using Facturacion_Electronica.Business;
+@model Facturacion_Electronica.Models.Emisor.ModeloBuscarEmisor
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
 <h2>Emisores Registrados</h2>
-<br/>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Emisores Activos: @ViewBag.UsuariosActivos</h3>
+    </div>
+    <div class="col-md-6">
+        <h3>Emisores Inactivos: @ViewBag.UsuariosInactivos</h3>
+    </div>
+</div>
+
+<br />
 @using (Html.BeginForm())
 {
 
@@ -32,6 +43,13 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="control-label col-md-2">Buscar por Estado</label>
+                    <div class="col-md-10">
+                        @Html.DropDownListFor(model => model.BuscarPorEstadoUsuario, (IEnumerable<SelectListItem>)ViewBag.estados, null, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BuscarPorEstadoUsuario, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
                     <div class="col-md-12">
                         <div class="row">
                             <div class="col-md-7">
@@ -44,8 +62,6 @@
 
                             </div>
                         </div>
-
-
                     </div>
                 </div>
                 <div class="form-group">
@@ -59,55 +75,88 @@
     <div class="table-responsive">
         <table class="table">
             <tr>
+                <th></th>
+                <th>#</th>
+                <th>
+                    RUC
+                </th>
+                <th>
+                    Habilitado hasta 
+                </th>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Razón Social
+                </th>
+                <th>
+                    Estado
+                </th>
                 <th>
                     Fecha Creacion
                 </th>
                 <th>
                     Fecha Modificacion
                 </th>
-                <th>
-                    Razón Social
-                </th>
-                <th>
-                    RUC
-                </th>
-                <th>
-                    Email
-                </th>
                 <th></th>
             </tr>
 
+            @{
+                var indice = 1;
+            }
+
             @foreach (var item in Model.Emisores)
             {
-                <tr>
-                    <td>
-                        @Convert.ToDateTime(item.Fecha_creacion).ToString("dd/MM/yyyy")
-                    </td>
-                    <td>
-                        @Convert.ToDateTime(item.fecha_modificacion).ToString("dd/MM/yyyy")
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Razon_social)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Ruc)
-                    </td>
-                    @if (item.Usuario.Any())
-                    {
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Usuario.FirstOrDefault().Correo)
-                        </td>
-                    }
-                    else
-                    {
-                        <td></td>
-                    }
-                    <td>
-                        <button type="button" id="editarEmisor" class="btn btn-info btn-editar" data-target="#editarEmisor" onclick="location.href='/Emisor/Configurar/@item.id'">
-                            Editar
-                        </button>
-                    </td>
-                </tr>
+                var colorFila = "white";
+
+                if (item.estado == 2)
+                {
+                    colorFila = "#faaa99";
+                }
+
+        <tr style="background-color:@colorFila">
+            <td>
+                <button type="button" id="editarEmisor" class="btn btn-info btn-editar" data-target="#editarProforma" onclick="window.open('@Url.Action("Configurar", "Emisor", new { id = item.id, target = "_blank" })')">
+                    Editar
+                </button>
+            </td>
+
+            <td>@indice</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ruc)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Emisor_habilitacion.fecha_hasta)
+            </td>
+            @if (item.Usuario.Any())
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.Usuario.FirstOrDefault().Correo)
+                </td>
+            }
+            else
+            {
+                <td></td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.Razon_social)
+            </td>
+            <td>
+                @{
+                    var estadoDescr = item.estado == (int)EnumEstadoUsuario.ACTIVO ? "ACTIVO" : "INACTIVO";
+                }
+
+                @Html.DisplayFor(modelItem => estadoDescr)
+            </td>
+            <td>
+                @Convert.ToDateTime(item.Fecha_creacion).ToString("dd/MM/yyyy")
+            </td>
+            <td>
+                @Convert.ToDateTime(item.fecha_modificacion).ToString("dd/MM/yyyy")
+            </td>
+
+        </tr>
+                indice++;
             }
 
         </table>

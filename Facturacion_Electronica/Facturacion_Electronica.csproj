@@ -69,6 +69,9 @@
     <Reference Include="BouncyCastle.Crypto, Version=1.8.6.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
       <HintPath>..\packages\BouncyCastle.1.8.6.1\lib\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
+    <Reference Include="ClosedXML, Version=0.102.2.0, Culture=neutral, PublicKeyToken=fd1eb21b62ae805b, processorArchitecture=MSIL">
+      <HintPath>..\packages\ClosedXML.0.102.2\lib\netstandard2.0\ClosedXML.dll</HintPath>
+    </Reference>
     <Reference Include="commons-codec-1.2, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Business\FirmaDigital\Dll Libraries\commons-codec-1.2.dll</HintPath>
@@ -85,6 +88,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Business\FirmaDigital\Dll Libraries\commons-logging-1.1.1.dll</HintPath>
     </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.16.0.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.16.0\lib\net46\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml.Framework, Version=3.0.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.Framework.3.0.2\lib\net46\DocumentFormat.OpenXml.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -93,6 +102,9 @@
     </Reference>
     <Reference Include="ExcelDataReader, Version=3.6.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
       <HintPath>..\packages\ExcelDataReader.3.6.0\lib\net45\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelNumberFormat, Version=1.1.0.0, Culture=neutral, PublicKeyToken=23c6f5d73be07eca, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelNumberFormat.1.1.0\lib\net20\ExcelNumberFormat.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.Beans, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -190,6 +202,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Business\FirmaDigital\Dll Libraries\IKVM.Runtime.JNI.dll</HintPath>
     </Reference>
+    <Reference Include="Irony, Version=1.0.11.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
+      <HintPath>..\packages\Irony.NetCore.1.0.11\lib\net461\Irony.dll</HintPath>
+    </Reference>
     <Reference Include="itextsharp, Version=5.5.13.2, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\iTextSharp.5.5.13.2\lib\itextsharp.dll</HintPath>
     </Reference>
@@ -241,32 +256,79 @@
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
+      <HintPath>..\packages\SixLabors.Fonts.1.0.0\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.4.7.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Packaging, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IO.Packaging.6.0.0\lib\net461\System.IO.Packaging.dll</HintPath>
+    </Reference>
     <Reference Include="System.Linq.Dynamic.Core, Version=1.1.5.0, Culture=neutral, PublicKeyToken=0f07ec44de6ac832, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Linq.Dynamic.Core.1.1.5\lib\net46\System.Linq.Dynamic.Core.dll</HintPath>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.4\lib\net46\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.0\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Text.RegularExpressions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.RegularExpressions.4.3.1\lib\net463\System.Text.RegularExpressions.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -300,23 +362,34 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
-    <Reference Include="System.Net.Http">
-    </Reference>
     <Reference Include="System.Net.Http.WebRequest">
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="XLParser, Version=1.5.2.0, Culture=neutral, PublicKeyToken=63397e1e46bb91b4, processorArchitecture=MSIL">
+      <HintPath>..\packages\XLParser.1.5.2\lib\net461\XLParser.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abonos_Pedido.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Atributos_adicionales_producto.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
+    <Compile Include="Atributos_fichas_clientes.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
     <Compile Include="Avisos.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Bodegas.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Business\CaptchaHttpClient.cs" />
@@ -329,6 +402,7 @@
     <Compile Include="Business\EmisorBusiness.cs" />
     <Compile Include="Business\EnumDatosGenerales.cs" />
     <Compile Include="Business\EnumEstadosComprobante.cs" />
+    <Compile Include="Business\EnumEstadoUsuario.cs" />
     <Compile Include="Business\EnumImpuestoProducto.cs" />
     <Compile Include="Business\EnumIvaProducto.cs" />
     <Compile Include="Business\EnumRolUsuario.cs" />
@@ -347,6 +421,7 @@
     <Compile Include="Business\LiquidacionCompraBusiness.cs" />
     <Compile Include="Business\NotaCreditoBusiness.cs" />
     <Compile Include="Business\NotaDebitoBusiness.cs" />
+    <Compile Include="Business\PedidoBusiness.cs" />
     <Compile Include="Business\Productobusiness.cs" />
     <Compile Include="Business\ProformaBusiness.cs" />
     <Compile Include="Business\ReCapchaBusiness.cs" />
@@ -373,7 +448,9 @@
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AtributosFichasClientesController.cs" />
     <Compile Include="Controllers\AvisoController.cs" />
+    <Compile Include="Controllers\BodegaController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\CompraController.cs" />
     <Compile Include="Controllers\CuentaCorreoController.cs" />
@@ -382,14 +459,17 @@
     <Compile Include="Controllers\FallidosController.cs" />
     <Compile Include="Controllers\GuiaRemisionController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\IngresosBodegaController.cs" />
     <Compile Include="Controllers\LiquidacionCompraController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\NotaCreditoController.cs" />
     <Compile Include="Controllers\NotaDebitoController.cs" />
+    <Compile Include="Controllers\PedidoController.cs" />
     <Compile Include="Controllers\ProductoController.cs" />
     <Compile Include="Controllers\ProformaController.cs" />
     <Compile Include="Controllers\PuntoEmisionController.cs" />
     <Compile Include="Controllers\RetencionController.cs" />
+    <Compile Include="Controllers\TransferenciaInventarioController.cs" />
     <Compile Include="Controllers\TransportistaController.cs" />
     <Compile Include="Controllers\UsuarioController.cs" />
     <Compile Include="Cuentas_correo.cs">
@@ -443,10 +523,16 @@
     <Compile Include="Detalle_pago_nota_debito.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
+    <Compile Include="Detalle_pedido.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
     <Compile Include="Detalle_Proforma.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Detalle_retencion.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Detalle_Transferencia_Inventario.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Documentos_Electronicos.cs">
@@ -459,6 +545,9 @@
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Factura.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Fichas_clientes.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Formas_de_Pago.cs">
@@ -491,6 +580,12 @@
     <Compile Include="Impuesto_porcentaje_retencion.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
+    <Compile Include="Ingresos_bodega.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Ingresos_bodega_detalle.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
     <Compile Include="Liquidacion_Compra.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
@@ -512,6 +607,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ModeloFacturacion.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Cliente\ModeloFichaCliente.cs" />
+    <Compile Include="Models\Compra\ModeloBuscarCompra.cs" />
+    <Compile Include="Models\ModeloBodega.cs" />
     <Compile Include="Models\Cliente\DatosAdicionalesCliente.cs" />
     <Compile Include="Models\Cliente\ModelClienteSeleccionado.cs" />
     <Compile Include="Models\Cliente\ModeloBuscarClientes.cs" />
@@ -525,6 +623,7 @@
     <Compile Include="Models\Factura\ModeloBuscarProducto.cs" />
     <Compile Include="Models\Factura\ModeloFactura.cs" />
     <Compile Include="Models\Factura\ModeloImpresionFactura.cs" />
+    <Compile Include="Models\Factura\ModeloReporte.cs" />
     <Compile Include="Models\GuiaRemision\ModeloBuscarGuiaRemision.cs" />
     <Compile Include="Models\GuiaRemision\ModeloGuiaRemision.cs" />
     <Compile Include="Controllers\ImpresionController.cs" />
@@ -541,16 +640,24 @@
     <Compile Include="Models\NotaDebito\ModeloBuscarNotaDebito.cs" />
     <Compile Include="Models\NotaDebito\ModeloImpresionNotaDebito.cs" />
     <Compile Include="Models\NotaDebito\ModeloNotaDebito.cs" />
+    <Compile Include="Models\Pedido\ModeloBuscarPedido.cs" />
+    <Compile Include="Models\Pedido\ModeloPedido.cs" />
+    <Compile Include="Models\Producto\Kardex.cs" />
     <Compile Include="Models\Producto\ModeloBuscarProducto.cs" />
+    <Compile Include="Models\Producto\ModeloDetalleIngresoExistencias.cs" />
     <Compile Include="Models\Producto\ModeloImportarProducto.cs" />
+    <Compile Include="Models\Producto\ModeloIngresoExitencias.cs" />
     <Compile Include="Models\Producto\ModeloProducto.cs" />
     <Compile Include="Models\Proforma\ModeloBuscarProforma.cs" />
+    <Compile Include="Models\Proforma\ModeloImpresionProforma.cs" />
     <Compile Include="Models\Proforma\ModeloProforma.cs" />
     <Compile Include="Models\Retencion\ModeloBuscarRetencion.cs" />
     <Compile Include="Models\Retencion\ModeloImpresionRetencion.cs" />
     <Compile Include="Models\Retencion\ModeloRetencion.cs" />
     <Compile Include="Models\Secuencias\ModeloSecuencia.cs" />
     <Compile Include="Models\Secuencias\ModeloSecuenciacomprobante.cs" />
+    <Compile Include="Models\Transferencias\EstadoTransferencia.cs" />
+    <Compile Include="Models\Transferencias\ModeloTransferencia.cs" />
     <Compile Include="Models\Transportista\ModeloBuscarTransportista.cs" />
     <Compile Include="Models\Transportista\ModeloTransportista.cs" />
     <Compile Include="Models\Usuario\ModeloBuscarUsuario.cs" />
@@ -564,10 +671,16 @@
     <Compile Include="Nota_debito.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
+    <Compile Include="Pedido.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
     <Compile Include="Porcentaje_impuesto_producto.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Productos_x_bodega.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Proforma.cs">
@@ -608,6 +721,9 @@
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Tipo_producto.cs">
+      <DependentUpon>ModeloFacturacion.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Transferencia_Inventario.cs">
       <DependentUpon>ModeloFacturacion.tt</DependentUpon>
     </Compile>
     <Compile Include="Transportistas.cs">
@@ -683,12 +799,15 @@
     <Content Include="Content\fonts\fontawesome\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\Home\HomeStyles.css" />
     <Content Include="Content\Imagenes\arrow-back.svg" />
+    <Content Include="Content\Imagenes\content-bg.png" />
     <Content Include="Content\Imagenes\favicon-si-do-it-64px.png" />
     <Content Include="Content\Imagenes\invoice-banner.svg" />
     <Content Include="Content\Imagenes\i_sidoit.png" />
+    <Content Include="Content\Imagenes\loading-image.gif" />
     <Content Include="Content\Imagenes\logo.png" />
     <Content Include="Content\Imagenes\warning-icon.svg" />
     <Content Include="Content\Login\LoginStyles.css" />
+    <Content Include="Content\Productos\ProductosStyles.css" />
     <Content Include="Content\Proforma\ProformaStyles.css" />
     <Content Include="Content\Usuario.css" />
     <Content Include="DocumentosElectronicos\ComprobanteFirmado.xml" />
@@ -728,7 +847,9 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Adicionales\PlantillaClientes.xls" />
+    <Content Include="Adicionales\PlantillaInventario.xlsx" />
     <None Include="packages.config" />
+    <Content Include="Scripts\Bodega\Bodega.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\Cliente\Cliente.js" />
@@ -744,6 +865,7 @@
     <Content Include="Scripts\Impresion\Impresion.js" />
     <None Include="Properties\PublishProfiles\comprobantes-electronicos - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
+    <Content Include="Scripts\IngresoExistencias\IngresoExistencias.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
     <Content Include="Scripts\jquery-3.4.1.slim.js" />
@@ -758,10 +880,13 @@
     <Content Include="Scripts\moment\min\moment-with-locales.min.js" />
     <Content Include="Scripts\NotaCredito\NotaCredito.js" />
     <Content Include="Scripts\NotaDebito\NotaDebito.js" />
+    <Content Include="Scripts\Pedido\Pedido.js" />
+    <Content Include="Scripts\Producto\Producto.js" />
     <Content Include="Scripts\Proforma\Proforma.js" />
     <Content Include="Scripts\Retencion\Retencion.js" />
     <Content Include="Scripts\sweetalert\dist\sweetalert.css" />
     <Content Include="Scripts\sweetalert\dist\sweetalert.min.js" />
+    <Content Include="Scripts\Transferencia\Transferencia.js" />
     <Content Include="Scripts\Transportista\Transportista.js" />
     <Content Include="Scripts\Usuario\Usuario.js" />
     <Content Include="Web.config">
@@ -869,7 +994,6 @@
     <Content Include="Views\Usuario\Index.cshtml" />
     <Content Include="Views\CuentaCorreo\Details.cshtml" />
     <Content Include="Views\Fallidos\Comprobantes.cshtml" />
-    <Content Include="Views\Compra\Index.cshtml" />
     <Content Include="Views\Compra\Create.cshtml" />
     <Content Include="Views\Cliente\Notas.cshtml" />
     <Content Include="Views\Cliente\CreateNota.cshtml" />
@@ -881,6 +1005,42 @@
     <Content Include="Views\Aviso\Delete.cshtml" />
     <Content Include="Views\Aviso\Edit.cshtml" />
     <Content Include="Views\Aviso\Index.cshtml" />
+    <Content Include="Views\Factura\ReporteExcel.cshtml" />
+    <Content Include="Views\Proforma\PreImpresion.cshtml" />
+    <Content Include="Views\Proforma\Impresion.cshtml" />
+    <Content Include="Views\Bodega\Create.cshtml" />
+    <Content Include="Views\Bodega\Delete.cshtml" />
+    <Content Include="Views\Bodega\Details.cshtml" />
+    <Content Include="Views\Bodega\Edit.cshtml" />
+    <Content Include="Views\Bodega\Index.cshtml" />
+    <Content Include="Views\IngresosBodega\Create.cshtml" />
+    <Content Include="Views\IngresosBodega\Delete.cshtml" />
+    <Content Include="Views\IngresosBodega\Details.cshtml" />
+    <Content Include="Views\IngresosBodega\Edit.cshtml" />
+    <Content Include="Views\IngresosBodega\Index.cshtml" />
+    <Content Include="Views\TransferenciaInventario\Create.cshtml" />
+    <Content Include="Views\TransferenciaInventario\Delete.cshtml" />
+    <Content Include="Views\TransferenciaInventario\Details.cshtml" />
+    <Content Include="Views\TransferenciaInventario\Edit.cshtml" />
+    <Content Include="Views\TransferenciaInventario\Index.cshtml" />
+    <Content Include="Views\TransferenciaInventario\AgregarProducto.cshtml" />
+    <Content Include="Views\Factura\AgregarProductoMasivo.cshtml" />
+    <Content Include="Views\Producto\Kardex.cshtml" />
+    <Content Include="Views\Bodega\Existencias.cshtml" />
+    <Content Include="Views\Compra\ImportarXML.cshtml" />
+    <Content Include="Views\Compra\Index.cshtml" />
+    <Content Include="Views\Compra\Details.cshtml" />
+    <Content Include="Views\Pedido\Index.cshtml" />
+    <Content Include="Views\Pedido\Create.cshtml" />
+    <Content Include="Views\Pedido\AgregarProducto.cshtml" />
+    <Content Include="Views\Pedido\AgregarAbono.cshtml" />
+    <Content Include="Views\Pedido\View.cshtml" />
+    <Content Include="Views\Factura\ImportarDetalle.cshtml" />
+    <Content Include="Views\AtributosFichasClientes\Create.cshtml" />
+    <Content Include="Views\AtributosFichasClientes\Delete.cshtml" />
+    <Content Include="Views\AtributosFichasClientes\Edit.cshtml" />
+    <Content Include="Views\AtributosFichasClientes\Index.cshtml" />
+    <Content Include="Views\Cliente\Ficha.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

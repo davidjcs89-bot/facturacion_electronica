@@ -15,6 +15,7 @@ namespace Facturacion_Electronica.Models.Compra
         [XmlElement("infoFactura")]
         public InformacionFacturaXml Factura { get; set; }
 
+        public int idBodega { get; set; }
 
         [XmlArray("detalles")]
         public List<DetalleCompraXml> Detalles { get; set; }
@@ -108,8 +109,10 @@ namespace Facturacion_Electronica.Models.Compra
         [XmlElement("cantidad")]
         public decimal Cantidad { get; set; }
 
+        public decimal PrecioVenta { get; set; }
+
         [XmlElement("precioUnitario")]
-        public decimal Precio { get; set; }
+        public decimal PrecioCompra { get; set; }
 
         [XmlElement("descuento")]
         public decimal Descuento { get; set; }

@@ -1,0 +1,79 @@
+﻿@model IEnumerable<Facturacion_Electronica.Transferencia_Inventario>
+@using Facturacion_Electronica.Models.Transferencias;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Transferencias entre Bodegas</h2>
+
+<p>
+    <button type="button" id="nuevoCliente" class="btn btn-success" data-target="#editarCliete" onclick="location.href='TransferenciaInventario/Create'">
+        Nueva Transferencia
+    </button>
+</p>
+<br />
+<table class="table">
+    <tr>
+        <th>
+            Nro.
+        </th>
+        <th>
+            Bodega Origen
+        </th>
+        <th>
+            Bodega Destino
+        </th>
+        <th>
+            Fecha de Creaci&oacute;n
+        </th>
+        <th>
+            Estado
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bodegas.nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bodegas1.nombre)
+            </td>
+            <td>
+                @{
+                    var fechaCreacion = item.fecha_creacion.ToString("dd/MM/yyyy HH:mm");
+                }
+                @Html.DisplayFor(modelItem => fechaCreacion)
+            </td>
+            <td>
+                @{
+                    if (item.estado == (int)EstadoTransferencia.PENDIENTE)
+                    {
+                        <p>PENDIENTE</p>
+                    }
+                    if (item.estado == (int)EstadoTransferencia.FINALIZADO)
+                    {
+                        <p>FINALIZADO</p>
+                    }
+                    if (item.estado == (int)EstadoTransferencia.ANULADO)
+                    {
+                        <p>ANULADO</p>
+                    }
+                }
+            </td>
+            <td>
+                <button type="button" id="editarPuntoEmision" class="btn btn-info btn-editar" data-target="#editar" onclick="location.href='/TransferenciaInventario/Edit/@item.id'">
+                    Editar
+                </button>
+            </td>
+        </tr>
+    }
+
+</table>

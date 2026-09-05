@@ -674,6 +674,8 @@ namespace Facturacion_Electronica.Business
                 new Chunk(retencion.Clientes.correo??"SIN CORREO", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 10))
             };
             cellCustomer2.AddElement(clienteCorreo);
+            tableCustomer.AddCell(cellCustomer2);
+
             doc.Add(tableCustomer);
 
             var tableDetails = new PdfPTable(9);

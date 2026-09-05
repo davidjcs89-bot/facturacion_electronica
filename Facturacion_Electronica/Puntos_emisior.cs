@@ -24,6 +24,7 @@ namespace Facturacion_Electronica
             this.Nota_debito = new HashSet<Nota_debito>();
             this.Retencion = new HashSet<Retencion>();
             this.Secuencias = new HashSet<Secuencias>();
+            this.Pedido = new HashSet<Pedido>();
         }
     
         public int id { get; set; }
@@ -33,7 +34,9 @@ namespace Facturacion_Electronica
         public string Direccion { get; set; }
         public System.DateTime Fecha_creacion { get; set; }
         public System.DateTime Fecha_modificacion { get; set; }
+        public int id_bodega { get; set; }
     
+        public virtual Bodegas Bodegas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Factura> Factura { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -48,5 +51,7 @@ namespace Facturacion_Electronica
         public virtual ICollection<Retencion> Retencion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Secuencias> Secuencias { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Pedido> Pedido { get; set; }
     }
 }

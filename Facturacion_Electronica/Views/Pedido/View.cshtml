@@ -1,0 +1,254 @@
+﻿@model Facturacion_Electronica.Models.Pedido.ModeloPedido
+@{
+    ViewBag.Title = "Pedido";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Pedido</h2>
+
+@if (Model.Estado != 8)
+{
+    <button type="button" id="anula" class="btn btn-danger" data-target="#anula" onclick="AnularPedido()" style="margin-top:15px">
+        Anular
+    </button>
+}
+
+<div class="container">
+    @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-pedido" })
+    <div class="row">
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <div style="text-align:center">
+                        @if (Model.Emisor.LogoRelativoPath != null)
+                        {
+                            <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                        }
+                    </div>
+
+                    <legend>Datos del Emisor</legend>
+                    <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                    <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                    <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                    <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                    <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                    @if (Model.Emisor.ContirbuyenteEspecial)
+                    {
+                        <p>Contribuyente Especial: <strong>SI</strong></p>
+                        <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                    }
+                    else
+                    {
+                        <p>Contribuyente Especial: <strong>NO</strong></p>
+                    }
+                    @if (Model.Emisor.ObligadoContabilidad)
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                    }
+                    else
+                    {
+                        <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                    }
+                    <p>Usuario: <strong>@Model.EmailUsuario</strong></p>
+                </fieldset>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="col-md-12" style="border-style: solid;">
+                <fieldset>
+                    <legend>Identificación del Comprobante</legend>
+                    <p>Número: <strong id="numero-pedido">@Model.Numero</strong></p>
+                    <p>Fecha Creaci&oacute;n: <strong>@Model.FechaCreacion</strong></p>
+                    <p>Fecha Modificaci&oacute;n: <strong>@Model.FechaModificacion</strong></p>
+
+                </fieldset>
+            </div>
+            <br />
+            <button type="button" style="margin-top:10px" class="btn btn-default" onclick="GenerarFactura()">Generar Factura</button>
+            <a href="@Url.Action("DescargarPDF", "Pedido", new { id = Model.Id})" class="btn btn-default" target="_blank">Descargar PDF </a>
+        </div>
+    </div>
+    <br />
+    <div>
+        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+            <fieldset>
+                <legend>Datos del Comprador</legend>
+                <p>Número Identificación: <strong id="numero-factura">@Model.Cliente.NumeroIdentificacion</strong></p>
+                <p>Razón Social: <strong id="numero-factura">@Model.Cliente.RazonSocial</strong></p>
+                <p>Dirección: <strong id="numero-factura">@Model.Cliente.Direccion</strong></p>
+                <p>Email: <strong id="numero-factura">@Model.Cliente.Email</strong></p>
+                <p>Celular: <strong id="numero-factura">@Model.Cliente.Celular</strong></p>
+            </fieldset>
+        </div>
+    </div>
+    <br />
+    <div class="table-responsive" style="border-style: solid;">
+        <fieldset>
+            <legend>Datos de Producto</legend>
+
+            <table class="table">
+                <tr>
+                    <th>
+                        SKU o Codigo
+                    </th>
+                    <th>
+                        Producto
+                    </th>
+                    <th>
+                        Adicional
+                    </th>
+                    <th>
+                        Precio Unitario
+                    </th>
+                    <th>
+                        Cantidad
+                    </th>
+                    <th>
+                        %Descuento
+                    </th>
+                    <th>
+                        Subtotal
+                    </th>
+                    <th>
+                        Valor IVA
+                    </th>
+                    <th>
+                        Valor ICE
+                    </th>
+                    <th>
+                        Valor IRBPNR
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                </tr>
+
+                @foreach (var item in Model.Detalles)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.CodigoPrincipal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Adicional)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cantidad)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Descuento)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Subtotal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIva)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIce)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIrbpnr)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+        </fieldset>
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+
+
+                    <div class="table-responsive" style="border-style: solid;">
+                        <fieldset>
+                            <legend>Abonos</legend>
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        Fecha
+                                    </th>
+                                    <th>
+                                        Monto $
+                                    </th>
+                                    <th>
+                                        Descripción
+                                    </th>
+                                </tr>
+                                @foreach (var item in Model.Abonos)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Fecha)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Monto)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Descripcion)
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </table>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="table-responsive">
+                <table class="table" border="2">
+                    <tr><th>Subtotal sin impuesto :</th><td>@Model.SubtotalSinImpuestos.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal Iva :</th><td>@Model.SubtotalIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal Iva 0:</th><td>@Model.SubtotalIvaCero.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal No objeto Iva :</th><td>@Model.SubtotalNoObjetoIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Subtotal Excento Iva:</th><td>@Model.SubtotalExcentoIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Total Descuento:</th><td>@Model.TotalDescuento.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Ice :</th><td>@Model.ValorIce.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Iva :</th><td>@Model.ValorIva.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Irbpnr :</th><td>@Model.ValorIrbpnr.ToString("C2")</td>
+                    <tr />
+                    <tr><th>Valor Total :</th><td>@Model.Total.ToString("C2")</td>
+                    <tr />
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/PedidoJs")
+

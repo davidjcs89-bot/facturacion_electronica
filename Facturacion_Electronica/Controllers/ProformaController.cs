@@ -207,7 +207,7 @@ namespace Facturacion_Electronica.Controllers
         public ActionResult AgregarProducto()
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
-            
+
             //AQUI CARGAMOS LOS PRODUCTOS QUE NOS APARECERAN POR DEFECTO EN LA TABLA DEL MODAL DE AGREGAR PRODUCTOS
             var productos = db.Producto.Where(x => (x.Codigo.Equals("servicio", StringComparison.OrdinalIgnoreCase) || x.Codigo.Equals("producto", StringComparison.OrdinalIgnoreCase)) && x.id_emisor == idEmisor).ToList();
 
@@ -223,7 +223,7 @@ namespace Facturacion_Electronica.Controllers
         [HttpPost]
         public ActionResult AgregarProducto(ModeloBuscarProducto modelo)
         {
-            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor);
+            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor,0);
             modelo.Productos = productos;
             return View(modelo);
         }
@@ -232,68 +232,86 @@ namespace Facturacion_Electronica.Controllers
         public ActionResult AgregarProductoProforma(int id, int idProforma)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
-            proformaBusiness.AgregarProducto(idProforma, id, idEmisor);
-            return RedirectToAction("Edit", new { id = idProforma });
-
+            string mensaje = proformaBusiness.AgregarProducto(idProforma, id, idEmisor);
+            //return RedirectToAction("Edit", new { id = idProforma });
+            return Json(new { detalleAgregado = string.IsNullOrEmpty(mensaje), mensaje = mensaje });
         }
 
+        //[HttpPost]
+        //public ActionResult ActualizarPrecioDetalle(int id, int idProforma, decimal nuevoPrecio)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (nuevoPrecio <= 0)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idProforma });
+        //        }
+        //        proformaBusiness.ActualizarPrecioDetalle(id, idProforma, idEmisor, nuevoPrecio);
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //}
+
+        //[HttpPost]
+        //public ActionResult ActualizarAdicionalDetalle(int id, int idProforma, string adicional)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (adicional == null)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idProforma });
+        //        }
+        //        proformaBusiness.ActualizarAdicionalDetalle(id, idProforma, idEmisor, adicional);
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //}
+
+        //[HttpPost]
+        //public ActionResult ActualizarCantidadDetalle(int id, int idProforma, int nuevaCantidad)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (nuevaCantidad <= 0)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idProforma });
+        //        }
+        //        proformaBusiness.ActualizarCantidadDetalle(id, idProforma, idEmisor, nuevaCantidad);
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //}
+
         [HttpPost]
-        public ActionResult ActualizarPrecioDetalle(int id, int idProforma, decimal nuevoPrecio)
+        public ActionResult ActualizarDetalle(int id, int idProforma, decimal nuevoPrecio, int nuevacantidad, decimal porcentajeDescuento, string adicional)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
             try
             {
-                if (nuevoPrecio <= 0)
+                if (nuevoPrecio <= 0 || nuevacantidad <= 0 || porcentajeDescuento < 0)
                 {
-                    return RedirectToAction("Edit", new { id = idProforma });
+                    return Json(new { detalleActualizado = false, mensaje = "Los datos estan incorrectos" });
                 }
-                proformaBusiness.ActualizarPrecioDetalle(id, idProforma, idEmisor, nuevoPrecio);
-                return RedirectToAction("Edit", new { id = idProforma });
+                string mensaje = proformaBusiness.ActualizarDetalle(id, idProforma, idEmisor, nuevoPrecio, nuevacantidad, porcentajeDescuento, adicional);
+                return Json(new { detalleActualizado = string.IsNullOrEmpty(mensaje), mensaje = mensaje });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return RedirectToAction("Edit", new { id = idProforma });
+                return Json(new { detalleActualizado = false, mensaje = "Error, no se pudo actualizar el detalle, "+ex.Message });
             }
         }
-
-        [HttpPost]
-        public ActionResult ActualizarAdicionalDetalle(int id, int idProforma, string adicional)
-        {
-            var idEmisor = GetUsuarioLogeado().IdEmisor;
-            try
-            {
-                if (adicional == null)
-                {
-                    return RedirectToAction("Edit", new { id = idProforma });
-                }
-                proformaBusiness.ActualizarAdicionalDetalle(id, idProforma, idEmisor, adicional);
-                return RedirectToAction("Edit", new { id = idProforma });
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", new { id = idProforma });
-            }
-        }
-
-        [HttpPost]
-        public ActionResult ActualizarCantidadDetalle(int id, int idProforma, int nuevaCantidad)
-        {
-            var idEmisor = GetUsuarioLogeado().IdEmisor;
-            try
-            {
-                if (nuevaCantidad <= 0)
-                {
-                    return RedirectToAction("Edit", new { id = idProforma });
-                }
-                proformaBusiness.ActualizarCantidadDetalle(id, idProforma, idEmisor, nuevaCantidad);
-                return RedirectToAction("Edit", new { id = idProforma });
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", new { id = idProforma });
-            }
-        }
-
 
         [HttpPost]
         public ActionResult ActualizarObservaciones(int id, string observaciones)
@@ -314,28 +332,28 @@ namespace Facturacion_Electronica.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult ActualizarPorcentajeDescuentoDetalle(int id, int idProforma, decimal porcentaje)
-        {
-            var idEmisor = GetUsuarioLogeado().IdEmisor;
-            try
-            {
-                if (porcentaje < 0)
-                {
-                    return RedirectToAction("Edit", new { id = idProforma });
-                }
-                else if (porcentaje > 100)
-                {
-                    porcentaje = 100;
-                }
-                proformaBusiness.ActualizarPorcentajeDescuentoDetalle(id, idProforma, idEmisor, porcentaje);
-                return RedirectToAction("Edit", new { id = idProforma });
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", new { id = idProforma });
-            }
-        }
+        //[HttpPost]
+        //public ActionResult ActualizarPorcentajeDescuentoDetalle(int id, int idProforma, decimal porcentaje)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (porcentaje < 0)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idProforma });
+        //        }
+        //        else if (porcentaje > 100)
+        //        {
+        //            porcentaje = 100;
+        //        }
+        //        proformaBusiness.ActualizarPorcentajeDescuentoDetalle(id, idProforma, idEmisor, porcentaje);
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idProforma });
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult EliminarDetalle(int id, int idProforma)
@@ -458,6 +476,29 @@ namespace Facturacion_Electronica.Controllers
             return RedirectToAction("Edit", "Factura", new { id = idFactura });
         }
 
+        public ActionResult Impresion(int id)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            var proforma = db.Proforma.FirstOrDefault(x => x.id == id && x.id_emisor == idEmisor);
+            var impresionConfig = db.impresion_comprobantes.FirstOrDefault(x => x.id_comprobante == EnumTipoDocumento.FACTURA && x.id_emisor == idEmisor);
+            if (proforma == null || impresionConfig == null)
+            {
+                return Content("<h2>Impresión no configurada</h2>");
+            }
+            return View(new ModeloImpresionProforma { Proforma = proforma, Impresion = impresionConfig });
+        }
+
+        public ActionResult PreImpresion(int id)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            var proforma = db.Proforma.FirstOrDefault(x => x.id == id && x.id_emisor == idEmisor);
+            var impresionConfig = db.impresion_comprobantes.FirstOrDefault(x => x.id_comprobante == EnumTipoDocumento.FACTURA && x.id_emisor == idEmisor);
+            if (proforma == null || impresionConfig == null)
+            {
+                return Content("<h2>Impresión no configurada</h2>");
+            }
+            return View(new ModeloImpresionProforma { Proforma = proforma, Impresion = impresionConfig });
+        }
 
         [NonAction]
         private ModeloUsuarioSesion GetUsuarioLogeado()

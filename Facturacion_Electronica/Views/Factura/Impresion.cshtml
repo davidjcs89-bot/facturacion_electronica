@@ -80,9 +80,13 @@
                                 email = Model.Factura.Clientes.correo.Substring(0, 24);
                                 email = email.ToUpper();
                             }
+                            else if (email != null && Model.Factura.Clientes.correo.Length <= 24)
+                            {
+                                email = Model.Factura.Clientes.correo;
+                            }
                             else
                             {
-                                email = "";
+                                email = " ";
                             }
 
                         }

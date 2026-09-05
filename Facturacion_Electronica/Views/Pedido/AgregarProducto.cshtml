@@ -1,0 +1,120 @@
+﻿@model Facturacion_Electronica.Models.Producto.ModeloBuscarProducto
+
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AgregarProducto", "Pedido", null, FormMethod.Post, new { id = "frm-agregar-producto", autocomplete = "off" }))
+{
+
+    @Html.AntiForgeryToken()
+    <div class="container">
+        @Html.HiddenFor(modelo => modelo.IdFactura)
+        <fieldset>
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorCodigo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorCodigo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorEstilo, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorEstilo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.BuscarPorNombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.BuscarPorNombre, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+                        <small style="font-style:italic">Ejm: Prod o Serv</small>
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.NumeroRegistros, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.NumeroRegistros, new { htmlAttributes = new { @class = "form-control", @id = "nro-registros" } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input id="btn-buscar" type="button" value="Buscar" class="btn btn-default" onclick="BuscarProducto()" />
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    </div><div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>
+                    Codigo
+                </th>
+                <th>
+                    Codigo auxiliar
+                </th>
+                <th>
+                    Producto
+                </th>
+                <th>
+                    Precio
+                </th>
+                <th>
+                    Stock/Cantidad
+                </th>
+                <th>
+                    %IVA
+                </th>
+                <th>
+                    ICE
+                </th>
+                <th>
+                    IRBPNR
+                </th>
+            </tr>
+
+            @for (var i = 0; i < Model.Productos.Count; i++)
+            {
+                <tr>
+                    @Html.HiddenFor(modelo => Model.Productos[i].id)
+                    <td>
+                        <button type="button" class="btn btn-default" onclick="AgregarProducto(@Model.Productos[i].id)">Seleccionar</button>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Codigo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Codigo_auxiliar)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Precio)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Cantidad_producto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Porcentaje_impuesto_producto2.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Porcentaje_impuesto_producto.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => Model.Productos[i].Porcentaje_impuesto_producto1.Descripcion)
+                    </td>
+
+                </tr>
+            }
+
+        </table>
+    </div>
+
+}
+

@@ -23,6 +23,10 @@ namespace Facturacion_Electronica.Business
             {
                 return _db.Clientes.Where(x => x.id_emisor == IdEmisor && x.identificacion.StartsWith(modeloBuscar.BuscarPorIdentificacion) && x.id != EnumDatosGenerales.ID_CONSUMIDOR_FINAL).ToList();
             }
+            if (modeloBuscar.BuscarPorCodigo != null && modeloBuscar.BuscarPorCodigo.Trim().Length > 0)
+            {
+                return _db.Clientes.Where(x => x.id_emisor == IdEmisor && x.codigo == modeloBuscar.BuscarPorCodigo).ToList();
+            }
             if (modeloBuscar.BuscarPorTelefono != null && modeloBuscar.BuscarPorTelefono.Trim().Length > 0)
             {
                 return _db.Clientes.Where(x => x.id_emisor == IdEmisor && x.telefono_movil.StartsWith(modeloBuscar.BuscarPorTelefono) && x.id != EnumDatosGenerales.ID_CONSUMIDOR_FINAL).ToList();
@@ -51,7 +55,8 @@ namespace Facturacion_Electronica.Business
                 Direccion = modeloCliente.Direccion != null ? modeloCliente.Direccion.ToUpper() : null,
                 correo = modeloCliente.Email != null ? modeloCliente.Email.ToUpper() : null,
                 fecha_creacion = DateTime.Now,
-                fecha_modificacion = DateTime.Now
+                fecha_modificacion = DateTime.Now,
+                codigo = modeloCliente.Codigo
             };
 
             _db.Clientes.Add(cliente);
@@ -77,7 +82,8 @@ namespace Facturacion_Electronica.Business
                 TelefonoConvencional = cliente.telefono_fijo,
                 Celular = cliente.telefono_movil,
                 Direccion = cliente.Direccion,
-                Email = cliente.correo
+                Email = cliente.correo,
+                Codigo = cliente.codigo
             };
             return modeloCliente;
 
@@ -86,6 +92,16 @@ namespace Facturacion_Electronica.Business
        public ModeloCliente BuscarClienteFactura(string identificacion, int idEmisor)
         {
             var cliente = _db.Clientes.FirstOrDefault(x => x.id_emisor == idEmisor && x.tipo_cliente == EnumTipoCliente.CLIENTE && x.identificacion == identificacion);
+            if (cliente == null)
+            {
+                return null;
+            }
+            return this.GenerarModeloCliente(cliente.id);
+        }
+
+        public ModeloCliente BuscarClientePedido(string codigo, int idEmisor)
+        {
+            var cliente = _db.Clientes.FirstOrDefault(x => x.id_emisor == idEmisor && x.tipo_cliente == EnumTipoCliente.CLIENTE && x.codigo == codigo);
             if (cliente == null)
             {
                 return null;
@@ -156,6 +172,7 @@ namespace Facturacion_Electronica.Business
             cliente.Direccion = modeloCliente.Direccion?.ToUpper();
             cliente.correo = modeloCliente.Email?.ToUpper();
             cliente.fecha_modificacion = DateTime.Now;
+            cliente.codigo = modeloCliente.Codigo;
 
             _db.SaveChanges();
         }

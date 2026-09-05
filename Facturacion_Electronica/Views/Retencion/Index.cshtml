@@ -113,47 +113,58 @@
 
             @foreach (var item in Model.Retenciones)
             {
-                var colorFila = item.estado == 1 ? "#faaa99" : "white";
+                var colorFila = "";
+                var colorLetra = "black";
 
-                <tr style="background-color:@colorFila">
-                    @switch (item.estado)
-                    {
-                        case 1:
-                            <td>
+                switch (item.estado)
+                {
+                    case 1:
+                        colorFila = "#faaa99";
+                        break;
+                    case 2:
+                        colorFila = "white";
+                        break;
+                    case 3:
+                        colorFila = "#f3130c";
+                        colorLetra = "white";
+                        break;
+                    case 4:
+                        colorFila = "white";
+                        break;
+                    case 5:
+                        colorFila = "white";
+                        break;
+                    case 6:
+                        colorFila = "white";
+                        break;
+                    case 7:
+                        colorFila = "white";
+                        break;
+                }
+
+                <tr style="background-color:@colorFila;color:@colorLetra">
+                    <td>
+                        @switch (item.estado)
+                        {
+                            case 1:
                                 <p>PENDIENTE</p>
-                            </td>
-                            break;
-                        case 2:
-                            <td>
-                                <p>PAGADO</p>
-                            </td>
-                            break;
-                        case 3:
-                            <td>
-                                <p>FINALIZADO</p>
-                            </td>
-                            break;
-                        case 4:
-                            <td>
-                                <p>RECIBIDO</p>
-                            </td>
-                            break;
-                        case 5:
-                            <td>
-                                <p>NO_RECIBIDO</p>
-                            </td>
-                            break;
-                        case 6:
-                            <td>
-                                <p>AUTORIZADO</p>
-                            </td>
-                            break;
-                        case 7:
-                            <td>
-                                <p>NO_AUTORIZADO</p>
-                            </td>
-                            break;
-                    }
+                                break;
+                            case 2: <p>PAGADO</p>
+                                break;
+                            case 3: <p>FINALIZADO</p>
+                                break;
+                            case 4: <p>RECIBIDO</p>
+                                break;
+                            case 5: <p>NO_RECIBIDO</p>
+                                break;
+                            case 6: <p>AUTORIZADO</p>
+                                break;
+                            case 7: <p>NO_AUTORIZADO</p>
+                                break;
+                            case 8: <p>ANULADO</p>
+                                break;
+                        }
+                    </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Fecha_creacion)
                     </td>

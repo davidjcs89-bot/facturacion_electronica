@@ -1,0 +1,625 @@
+﻿@model Facturacion_Electronica.Models.Pedido.ModeloPedido
+@{
+    ViewBag.Title = "Pedido";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2> Nuevo Pedido </h2>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-pedido" })
+    <div class="container">
+
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Datos del Emisor y Comprobante
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <div class="row" style="padding-top:5px">
+                            <div class="col-md-6">
+                                <div class="col-md-12" style="border-style: solid;">
+                                    <fieldset>
+                                        <div style="text-align:center">
+                                            @if (Model.Emisor.LogoRelativoPath != null)
+                                            {
+                                                <img src="@Url.Content(Model.Emisor.LogoRelativoPath)" width="100px" height="100px" />
+                                            }
+                                        </div>
+
+                                        <p>RUC: <strong>@Model.Emisor.Ruc</strong></p>
+                                        <p>Nombre Comercial: <strong>@Model.Emisor.NombreComercial</strong></p>
+                                        <p>Razón Social: <strong>@Model.Emisor.RazonSocial</strong></p>
+                                        <p>Direccion Matriz: <strong>@Model.Emisor.DireccionMatriz</strong></p>
+                                        <p>Direccion Sucursal: <label id="direccion-sucursal">@Model.DireccionSucursal</label></p>
+                                        @if (Model.Emisor.ContirbuyenteEspecial)
+                                        {
+                                            <p>Contribuyente Especial: <strong>SI</strong></p>
+                                            <p>Número Contribuyente Especial: <strong>@Model.Emisor.NumeroContribuyenteEspecial</strong></p>
+                                        }
+                                        else
+                                        {
+                                            <p>Contribuyente Especial: <strong>NO</strong></p>
+                                        }
+                                        @if (Model.Emisor.ObligadoContabilidad)
+                                        {
+                                            <p>Obligado a llevar contabilidad: <strong>SI</strong></p>
+                                        }
+                                        else
+                                        {
+                                            <p>Obligado a llevar contabilidad: <strong>NO</strong></p>
+                                        }
+                                        <p>Usuario (No visible en factura): <strong>@Model.EmailUsuario</strong></p>
+                                        <p>@ViewBag.Impresion</p>
+                                    </fieldset>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-md-12" style="border-style: solid;">
+                                    <fieldset>
+                                        <label>Punto de Emisón:</label>
+                                        @Html.DropDownListFor(model => model.PuntoEmisionId, (IEnumerable<SelectListItem>)ViewBag.PuntoEmision, null, new { @id = "lista-punto-emision", @class = "form-control", @onchange = "CambiarPuntoEmision()" })
+                                        <p>Número: <strong id="numero-pedido">@Model.Numero</strong></p>
+                                        <p>Fecha Creaci&oacute;n: <strong>@Model.FechaCreacion</strong></p>
+                                        <p>Fecha Modificaci&oacute;n: <strong>@Model.FechaModificacion</strong></p>
+                                    </fieldset>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <br />
+
+        <div class="accordion" id="accordion3">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseThree" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Datos del Comprador (@Model.Cliente.Codigo)
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <div class="table-responsive" style="border-style: solid;overflow:hidden">
+                            <fieldset>
+
+                                @if (Model.PermiteEditarCliente)
+                                {
+                                    <div class="form-horizontal">
+                                        <table>
+                                            <tr>
+                                                <td style="padding-left:20px">
+                                                    <label class="control-label">
+                                                        <span class="glyphicon glyphicon-info-sign"></span> Consumidor Final
+                                                    </label>
+                                                </td>
+                                                <td style="padding-left:10px">
+                                                    @Html.EditorFor(model => model.EsConsumidorFinal, new { htmlAttributes = new { @id = "consumidor-final", @style = "margin-left:0px" } })
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <!--CARGAR DATOS DEL CLIENTE-->
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-5">
+                                                <div class="form-group search-client">
+                                                    <div class="control-container">
+                                                        @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label" })
+                                                        @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                                        @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+                                                        @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <div class="button-container">
+                                                        <!--BOTON BUSCAR POR NUMERO DE IDENTIDAD-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Búsqueda por la identificación del cliente.">
+                                                            <input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" />
+                                                        </span>
+                                                        <!--BOTON BUSCAR POR CODIGO-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Búsqueda por codigo.">
+                                                            <input type="button" id="btn-buscar" value="Buscar por código" class="btn btn-default" onclick="BuscarClientePorCodigo();" />
+                                                        </span>
+                                                        <!--BOTON BUSCAR POR NOMBRE DE CLIENTE-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Este tipo de búsqueda es poco específico y puede tener más de una coincidencia">
+                                                            <input type="button" id="btn-buscar-nombre" value="Buscar por Nombre" data-toggle="modal" data-target="#modalBuscarporNombre" class="btn btn-primary" />
+                                                        </span>
+                                                        <!--BOTON CREAR CLIENTE-->
+                                                        <span data-toggle="tooltip" data-placement="top" title="Puedes agregar un cliente si no esta registrado aún.">
+                                                            <input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-success" onclick="CargarCrearCliente();" />
+                                                        </span>
+                                                        <!--BOTON EDITAR CLIENTE-->
+                                                        <span>
+                                                            <input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        @*<div class="form-group">
+                                                @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label col-md-2" })
+                                                <div class="col-md-4 ">
+                                                    @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                                    @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @id = "id-cliente" } })
+                                                    <span>
+                                                        <span><input type="button" id="btn-buscar" value="Buscar" class="btn btn-default" onclick="BuscarCliente();" /></span>
+                                                        <span><input type="button" id="btn-crear" value="Nuevo" data-target="#nuevoCliete" class="btn btn-default" onclick="CargarCrearCliente();" /></span>
+                                                        <span><input type="button" id="btn-editar" value="Editar" data-target="#editarCliete" class="btn btn-info btn-editar" onclick="CargarEditarCliente();" /></span>
+                                                    </span>
+                                                    @Html.ValidationMessageFor(model => model.Cliente.NumeroIdentificacion, "", new { @class = "text-danger" })
+                                                </div>
+
+                                            </div>*@
+
+
+                                        <div class="row">
+                                            <div class="col-md-1"></div>
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.Codigo, htmlAttributes: new { @class = "control-label  " })
+                                                        @Html.EditorFor(model => model.Cliente.Codigo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "codigo-cliente" } })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.NumeroIdentificacion, htmlAttributes: new { @class = "control-label  " })
+                                                        @Html.EditorFor(model => model.Cliente.NumeroIdentificacion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "cedula-cliente" } })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.RazonSocial, htmlAttributes: new { @class = "control-label  " })
+                                                        @Html.EditorFor(model => model.Cliente.RazonSocial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "nombre-cliente" } })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.Direccion, htmlAttributes: new { @class = "control-label" })
+                                                        @Html.EditorFor(model => model.Cliente.Direccion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "direccion-cliente" } })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.Email, htmlAttributes: new { @class = "control-label  " })
+                                                        @Html.EditorFor(model => model.Cliente.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "email-cliente" } })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <div class="col-md-12">
+                                                        @Html.LabelFor(model => model.Cliente.Celular, htmlAttributes: new { @class = "control-label" })
+                                                        @Html.EditorFor(model => model.Cliente.Celular, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @id = "celular-cliente" } })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p>Número de Identificación: <strong>@Model.Cliente.NumeroIdentificacion</strong></p>
+                                    <p>Nombre y Apellido/Razon Social: <strong id="numero-factura">@Model.Cliente.RazonSocial</strong></p>
+                                    <p>Dirección: <strong>@Model.Cliente.Direccion</strong></p>
+                                    <p>Email: <strong>@Model.Cliente.Email</strong></p>
+                                    <p>Nro Celular: <strong>@Model.Cliente.Celular</strong></p>
+                                }
+
+                            </fieldset>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="table-responsive" style="border-style: solid;">
+            <fieldset>
+                <legend>Datos de Producto</legend>
+                @if (Model.PermiteEditarDetalles)
+                {
+
+                    <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
+                        Agregar Nuevo Detalle
+                    </button>
+
+
+                }
+
+            <table class="table">
+                <tr>
+                    <th>#</th>
+                    <th>
+                        Codigo
+                    </th>
+                    <th>
+                        Producto
+                    </th>
+                    <th>
+                        Adicional
+                    </th>
+                    <th>
+                        Precio + IVA
+                    </th>
+                    <th>
+                        Precio Uni
+                    </th>
+                    <th>
+                        Iva Uni
+                    </th>
+                    <th>
+                        Cantidad
+                    </th>
+                    <th>
+                        Subtotal
+                    </th>
+                    <th>
+                        %Desc
+                    </th>
+                    <th>
+                        $Desc
+                    </th>
+                    <th>
+                        IVA
+                    </th>
+                    <th>
+                        ICE
+                    </th>
+                    <th>
+                        IRBPNR
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                @{
+                    var index = 1;
+                }
+                @foreach (var item in Model.Detalles)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.CodigoPrincipal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                        </td>
+                        @if (Model.PermiteEditarDetalles)
+                        {
+                            <td>
+                                @Html.EditorFor(model => item.Adicional, new { htmlAttributes = new { @id = item.Id + "-adic", @class = "form-control", onchange = "ActualizarAdicionalDetalle(" + item.Id + ",this)" } })
+                                @Html.ValidationMessageFor(model => item.Adicional, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => item.PrecioConImpuestos, new { htmlAttributes = new { @id = item.Id + "-precio", @class = "form-control", onchange = "ActualizarPrecioDetalle(" + item.Id + ",this)" } })
+                                @Html.ValidationMessageFor(model => item.PrecioConImpuestos, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IvaUnitario)
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => item.Cantidad, new { htmlAttributes = new { @id = item.Id + "-qty", @class = "form-control", onchange = "ActualizarCantidadDetalle(" + item.Id + ",this)" } })
+                                @Html.ValidationMessageFor(model => item.Cantidad, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Subtotal)
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => item.Descuento, new { htmlAttributes = new { @id = item.Id + "-desc", @class = "form-control", onchange = "ActualizarPorcentajeDescuentoDetalle(" + item.Id + ",this)" } })
+                                @Html.ValidationMessageFor(model => item.Descuento, "", new { @class = "text-danger" })
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Adicional)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PrecioConImpuestos)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IvaUnitario)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Cantidad)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Subtotal)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Descuento)
+                            </td>
+                        }
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorDescuento)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIva)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIce)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIrbpnr)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                        @if (Model.PermiteEditarDetalles)
+                        {
+                            <td>
+                                <button type="button" id="eliminar-detalle" class="btn btn-success" onclick="ActualizarDetallePedido(@item.Id)">
+                                    <span class="glyphicon glyphicon-floppy-saved"></span>
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarDetalle(@item.Id)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+
+                    </tr>
+                    {
+                        index++;
+                    }
+                }
+
+            </table>
+            </fieldset>
+
+
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="table-responsive" style="border-style: solid;">
+                    <fieldset>
+                        <legend>Abonos</legend>
+                        <button type="button" id="agregar-abono" class="btn bg-info" data-target="#agregarAbono" onclick="CargarAgregarAbono()">
+                            Agregar Nuevo Abono
+                        </button>
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Fecha
+                                </th>
+                                <th>
+                                    Monto $
+                                </th>
+                                <th>
+                                    Descripción
+                                </th>
+                                <th>
+                                    Accion
+                                </th>
+                            </tr>
+
+                            @foreach (var item in Model.Abonos)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Fecha)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Monto)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Descripcion)
+                                    </td>
+                                    <td>
+                                        <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarAbono(@item.Id)">
+                                            Eliminar
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+
+                        </table>
+
+                        @{
+                            var totalAbonado = Model.Abonos.Sum(x => x.Monto);
+                        }
+
+                        <h4>Total Abonado: <b>$@totalAbonado</b></h4>
+                        <h4>Saldo Pendiente: <b>$@(Model.Total - totalAbonado)</b></h4>
+
+                    </fieldset>
+                </div>
+                <br />
+
+                @if (Model.Detalles.Count > 0)
+                {
+                    <button type="button" id="finalizar" class="btn bg-success" onclick="FinalizarPedido()">
+                        Finalizar
+                    </button>
+                    <button type="button" id="anular" class="btn btn-danger" onclick="AnularPedido()">
+                        Anular
+                    </button>
+                }
+
+            </div>
+            <div class="col-md-6">
+                <div class="table-responsive">
+                    <table class="table" border="2">
+                        <tr><th>Subtotal sin impuesto :</th><td>@Model.SubtotalSinImpuestos.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal Iva :</th><td>@Model.SubtotalIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal Iva 0:</th><td>@Model.SubtotalIvaCero.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal No objeto Iva :</th><td>@Model.SubtotalNoObjetoIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Subtotal Excento Iva:</th><td>@Model.SubtotalExcentoIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Total Descuento:</th><td>@Model.TotalDescuento.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Ice :</th><td>@Model.ValorIce.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Iva :</th><td>@Model.ValorIva.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Irbpnr :</th><td>@Model.ValorIrbpnr.ToString("C2")</td>
+                        <tr />
+                        <tr><th>Valor Total :</th><td>@Model.Total.ToString("C2")</td>
+                        <tr />
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section BodyArea {
+    <div id="nuevoCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Crear Cliente</h4>
+                </div>
+                <div id="vistaNuevoCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editarCliete" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Editar Cliente</h4>
+                </div>
+                <div id="vistaEditarCliente">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarProducto" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Producto</h4>
+                </div>
+                <div id="vistaAgregarProducto">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="agregarAbono" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Abono</h4>
+                </div>
+                <div id="vistaAgregarAbono">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--MODAL PARA BUSCAR A CLIENTE POR NOMBRE-->
+    <div class="modal fade" id="modalBuscarporNombre" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Buscar Cliente por Nombre</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- BUSCAR POR NOMBRE -->
+                    <div class="form-group">
+                        <div class="control-search-name">
+                            @Html.LabelFor(model => model.Cliente.RazonSocial, "Buscar por Nombre", htmlAttributes: new { @class = "control-label" })
+                            <div class="input-group">
+                                @Html.HiddenFor(model => model.Cliente.Id, htmlAttributes: new { @id = "id" })
+                                @Html.EditorFor(model => model.Cliente.RazonSocial, new { htmlAttributes = new { @class = "form-control", @id = "cliente-name" } })
+                                <div class="input-group-append">
+                                    <button type="button" id="btn-buscar" class="btn btn-default" onclick="BuscarClienteByNombre();">Buscar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Tabla -->
+                    <div class="modal-body row p-5">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-12">
+                            <table id="tabla-clientes" class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Razon social</th>
+                                        <th scope="col">Identificación</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" class="no-data">No hay clientes disponibles.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <!-- <button type="button" class="btn btn-primary">Guardar cambios</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+    @Styles.Render("~/bundles/ProformaCSS")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/PedidoJs")
+@Scripts.Render("~/bundles/GeneralJS")

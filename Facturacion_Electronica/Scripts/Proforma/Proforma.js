@@ -355,7 +355,13 @@ function AgregarProducto(id) {
         success: function (result) {
             $(".loading").hide();
             $("#agregarProducto").modal("hide");
-            location.reload();
+
+            if (result.detalleAgregado) {
+                location.reload();
+            } else {
+                swal(result.mensaje);
+            }
+
         },
         failure: function (response) {
             alert(response.responseText);
@@ -368,7 +374,8 @@ function AgregarProducto(id) {
 }
 
 function ActualizarAdicionalDetalle(id, selectObject) {
-    var adiciona = selectObject.value;
+    return;
+    /*var adiciona = selectObject.value;
     if (adiciona !== null && adiciona !== undefined) {
         $(".loading").show();
         $.ajax({
@@ -390,11 +397,12 @@ function ActualizarAdicionalDetalle(id, selectObject) {
         });
     } else {
         location.reload();
-    }
+    }*/
 }
 
 function ActualizarPrecioDetalle(id, selectObject) {
-    var precio = selectObject.value;
+    return;
+    /*var precio = selectObject.value;
     if (Number(precio) > 0) {
         $(".loading").show();
         $.ajax({
@@ -416,11 +424,12 @@ function ActualizarPrecioDetalle(id, selectObject) {
         });
     } else {
         location.reload();
-    }
+    }*/
 }
 
 function ActualizarCantidadDetalle(id, selectObject) {
-    var cantidad = selectObject.value;
+    return;
+    /*var cantidad = selectObject.value;
     if (Number(cantidad) > 0) {
         $(".loading").show();
         $.ajax({
@@ -429,7 +438,7 @@ function ActualizarCantidadDetalle(id, selectObject) {
             cache: false,
             data: { id, idProforma: $("#id-proforma").val(), nuevaCantidad: cantidad },
             success: function (result) {
-                $(".loading").hide();
+                //$(".loading").hide();
                 location.reload();
             },
             failure: function (response) {
@@ -442,11 +451,12 @@ function ActualizarCantidadDetalle(id, selectObject) {
         });
     } else {
         location.reload();
-    }
+    }*/
 }
 
 function ActualizarPorcentajeDescuentoDetalle(id, selectObject) {
-    var porcentaje = selectObject.value;
+    return;
+   /* var porcentaje = selectObject.value;
     if (Number(porcentaje) >= 0) {
         $(".loading").show();
         $.ajax({
@@ -468,8 +478,47 @@ function ActualizarPorcentajeDescuentoDetalle(id, selectObject) {
         });
     } else {
         location.reload();
+    }*/
+}
+
+function ActualizarDetalleProforma(id) {
+
+    var precio = $('#' + id + '-precio').val();
+    var qty = $('#' + id + '-qty').val();
+    var desc = $('#' + id + '-desc').val();
+    var adic = $('#' + id + '-adic').val();
+
+    if (Number(precio) >= 0 && Number(qty) >= 0 && Number(desc) >= 0) {
+        $(".loading").show();
+        $.ajax({
+            type: "POST",
+            url: "/Proforma/ActualizarDetalle/",
+            cache: false,
+            data: { id, idProforma: $("#id-proforma").val(), nuevoPrecio: precio, nuevacantidad: qty, porcentajeDescuento: desc, adicional: adic  },
+            success: function (result) {
+                $(".loading").hide();
+
+                if (result.detalleActualizado) {
+                    location.reload();
+                } else {
+                    swal(result.mensaje);
+                }
+
+               
+            },
+            failure: function (response) {
+                alert(response.responseText);
+                alert("error ");
+            },
+            error: function (response) {
+                alert(response.responseText);
+            }
+        });
+    } else {
+        location.reload();
     }
 }
+
 
 function ActualizarObservaciones(selectObject) {
     var texto = selectOjbect.value;

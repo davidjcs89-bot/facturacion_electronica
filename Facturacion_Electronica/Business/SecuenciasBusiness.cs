@@ -39,6 +39,7 @@ namespace Facturacion_Electronica.Business
                 Numero_emision = modelo.NumeroPuntoEmision,
                 Numero_establecimiento = modelo.NumeroComprobante,
                 Id_emisor = idEmisor,
+                id_bodega = modelo.IdBodega,
                 Secuencias = new List<Secuencias>()
             };
             foreach (var secuencia in modelo.Secuencias)
@@ -67,6 +68,7 @@ namespace Facturacion_Electronica.Business
                 NumeroComprobante = puntoEmision.Numero_establecimiento,
                 NumeroPuntoEmision = puntoEmision.Numero_emision,
                 Direccion = puntoEmision.Direccion,
+                IdBodega = puntoEmision.id_bodega,
                 Secuencias = new List<ModeloSecuencia>()
             };
 
@@ -97,6 +99,7 @@ namespace Facturacion_Electronica.Business
             puntoEmision.Fecha_modificacion = DateTime.Now;
             puntoEmision.Numero_emision = modelo.NumeroPuntoEmision;
             puntoEmision.Numero_establecimiento = modelo.NumeroComprobante;
+            puntoEmision.id_bodega = modelo.IdBodega;
 
             foreach (var secuencia in puntoEmision.Secuencias.ToList())
             {

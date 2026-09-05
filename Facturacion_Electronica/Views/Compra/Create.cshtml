@@ -14,256 +14,308 @@
     </div>
     <br />
     @Html.ValidationMessage(string.Empty)
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12" style="border-style: solid;">
-                <fieldset>
-                    <legend>Datos del Proveedor</legend>
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.Ruc, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.Ruc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.Ruc, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
+<div class="container">
+    <div class="form-group">
+        <label class="control-label col-md-2">Seleccionar una Bodega</label>
+        <div class="col-md-10">
+            @Html.DropDownListFor(model => model.idBodega, (IEnumerable<SelectListItem>)ViewBag.Bodegas, null, new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.idBodega, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <br />
+    <br />
+    <div class="accordion" id="accordion2">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <h4 class="mb-0">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Datos del Proveedor
+                    </a>
+                </h4>
+            </div>
+            <div id="collapseTwo" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div class="row">
+                        <div class="col-md-12" style="border-style: solid;">
+                            <fieldset>
+                                <legend>Datos del Proveedor</legend>
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.Ruc, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.Ruc, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.Ruc, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.RazonSocial, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.RazonSocial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.RazonSocial, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.RazonSocial, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.RazonSocial, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.RazonSocial, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.DireccionMatriz, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.DireccionMatriz, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.DireccionMatriz, "", new { @class = "text-danger" })
-                            </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.DireccionMatriz, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.DireccionMatriz, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.DireccionMatriz, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
-                </fieldset>
+                </div>
             </div>
         </div>
+    </div>
 
-        <br />
 
-        <div class="row">
-            <div class="col-md-12" style="border-style: solid;">
-                <fieldset>
-                    <legend>Datos de la Factura</legend>
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.CodigoEstablecimiento, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.CodigoEstablecimiento, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.CodigoEstablecimiento, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.CodigoEmision, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.CodigoEmision, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.CodigoEmision, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
+    <br />
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.Secuencial, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.Secuencial, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.Secuencial, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.DatosTributarios.ClaveAcceso, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.DatosTributarios.ClaveAcceso, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.DatosTributarios.ClaveAcceso, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Factura.FechaEmision, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.Factura.FechaEmision, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.Factura.FechaEmision, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Factura.TotalSinImpuestos, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.Factura.TotalSinImpuestos, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.Factura.TotalSinImpuestos, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Factura.TotalDescuento, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.Factura.TotalDescuento, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.Factura.TotalDescuento, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Factura.Total, htmlAttributes: new { @class = "control-label col-md-2" })
-                            <div class="col-md-10 ">
-                                @Html.EditorFor(model => model.Factura.Total, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                @Html.ValidationMessageFor(model => model.Factura.Total, "", new { @class = "text-danger" })
-                            </div>
-                        </div>
-                        <br />
-                        <strong>Impuestos de Factura</strong>
-                        <div class="table-responsive">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <td>C&oacute;digo</td>
-                                        <td>C&oacute;digo Porcentaje</td>
-                                        <td>Base Imponible</td>
-                                        <td>Valor</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < Model.Factura.Impuestos.Count; i++)
-                                    {
-                                        <tr>
-                                            <td>
-                                                @Html.EditorFor(model => model.Factura.Impuestos[i].Codigo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].Codigo, "", new { @class = "text-danger" })
-                                            </td>
-                                            <td>
-                                                @Html.EditorFor(model => model.Factura.Impuestos[i].CodigoPorcentaje, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].CodigoPorcentaje, "", new { @class = "text-danger" })
-                                            </td>
-                                            <td>
-                                                @Html.EditorFor(model => model.Factura.Impuestos[i].BaseImponible, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].BaseImponible, "", new { @class = "text-danger" })
-                                            </td>
-                                            <td>
-                                                @Html.EditorFor(model => model.Factura.Impuestos[i].Valor, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].Valor, "", new { @class = "text-danger" })
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                    </div>
-                </fieldset>
+    <div class="accordion" id="accordion3">
+        <div class="accordion-group">
+            <div class="accordion-heading">
+                <h4 class="mb-0">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseThree" style="color: #656565;">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Datos de la factura
+                    </a>
+                </h4>
             </div>
-        </div>
+            <div id="collapseThree" class="accordion-body collapse">
+                <div class="accordion-inner">
+                    <div class="row">
+                        <div class="col-md-12" style="border-style: solid;">
+                            <fieldset>
+                                <legend>Datos de la Factura</legend>
+                                <div class="form-horizontal">
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.CodigoEstablecimiento, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.CodigoEstablecimiento, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.CodigoEstablecimiento, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-        <br />
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.CodigoEmision, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.CodigoEmision, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.CodigoEmision, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-        <div class="row">
-            <div class="col-md-12" style="border-style: solid;">
-                <fieldset>
-                    <legend>Detalle  de la Factura</legend>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <td>C&oacute;digo</td>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.Secuencial, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.Secuencial, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.Secuencial, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                                    <td>Descripci&oacute;n</td>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.DatosTributarios.ClaveAcceso, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.DatosTributarios.ClaveAcceso, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.DatosTributarios.ClaveAcceso, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                                    <td>Cantidad</td>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Factura.FechaEmision, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.Factura.FechaEmision, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Factura.FechaEmision, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                                    <td>Precio</td>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Factura.TotalSinImpuestos, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.Factura.TotalSinImpuestos, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Factura.TotalSinImpuestos, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                                    <td>Descuento</td>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Factura.TotalDescuento, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.Factura.TotalDescuento, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Factura.TotalDescuento, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
 
-                                    <td>Precio sin impuesto</td>
-                                    <td>Impuestos</td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @for (int i = 0; i < Model.Detalles.Count; i++)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.EditorFor(model => model.Detalles[i].Codigo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                            @Html.ValidationMessageFor(model => model.Detalles[i].Codigo, "", new { @class = "text-danger" })
-                                        </td>
-                                        <td>
-                                            @Html.EditorFor(model => model.Detalles[i].Descripcion, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                            @Html.ValidationMessageFor(model => model.Detalles[i].Descripcion, "", new { @class = "text-danger" })
-                                        </td>
-                                        <td>
-                                            @Html.EditorFor(model => model.Detalles[i].Cantidad, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                            @Html.ValidationMessageFor(model => model.Detalles[i].Cantidad, "", new { @class = "text-danger" })
-                                        </td>
-                                        <td>
-                                            @Html.EditorFor(model => model.Detalles[i].Precio, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                            @Html.ValidationMessageFor(model => model.Detalles[i].Precio, "", new { @class = "text-danger" })
-                                        </td>
-                                        <td>
-                                            @Html.EditorFor(model => model.Detalles[i].Descuento, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                            @Html.ValidationMessageFor(model => model.Detalles[i].Descuento, "", new { @class = "text-danger" })
-                                        </td>
-                                        <td>
-                                            @Html.EditorFor(model => model.Detalles[i].PrecioSInImpuestos, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                            @Html.ValidationMessageFor(model => model.Detalles[i].PrecioSInImpuestos, "", new { @class = "text-danger" })
-                                        </td>
-                                        <td>
-                                            <table class="table">
-                                                <thead>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Factura.Total, htmlAttributes: new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10 ">
+                                            @Html.EditorFor(model => model.Factura.Total, new { htmlAttributes = new { @class = "form-control" } })
+                                            @Html.ValidationMessageFor(model => model.Factura.Total, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <br />
+                                    <strong>Impuestos de Factura</strong>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <td>C&oacute;digo</td>
+                                                    <td>C&oacute;digo Porcentaje</td>
+                                                    <td>Base Imponible</td>
+                                                    <td>Valor</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i < Model.Factura.Impuestos.Count; i++)
+                                                {
                                                     <tr>
-                                                        <td>C&oacute;digo</td>
-                                                        <td>C&oacute;digo Porcentaje</td>
-                                                        <td>Base imponible</td>
-                                                        <td>Tarifa</td>
-                                                        <td>Valor</td>
+                                                        <td>
+                                                            @Html.EditorFor(model => model.Factura.Impuestos[i].Codigo, new { htmlAttributes = new { @class = "form-control" } })
+                                                            @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].Codigo, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.EditorFor(model => model.Factura.Impuestos[i].CodigoPorcentaje, new { htmlAttributes = new { @class = "form-control" } })
+                                                            @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].CodigoPorcentaje, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.EditorFor(model => model.Factura.Impuestos[i].BaseImponible, new { htmlAttributes = new { @class = "form-control" } })
+                                                            @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].BaseImponible, "", new { @class = "text-danger" })
+                                                        </td>
+                                                        <td>
+                                                            @Html.EditorFor(model => model.Factura.Impuestos[i].Valor, new { htmlAttributes = new { @class = "form-control" } })
+                                                            @Html.ValidationMessageFor(model => model.Factura.Impuestos[i].Valor, "", new { @class = "text-danger" })
+                                                        </td>
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @for (int j = 0; j < Model.Detalles[i].Impuestos.Count; j++)
-                                                    {
-                                                        <tr>
-                                                            <td>
-                                                                @Html.EditorFor(model => model.Detalles[i].Impuestos[j].Codigo, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                                @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].Codigo, "", new { @class = "text-danger" })
-                                                            </td>
-                                                            <td>
-                                                                @Html.EditorFor(model => model.Detalles[i].Impuestos[j].CodigoPorcentaje, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                                @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].CodigoPorcentaje, "", new { @class = "text-danger" })
-                                                            </td>
-                                                            <td>
-                                                                @Html.EditorFor(model => model.Detalles[i].Impuestos[j].BaseImponible, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                                @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].BaseImponible, "", new { @class = "text-danger" })
-                                                            </td>
-                                                            <td>
-                                                                @Html.EditorFor(model => model.Detalles[i].Impuestos[j].Tarifa, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                                @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].Tarifa, "", new { @class = "text-danger" })
-                                                            </td>
-                                                            <td>
-                                                                @Html.EditorFor(model => model.Detalles[i].Impuestos[j].Valor, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
-                                                                @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].Valor, "", new { @class = "text-danger" })
-                                                            </td>
-                                                        </tr>
-                                                    }
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>
+                            </fieldset>
+                        </div>
                     </div>
-
-
-                </fieldset>
-
+                </div>
             </div>
 
         </div>
     </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-md-12" style="border-style: solid;">
+            <fieldset>
+                <legend>Detalle  de la Factura</legend>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <td>#</td>
+                                <td>C&oacute;digo</td>
+
+                                <td>Descripci&oacute;n</td>
+
+                                <td>Cantidad</td>
+
+                                <td>Precio Venta</td>
+
+                                <td>Precio Compra</td>
+
+                                <td>Descuento</td>
+
+                                <td>Precio sin impuesto</td>
+                                <td>Impuestos</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Detalles.Count; i++)
+                            {
+                            <tr>
+                                <td>@(i+1)</td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].Codigo, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].Codigo, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].Descripcion, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].Descripcion, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].Cantidad, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].Cantidad, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].PrecioVenta, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].PrecioVenta, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].PrecioCompra, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].PrecioCompra, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].Descuento, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].Descuento, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    @Html.EditorFor(model => model.Detalles[i].PrecioSInImpuestos, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Detalles[i].PrecioSInImpuestos, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <td>C&oacute;digo</td>
+                                                <td>C&oacute;digo Porcentaje</td>
+                                                <td>Base imponible</td>
+                                                <td>Tarifa</td>
+                                                <td>Valor</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @for (int j = 0; j < Model.Detalles[i].Impuestos.Count; j++)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @Html.EditorFor(model => model.Detalles[i].Impuestos[j].Codigo, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].Codigo, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.EditorFor(model => model.Detalles[i].Impuestos[j].CodigoPorcentaje, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].CodigoPorcentaje, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.EditorFor(model => model.Detalles[i].Impuestos[j].BaseImponible, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].BaseImponible, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.EditorFor(model => model.Detalles[i].Impuestos[j].Tarifa, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].Tarifa, "", new { @class = "text-danger" })
+                                                    </td>
+                                                    <td>
+                                                        @Html.EditorFor(model => model.Detalles[i].Impuestos[j].Valor, new { htmlAttributes = new { @class = "form-control" } })
+                                                        @Html.ValidationMessageFor(model => model.Detalles[i].Impuestos[j].Valor, "", new { @class = "text-danger" })
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </fieldset>
+
+        </div>
+
+    </div>
+</div>
 }

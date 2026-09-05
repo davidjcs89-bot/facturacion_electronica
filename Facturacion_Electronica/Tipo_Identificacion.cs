@@ -17,8 +17,8 @@ namespace Facturacion_Electronica
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Tipo_Identificacion()
         {
-            this.Clientes = new HashSet<Clientes>();
             this.Transportistas = new HashSet<Transportistas>();
+            this.Clientes = new HashSet<Clientes>();
         }
     
         public int id { get; set; }
@@ -26,8 +26,8 @@ namespace Facturacion_Electronica
         public string Codigo { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Clientes> Clientes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Transportistas> Transportistas { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Clientes> Clientes { get; set; }
     }
 }

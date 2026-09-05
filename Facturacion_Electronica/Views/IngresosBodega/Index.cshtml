@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Facturacion_Electronica.Models.Producto.ModeloIngresoExitencias>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Ingresos de Existencias</h2>
+
+<p>
+    <button type="button" id="nuevaFactura" class="btn btn-success" data-target="#nuevaFactura" onclick="location.href='/IngresosBodega/Create'">
+        Nuevo Ingreso
+    </button>
+</p>
+<table class="table">
+    <tr>
+        <th>
+            Nro de Ingreso
+        </th>
+        <th>
+            Fecha de Ingreso
+        </th>
+        <th>
+            Bodega
+        </th>
+        <th>
+            Total de Productos
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.Id)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Fecha)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Bodega)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.TotalItems)
+    </td>
+    <td>
+        <button type="button" id="editarFactura" class="btn bg-info" data-target="#editarFactura" onclick="location.href='/IngresosBodega/Details/@item.Id'">
+            Ver
+        </button>
+    </td>
+</tr>
+}
+
+</table>

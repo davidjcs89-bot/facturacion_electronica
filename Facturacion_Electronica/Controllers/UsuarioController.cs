@@ -29,13 +29,38 @@ namespace Facturacion_Electronica.Controllers
                 ViewBag.MensajeError = "Acceso Denegado";
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
             }
-            return View(new ModeloBuscarUsuario { Usuarios = new List<Usuario>() });
+
+            ViewBag.UsuariosActivos = db.Usuario.Count(x => x.Estado == EnumEstadoUsuario.ACTIVO).ToString();
+            ViewBag.UsuariosInactivos = db.Usuario.Count(x => x.Estado == EnumEstadoUsuario.INACTIVO).ToString();
+
+            Dictionary<int, string> estados = new Dictionary<int, string>
+            {
+                {  1, "ACTIVO" },
+                {  2, "INACTIVO" }
+            };
+
+            ViewBag.estados = new SelectList(estados, "Key", "Value", 1);
+
+            return View(new ModeloBuscarUsuario { BuscarPorEstado = 1, Usuarios = db.Usuario.Where(x => x.Estado == 1).OrderByDescending(x => x.id).Take(10).ToList() });
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Index(ModeloBuscarUsuario modelo)
         {
+
+            ViewBag.UsuariosActivos = db.Usuario.Count(x => x.Estado == EnumEstadoUsuario.ACTIVO).ToString();
+            ViewBag.UsuariosInactivos = db.Usuario.Count(x => x.Estado == EnumEstadoUsuario.INACTIVO).ToString();
+
+            Dictionary<int, string> estados = new Dictionary<int, string>
+            {
+                {  1, "ACTIVO" },
+                {  2, "INACTIVO" }
+            };
+
+            ViewBag.estados = new SelectList(estados, "Key", "Value", modelo.BuscarPorEstado);
+
             var productos = usuarioBusiness.BuscarUsuarios(modelo);
             modelo.Usuarios = productos;
             return View(modelo);
@@ -73,7 +98,7 @@ namespace Facturacion_Electronica.Controllers
                     {
                         usuarioBusiness.registrarUsuario(nuevoNsuario);
                         TempData["MensajeActualizacion"] = "Usuario creado correctamente";
-                        return RedirectToAction("Login","Login");
+                        return RedirectToAction("Login", "Login");
                     }
                     else
                     {
@@ -82,7 +107,7 @@ namespace Facturacion_Electronica.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("NombreUsuario","Nombre de usuario ya registrado");
+                    ModelState.AddModelError("NombreUsuario", "Nombre de usuario ya registrado");
                 }
 
             }
@@ -90,9 +115,8 @@ namespace Facturacion_Electronica.Controllers
             return View(nuevoNsuario);
         }
 
-
-
         // GET: Usuario/Edit/5
+        [Authorize]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,6 +128,14 @@ namespace Facturacion_Electronica.Controllers
             {
                 return HttpNotFound();
             }
+
+            Dictionary<int, string> estados = new Dictionary<int, string>
+            {
+                {  1, "ACTIVO" },
+                {  2, "INACTIVO" }
+            };
+
+            ViewBag.estados = new SelectList(estados, "Key", "Value", usuario.Estado);
             ViewBag.Id_Categoria = new SelectList(db.Categoria_usuarios, "id", "Descripcion", usuario.Id_Categoria);
             return View(usuario);
         }
@@ -111,18 +143,78 @@ namespace Facturacion_Electronica.Controllers
         // POST: Usuario/Edit/5
         // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que desea enlazarse. Para obtener 
         // más información vea https://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "id,Nombre_usuario,Clave,Nombre,Apellido,Correo,Numero_telefono,Direccion_Dom_cuenta,Ciudad,Provincia,Fecha_modificacion,Fecha_creacion,Estado,Id_Categoria,Notificaciones")] Usuario usuario)
+        public async Task<ActionResult> Edit(Usuario model)
         {
+            Dictionary<int, string> estados = new Dictionary<int, string>
+            {
+                {  1, "ACTIVO" },
+                {  2, "INACTIVO" }
+            };
+
+            ViewBag.estados = new SelectList(estados, "Key", "Value", model.Estado);
+            ViewBag.Id_Categoria = new SelectList(db.Categoria_usuarios, "id", "Descripcion", model.Id_Categoria);
+
+            Usuario usuario = await db.Usuario.FindAsync(model.id);
+            if (usuario == null)
+            {
+                return HttpNotFound();
+            }
+
             if (ModelState.IsValid)
             {
-                db.Entry(usuario).State = EntityState.Modified;
+                usuario.Fecha_modificacion = DateTime.Now;
+                usuario.Notificaciones = model.Notificaciones;
+                usuario.Estado = model.Estado;
+                usuario.Id_Categoria = model.Id_Categoria;
+
+                // Actulizar estado a los emisores
+                var emisores = db.Emisor.Where(x => x.id == usuario.id_emisor).ToList();
+                emisores.ForEach(x => x.estado = model.Estado);
+
                 await db.SaveChangesAsync();
-                return RedirectToAction("Index");
+
+                ViewBag.Mensaje = "Actualizado Correctamente";
+
+                return View(usuario);
             }
-            ViewBag.Id_Categoria = new SelectList(db.Categoria_usuarios, "id", "Descripcion", usuario.Id_Categoria);
-            return View(usuario);
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        public ActionResult Delete(int id)
+        {
+            var usuario = db.Usuario.Find(id);
+
+            if (usuario == null)
+            {
+                return Json(new { eliminado = false, mensaje = "Usuario no existe" });
+            }
+
+            // Comprobar si posee facturas acturizadas
+            if (db.Factura.Any(x => x.id_emisor == usuario.id_emisor && x.Estado == EnumEstadosComprobante.AUTORIZADO))
+            {
+                return Json(new { eliminado = false, mensaje = "Usuario posee facturas autorizadas" });
+            }
+
+            usuario.Estado = 3;
+            usuario.Fecha_modificacion = DateTime.Now;
+            usuario.Nombre_usuario = ".";
+            usuario.Nombre = ".";
+            usuario.Correo = ".";
+
+            // Actulizar estado a los emisores
+            var emisores = db.Emisor.Where(x => x.id == usuario.id_emisor).ToList();
+            emisores.ForEach(x => x.estado = 3);
+            emisores.ForEach(x => x.Ruc = "0");
+
+            db.SaveChanges();
+
+            return Json(new { eliminado = true, mensaje = "" });
         }
 
         [Authorize]
@@ -130,7 +222,7 @@ namespace Facturacion_Electronica.Controllers
         public async Task<ActionResult> ObtenerDiasRestantes()
         {
             var usuario = GetUsuarioLogeado();
-            var emisor = await db.Emisor.FirstOrDefaultAsync(x=>x.id == usuario.IdEmisor);
+            var emisor = await db.Emisor.FirstOrDefaultAsync(x => x.id == usuario.IdEmisor);
             if (emisor == null || emisor.Emisor_habilitacion == null)
             {
                 return Json(new { dias = 0 }, JsonRequestBehavior.AllowGet);

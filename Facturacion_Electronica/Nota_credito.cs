@@ -49,7 +49,6 @@ namespace Facturacion_Electronica
         public int id_factura_devolver { get; set; }
         public Nullable<System.DateTime> fecha_autorizacion { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Datos_Adicionales_Nota_Credito> Datos_Adicionales_Nota_Credito { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -59,5 +58,6 @@ namespace Facturacion_Electronica
         public virtual Nota_credito Nota_credito1 { get; set; }
         public virtual Nota_credito Nota_credito2 { get; set; }
         public virtual Puntos_emisior Puntos_emisior { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

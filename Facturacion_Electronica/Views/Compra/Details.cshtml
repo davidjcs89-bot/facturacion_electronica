@@ -1,0 +1,91 @@
+﻿@model Facturacion_Electronica.Compra
+
+@{
+    ViewBag.Title = "Compra";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<br />
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-6" style="border-style: solid;">
+            <fieldset>
+                <legend>Datos de la Compra</legend>
+                <p>N&uacute;mero: <strong>@Model.id</strong></p>
+                <p>Fecha de Ingreso: <strong>@Model.fecha_creacion</strong></p>
+                <p>Bodega: <strong>@Model.Bodegas.nombre</strong></p>
+                <p>Estado: <strong>@(Model.estado == 1 ? "INGRESADA" : "ANULADA" ) </strong></p>
+                <p>Total: <strong>$@Model.total</strong></p>
+            </fieldset>
+        </div>
+        <div class="col-md-6" style="border-style: solid;">
+            <fieldset>
+                <legend>Datos de la Factura</legend>
+                <p>Clave Acceso: <strong>@Model.clave</strong></p>
+                <p>N&uacute;mero: <strong>@Model.numero</strong></p>
+                <p>Fecha de Emisión: <strong>@Model.fecha.ToString("dd/MM/yyyy")</strong></p>
+                <p>RUC: <strong>@Model.Clientes.identificacion</strong>
+                <p>Emisor: <strong>@Model.Clientes.nombre_cliente</strong>
+            </fieldset>
+        </div>
+    </div>
+
+
+</div>
+<br />
+<div class="table-responsive" style="border-style: solid;">
+    <fieldset>
+        <legend>Detalle</legend>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>
+                        C&oacute;digo Producto
+                    </th>
+                    <th>
+                        Producto
+                    </th>
+                    <th>
+                        Precio Compra
+                    </th>
+                    <th>
+                        Cantidad
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int id = 1;
+                }
+                @foreach (var item in Model.Detalle_Compra)
+                {
+                    <tr>
+                        <td>@id</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.codigo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.precio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.cantidad)
+                        </td>
+                    </tr>
+
+                    id++;
+
+                }
+            </tbody>
+        </table>
+    </fieldset>
+
+</div>
+<br />
+
+

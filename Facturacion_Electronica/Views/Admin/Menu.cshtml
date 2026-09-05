@@ -23,20 +23,28 @@
                     <li>@Html.ActionLink("Factura", "Index", "Factura", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Nota de Credito", "Index", "NotaCredito", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Guia de Remision", "Index", "GuiaRemision", null, new { target = "_blank" })</li>
-                    <li>@Html.ActionLink("Compra", "Index", "Compra", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Compras", "Index", "Compra", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Liquidacion de Compra", "Index", "LiquidacionCompra", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Nota de Debito", "Index", "NotaDebito", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Comp. de Retencion Cliente", "Index", "Retencion", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Pedido", "Index", "Pedido", null, new { target = "_blank" })</li>
                 </ul>
             </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Administracion<b class="caret"></b></a>
                 <ul class="dropdown-menu ">
-                    <li>@Html.ActionLink("Clientes", "Index", "Cliente", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Productos", "Index", "Producto", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Clientes", "Index", "Cliente", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Atrib. Fichas Clientes", "Index", "AtributosFichasClientes", null, new { target = "_blank" })</li>
                     <li>@Html.ActionLink("Transportitas", "Index", "Transportista", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Bodegas", "Index", "Bodega", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Ingreso Existencias", "Index", "IngresosBodega", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Consulta Existencias", "Existencias", "Bodega", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Transferencia entre Bodegas", "Index", "TransferenciaInventario", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Facturas Autorizadas", "ReporteExcel", "Factura", null, new { target = "_blank" })</li>
                 </ul>
             </li>
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Observaciones<b class="caret"></b></a>
                 <ul class="dropdown-menu ">
@@ -86,10 +94,10 @@ else
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Configuracion<b class="caret"></b></a>
                 <ul class="dropdown-menu ">
-                    <li>@Html.ActionLink("Avisos", "Index", "Aviso")</li>
-                    <li>@Html.ActionLink("Emisores", "Index", "Emisor")</li>
-                    <li>@Html.ActionLink("Usuarios", "Index", "Usuario")</li>
-                    <li>@Html.ActionLink("Correos Electronicos", "Index", "CuentaCorreo")</li>
+                    <li>@Html.ActionLink("Emisores", "Index", "Emisor", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Usuarios", "Index", "Usuario", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Avisos", "Index", "Aviso", null, new { target = "_blank" })</li>
+                    <li>@Html.ActionLink("Correos Electronicos", "Index", "CuentaCorreo", null, new { target = "_blank" })</li>
                 </ul>
             </li>
             <li class="dropdown">

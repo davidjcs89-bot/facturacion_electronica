@@ -30,12 +30,16 @@ namespace Facturacion_Electronica
         public decimal total_sin_impuestos { get; set; }
         public decimal total_descuento { get; set; }
         public decimal total { get; set; }
+        public Nullable<System.DateTime> fecha_creacion { get; set; }
+        public int estado { get; set; }
+        public int id_bodega { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         public virtual Emisor Emisor { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Detalle_Compra> Detalle_Compra { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Impuestos_Compra> Impuestos_Compra { get; set; }
+        public virtual Bodegas Bodegas { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

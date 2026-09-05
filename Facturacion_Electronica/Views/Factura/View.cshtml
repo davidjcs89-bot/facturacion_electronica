@@ -5,6 +5,22 @@
 }
 
 <h2>Factura</h2>
+
+@*<p style="text-align:right">
+    @if (Model.Estado != 8 && Model.Estado != 6)
+    {
+        <button type="button" id="recalculaFactura" class="btn btn-success" data-target="#recalculaFactura" onclick="RecalcularValores()" style="margin-top:15px">
+            Recalcular Valores
+        </button>
+    }
+    @if (Model.Estado != 8)
+    {
+        <button type="button" id="anulaFactura" class="btn btn-danger" data-target="#anulaFactura" onclick="Anular()" style="margin-top:15px">
+            Anular
+        </button>
+    }
+</p>*@
+
 <div class="container">
     @Html.HiddenFor(model => model.Id, new { @class = "text-danger", @id = "id-factura" })
     <div class="row">
@@ -122,41 +138,41 @@
 
                 @foreach (var item in Model.Detalles)
                 {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Producto.CodigoPrincipal)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Producto.Nombre)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Adicional)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PrecioUnitario)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Cantidad)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Descuento)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Subtotal)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValorIva)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValorIce)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ValorIrbpnr)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Total)
-                </td>
-            </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.CodigoPrincipal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Adicional)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PrecioUnitario)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Cantidad)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Descuento)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Subtotal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIva)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIce)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValorIrbpnr)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Total)
+                        </td>
+                    </tr>
                 }
 
             </table>

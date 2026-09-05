@@ -111,64 +111,96 @@
 
             @foreach (var item in Model.Guias)
             {
-                var colorFila = item.estado == 1 ? "#faaa99" : "white";
+                var colorFila = "";
+                var colorLetra = "black";
 
-                <tr style="background-color:@colorFila">
-                    <td>
-                        @switch (item.estado)
-                        {
-                            case 1:
-                                <p>PENDIENTE</p>
-                                break;
-                            case 2: <p>PAGADO</p>
-                                break;
-                            case 3: <p>FINALIZADO</p>
-                                break;
-                            case 4: <p>RECIBIDO</p>
-                                break;
-                            case 5: <p>NO_RECIBIDO</p>
-                                break;
-                            case 6: <p>AUTORIZADO</p>
-                                break;
-                            case 7: <p>NO_AUTORIZADO</p>
-                                break;
-                        }
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.fecha_creacion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.fecha_modificacion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Fecha_inicio_transporte)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Numero_comprobante)
-                    </td>
-                    @{
-                        var cliente = item.Transportistas.Numero_identificacion + "<br/>" + item.Transportistas.Nombre;
-                    }
-                    <td>
-                        @Html.Raw(cliente)
-                    </td>
-                    @if (item.estado != 3 && item.estado != 6)
-                    {
-                        <td>
-                            <button type="button" id="editarFactura" class="btn btn-info btn-editar" data-target="#editarGuia" onclick="location.href='/GuiaRemision/Edit/@item.id'">
-                                Editar
-                            </button>
-                        </td>
-                    }
-                    else
-                    {
-                        <td>
-                            <button type="button" id="editarFactura" class="btn bg-info" data-target="#editarGuia" onclick="location.href='/GuiaRemision/View/@item.id'">
-                                Ver
-                            </button>
-                        </td>
-                    }
-                </tr>
+                switch (item.estado)
+                {
+                    case 1:
+                        colorFila = "#faaa99";
+                        break;
+                    case 2:
+                        colorFila = "white";
+                        break;
+                    case 3:
+                        colorFila = "#f3130c";
+                        colorLetra = "white";
+                        break;
+                    case 4:
+                        colorFila = "white";
+                        break;
+                    case 5:
+                        colorFila = "white";
+                        break;
+                    case 6:
+                        colorFila = "white";
+                        break;
+                    case 7:
+                        colorFila = "white";
+                        break;
+                }
+
+
+        <tr style="background-color:@colorFila;color:@colorLetra">
+            <td>
+            <td>
+                @switch (item.estado)
+                {
+                    case 1:
+                        <p>PENDIENTE</p>
+                        break;
+                    case 2: <p>PAGADO</p>
+                        break;
+                    case 3: <p>FINALIZADO</p>
+                        break;
+                    case 4: <p>RECIBIDO</p>
+                        break;
+                    case 5: <p>NO_RECIBIDO</p>
+                        break;
+                    case 6: <p>AUTORIZADO</p>
+                        break;
+                    case 7: <p>NO_AUTORIZADO</p>
+                        break;
+                    case 8: <p>ANULADO</p>
+                        break;
+                }
+            </td>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fecha_creacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fecha_modificacion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha_inicio_transporte)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Numero_comprobante)
+            </td>
+            @{
+                var cliente = item.Transportistas.Numero_identificacion + "<br/>" + item.Transportistas.Nombre;
+            }
+            <td>
+                @Html.Raw(cliente)
+            </td>
+            @if (item.estado != 3 && item.estado != 6)
+            {
+                <td>
+                    <button type="button" id="editarFactura" class="btn btn-info btn-editar" data-target="#editarGuia" onclick="location.href='/GuiaRemision/Edit/@item.id'">
+                        Editar
+                    </button>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <button type="button" id="editarFactura" class="btn bg-info" data-target="#editarGuia" onclick="location.href='/GuiaRemision/View/@item.id'">
+                        Ver
+                    </button>
+                </td>
+            }
+        </tr>
             }
 
         </table>

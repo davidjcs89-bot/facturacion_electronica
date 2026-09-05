@@ -17,9 +17,12 @@ namespace Facturacion_Electronica
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Emisor()
         {
-            this.Clientes = new HashSet<Clientes>();
+            this.Bodegas = new HashSet<Bodegas>();
+            this.Compra = new HashSet<Compra>();
             this.Factura = new HashSet<Factura>();
             this.Guia_remision = new HashSet<Guia_remision>();
+            this.impresion_comprobantes = new HashSet<impresion_comprobantes>();
+            this.Ingresos_bodega = new HashSet<Ingresos_bodega>();
             this.Liquidacion_Compra = new HashSet<Liquidacion_Compra>();
             this.Nota_credito = new HashSet<Nota_credito>();
             this.Nota_debito = new HashSet<Nota_debito>();
@@ -28,8 +31,10 @@ namespace Facturacion_Electronica
             this.Retencion = new HashSet<Retencion>();
             this.Transportistas = new HashSet<Transportistas>();
             this.Usuario = new HashSet<Usuario>();
-            this.impresion_comprobantes = new HashSet<impresion_comprobantes>();
-            this.Compra = new HashSet<Compra>();
+            this.Transferencia_Inventario = new HashSet<Transferencia_Inventario>();
+            this.Clientes = new HashSet<Clientes>();
+            this.Pedido = new HashSet<Pedido>();
+            this.Atributos_fichas_clientes = new HashSet<Atributos_fichas_clientes>();
         }
     
         public int id { get; set; }
@@ -48,9 +53,13 @@ namespace Facturacion_Electronica
         public System.DateTime fecha_modificacion { get; set; }
         public int id_impuesto_iva_actual { get; set; }
         public string adicionales_comprobantes { get; set; }
+        public bool control_inventario { get; set; }
+        public int estado { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Clientes> Clientes { get; set; }
+        public virtual ICollection<Bodegas> Bodegas { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Compra> Compra { get; set; }
         public virtual Tipo_ambientes Tipo_ambientes { get; set; }
         public virtual Emisor_habilitacion Emisor_habilitacion { get; set; }
         public virtual Porcentaje_impuesto_producto Porcentaje_impuesto_producto { get; set; }
@@ -58,6 +67,10 @@ namespace Facturacion_Electronica
         public virtual ICollection<Factura> Factura { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Guia_remision> Guia_remision { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<impresion_comprobantes> impresion_comprobantes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Ingresos_bodega> Ingresos_bodega { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Liquidacion_Compra> Liquidacion_Compra { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -75,8 +88,12 @@ namespace Facturacion_Electronica
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Usuario> Usuario { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<impresion_comprobantes> impresion_comprobantes { get; set; }
+        public virtual ICollection<Transferencia_Inventario> Transferencia_Inventario { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Compra> Compra { get; set; }
+        public virtual ICollection<Clientes> Clientes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Pedido> Pedido { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Atributos_fichas_clientes> Atributos_fichas_clientes { get; set; }
     }
 }

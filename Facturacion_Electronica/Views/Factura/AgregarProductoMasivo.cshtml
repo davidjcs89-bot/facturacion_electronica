@@ -1,0 +1,129 @@
+﻿@model Facturacion_Electronica.Models.Producto.ModeloBuscarProducto
+
+@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("AgregarProducto", "Factura", null, FormMethod.Post, new { id = "frm-agregar-producto", autocomplete = "off" }))
+{
+
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="container">
+            @Html.HiddenFor(modelo => modelo.IdFactura)
+            <fieldset>
+                <div class="form-horizontal">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BuscarPorCodigo, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.BuscarPorCodigo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BuscarPorEstilo, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.BuscarPorEstilo, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.BuscarPorNombre, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.BuscarPorNombre, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+                            <small style="font-style:italic">Ejm: Prod o Serv</small>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input id="btn-buscar" type="button" value="Buscar" class="btn btn-default" onclick="BuscarProductoMasivo()" />
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+        <div class="table-responsive" style="max-height:480px">
+            <table class="table">
+                <thead class="thead-dark" style="position: sticky; top: 0; background: #6a6a6a; color:white">
+                    <tr>
+                        <th>Cantidad</th>
+                        <th>
+                            Codigo
+                        </th>
+                        <th>
+                            Codigo auxiliar
+                        </th>
+                        <th>
+                            Producto
+                        </th>
+                        <th>
+                            Precio
+                        </th>
+                        <th>
+                            Stock
+                        </th>
+                        <th>
+                            %IVA
+                        </th>
+                        <th>
+                            ICE
+                        </th>
+                        <th>
+                            IRBPNR
+                        </th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.Productos.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.HiddenFor(modelo => Model.Productos[i].id)
+                                @Html.EditorFor(model => Model.Productos[i].Cantidad_producto, new { htmlAttributes = new { @id = "qty-" + Model.Productos[i].id, @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => Model.Productos[i].Cantidad_producto, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Codigo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Codigo_auxiliar)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Nombre)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Precio)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Cantidad_producto)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Porcentaje_impuesto_producto2.Descripcion)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Porcentaje_impuesto_producto.Descripcion)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => Model.Productos[i].Porcentaje_impuesto_producto1.Descripcion)
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        @Html.ValidationMessageFor(model => model.IdFactura, "", new { @class = "text-danger" })
+        <div class="col-md-offset-2 col-md-10">
+            <input type="button" value="Agregar Productos" class="btn btn-default" onclick="AgregarProductosMasivo();" />
+        </div>
+    </div>
+
+}
+

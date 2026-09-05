@@ -11,28 +11,48 @@ namespace Facturacion_Electronica.Business
     {
         private FacturacionElectronicaEntities _db = new FacturacionElectronicaEntities();
 
-        public List<Producto> BuscarProductos(ModeloBuscarProducto modeloBuscar, int IdEmisor)
+        public List<Producto> BuscarProductos(ModeloBuscarProducto modeloBuscar, int IdEmisor, int idBodega)
         {
+            var productosFiltrados = new List<Producto>();
+
             if (modeloBuscar.BuscarTodos)
             {
-                return _db.Producto.Where(x => x.id_emisor == IdEmisor).ToList();
+                productosFiltrados = _db.Producto.Where(x => x.id_emisor == IdEmisor).ToList();
             }
-            if (modeloBuscar.BuscarPorCodigo != null && modeloBuscar.BuscarPorCodigo.Trim().Length > 0)
+            else if(modeloBuscar.BuscarPorCodigo != null && modeloBuscar.BuscarPorCodigo.Trim().Length > 0)
             {
-                return _db.Producto.Where(x => x.id_emisor == IdEmisor && x.Codigo.ToUpper() == modeloBuscar.BuscarPorCodigo.ToUpper()).ToList();
+                productosFiltrados = _db.Producto.Where(x => x.id_emisor == IdEmisor && x.Codigo.ToUpper() == modeloBuscar.BuscarPorCodigo.ToUpper()).ToList();
             }
             else if (modeloBuscar.BuscarPorEstilo != null && modeloBuscar.BuscarPorEstilo.Trim().Length > 0)
             {
-                return _db.Producto.Where(x => x.id_emisor == IdEmisor && x.Codigo_auxiliar.ToUpper() == modeloBuscar.BuscarPorEstilo.ToUpper()).ToList();
+                productosFiltrados = _db.Producto.Where(x => x.id_emisor == IdEmisor && x.Codigo_auxiliar.ToUpper() == modeloBuscar.BuscarPorEstilo.ToUpper()).ToList();
             }
             else if (modeloBuscar.BuscarPorNombre != null && modeloBuscar.BuscarPorNombre.Trim().Length > 0)
             {
-                return _db.Producto.Where(x => x.id_emisor == IdEmisor && x.Nombre.ToUpper().Contains(modeloBuscar.BuscarPorNombre.ToUpper())).ToList();
+                productosFiltrados = _db.Producto.Where(x => x.id_emisor == IdEmisor && x.Nombre.ToUpper().Contains(modeloBuscar.BuscarPorNombre.ToUpper())).ToList();
             }
             else
             {
                 return new List<Producto>();
             }
+
+            //Agregar stock
+            for (int i=0;i<productosFiltrados.Count;i++)
+            {
+                var idProducto = productosFiltrados[i].id;
+                var stock = _db.Productos_x_bodega.FirstOrDefault(x=>x.id_producto == idProducto && x.id_bodega == idBodega);
+
+                if (stock != null)
+                {
+                    productosFiltrados[i].Cantidad_producto = stock.stock;
+                }else if (idBodega != 0)
+                {
+                    productosFiltrados[i].Cantidad_producto = 0;
+                }
+
+            }
+
+            return productosFiltrados;
         }
 
         public void CrearProducto(ModeloProducto modeloProducto, int idEmisor)
@@ -108,12 +128,13 @@ namespace Facturacion_Electronica.Business
                 Nombre = producto.Nombre,
                 Precio = producto.Precio,
                 TipoProductoId = producto.Tipo_producto,
-                Cantidad = producto.Cantidad_producto??0,
+                Cantidad = producto.Productos_x_bodega.Sum(x=>x.stock),
                 Costo = producto.Costo_producto??0,
                 FechaElavoracion = producto.Fecha_elavoracionproducto??new DateTime(2020,1,1),
                 FechaCaducidad = producto.Fecha_caducidadproducto ?? new DateTime(2020, 1, 1),
                 Imagen = producto.imagen,
-                Atributos = new List<AtributoProducto>(new AtributoProducto[numeroAtributos])
+                Atributos = new List<AtributoProducto>(new AtributoProducto[numeroAtributos]),
+                Existencias = new List<ExistenciasProducto>()
             };
 
             foreach (var atributo in producto.Atributos_adicionales_producto.ToList())
@@ -125,10 +146,19 @@ namespace Facturacion_Electronica.Business
                 });
             }
 
+            foreach (var extencia in _db.Productos_x_bodega.Where(x=>x.id_producto == producto.id).ToList())
+            {
+                modeloProducto.Existencias.Add(new ExistenciasProducto
+                {
+                    Bodega = extencia.Bodegas.nombre,
+                    Cantidad = extencia.stock
+                });
+            }
+
             return modeloProducto;
         }
 
-        public void ActualizarProducto(ModeloProducto modeloProducto)
+        public void ActualizarProducto(ModeloProducto modeloProducto, bool actualizaImagen)
         {
             var producto = _db.Producto.Find(modeloProducto.Id);
             if (producto == null)
@@ -140,7 +170,6 @@ namespace Facturacion_Electronica.Business
             {
                 _db.Atributos_adicionales_producto.Remove(atributo);
             }
-
 
             producto.Codigo = modeloProducto.CodigoPrincipal;
             producto.Codigo_auxiliar = modeloProducto.CodigoAuxiliar;
@@ -155,8 +184,10 @@ namespace Facturacion_Electronica.Business
             producto.Costo_producto = modeloProducto.Costo;
             producto.Fecha_elavoracionproducto = modeloProducto.FechaElavoracion;
             producto.Fecha_caducidadproducto = modeloProducto.FechaCaducidad;
-            producto.imagen = modeloProducto.Imagen;
-
+            if (actualizaImagen)
+            {
+                producto.imagen = modeloProducto.Imagen;
+            }
 
             foreach (var atributo in modeloProducto.Atributos)
             {
@@ -174,5 +205,80 @@ namespace Facturacion_Electronica.Business
 
             _db.SaveChanges();
         }
+
+        /// <summary>
+        /// Agregar productos cargados desde un archivo excel
+        /// </summary>
+        /// <param name="modelo">Modelo donde llegan datos de la bodega y el detalle de productos</param>
+        /// <param name="idEmisor">id del emisor</param>
+        /// <returns></returns>
+        public String CargarExistenciasBodega(ModeloIngresoExitencias modelo, int idEmisor)
+        {
+            //Comprobar que exista la bodega
+            var bodega = _db.Bodegas.FirstOrDefault(x=>x.id == modelo.IdBodega && x.id_emisor == idEmisor);
+
+            if (bodega == null)
+            {
+                return "No existe la bodega la cual se ingresaran las existencias";
+            }
+
+            if (!bodega.activa)
+            {
+                return "No existe la bodega la cual se ingresaran las existencias esta inactiva";
+            }
+
+            //Crear un nuevo registros de ingreso
+            var ingreso = new Ingresos_bodega
+            {
+                Ingresos_bodega_detalle = new List<Ingresos_bodega_detalle>(),
+                id_emisor = idEmisor,
+                id_bodega = modelo.IdBodega,
+                fecha = DateTime.Now
+            };
+
+            //Ingresar las existencias
+            foreach (var detalle in modelo.detalle)
+            {
+                var producto = _db.Producto.FirstOrDefault(x=>x.id == detalle.producto.Id && x.id_emisor == idEmisor);
+
+                if (producto == null)
+                {
+                    return $"El producto {detalle.producto.CodigoPrincipal} no existe";
+                }
+
+                //La cantidad debe ser mayor a cero
+                if (detalle.Cantidad <= 0)
+                {
+                    return $"La cantidad del producto {detalle.producto.CodigoPrincipal} debe ser mayor a cero";
+                }
+
+                //comprobar si ya existe un registro del producto en la bodega
+                var detalleExistenciaBodega = _db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.producto.Id && x.id_bodega == bodega.id);
+                if (detalleExistenciaBodega == null)
+                {
+                    _db.Productos_x_bodega.Add(new Productos_x_bodega
+                    {
+                        id_producto = detalle.producto.Id,
+                        id_bodega = bodega.id,
+                        stock = detalle.Cantidad
+                    }) ;
+                }
+                else
+                {
+                    detalleExistenciaBodega.stock += detalle.Cantidad;
+                }
+
+                ingreso.Ingresos_bodega_detalle.Add(new Ingresos_bodega_detalle
+                {
+                    cantidad = detalle.Cantidad,
+                    id_producto = detalle.producto.Id
+                });
+            }
+
+            _db.Ingresos_bodega.Add(ingreso);
+            _db.SaveChanges();
+            return null;
+        }
+
     }
 }

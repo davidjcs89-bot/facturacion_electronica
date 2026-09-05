@@ -56,12 +56,20 @@ namespace Facturacion_Electronica.Models.Producto
         public byte[] Imagen { get; set; }
 
         public List<AtributoProducto> Atributos { get; set; }
+        public List<ExistenciasProducto> Existencias { get; set; }
     }
 
     public class AtributoProducto {
         public int Id { get; set; }
         public string Atributo { get; set; }
         public string Valor { get; set; }
+    }
+
+    public class ExistenciasProducto
+    {
+        public int Id { get; set; }
+        public string Bodega { get; set; }
+        public int Cantidad { get; set; }
     }
 
 }

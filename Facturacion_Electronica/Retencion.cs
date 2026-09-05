@@ -33,12 +33,12 @@ namespace Facturacion_Electronica
         public int estado { get; set; }
         public Nullable<System.DateTime> fecha_autorizacion { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Datos_Adicionales_Retencion> Datos_Adicionales_Retencion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Detalle_retencion> Detalle_retencion { get; set; }
         public virtual Emisor Emisor { get; set; }
         public virtual Puntos_emisior Puntos_emisior { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

@@ -423,7 +423,7 @@ namespace Facturacion_Electronica.Controllers
         [HttpPost]
         public ActionResult BuscarProducto(ModeloBuscarProducto modelo)
         {
-            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor);
+            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor,0);
             modelo.Productos = productos;
             return View("AgregarProducto", modelo);
         }

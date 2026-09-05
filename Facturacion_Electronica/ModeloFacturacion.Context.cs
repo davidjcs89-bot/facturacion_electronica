@@ -28,16 +28,21 @@ namespace Facturacion_Electronica
         }
     
         public virtual DbSet<Atributos_adicionales_producto> Atributos_adicionales_producto { get; set; }
+        public virtual DbSet<Avisos> Avisos { get; set; }
+        public virtual DbSet<Bodegas> Bodegas { get; set; }
         public virtual DbSet<Categoria_usuarios> Categoria_usuarios { get; set; }
-        public virtual DbSet<Clientes> Clientes { get; set; }
         public virtual DbSet<codigos_seguridad> codigos_seguridad { get; set; }
         public virtual DbSet<Cola_envio_comprobantes> Cola_envio_comprobantes { get; set; }
+        public virtual DbSet<Compra> Compra { get; set; }
+        public virtual DbSet<Cuentas_correo> Cuentas_correo { get; set; }
+        public virtual DbSet<Datos_Adicionales_Cliente> Datos_Adicionales_Cliente { get; set; }
         public virtual DbSet<Datos_Adicionales_Factura> Datos_Adicionales_Factura { get; set; }
         public virtual DbSet<Datos_Adicionales_Guia_Remision> Datos_Adicionales_Guia_Remision { get; set; }
         public virtual DbSet<Datos_Adicionales_Liquidacion> Datos_Adicionales_Liquidacion { get; set; }
         public virtual DbSet<Datos_Adicionales_Nota_Credito> Datos_Adicionales_Nota_Credito { get; set; }
         public virtual DbSet<Datos_Adicionales_Nota_Debito> Datos_Adicionales_Nota_Debito { get; set; }
         public virtual DbSet<Datos_Adicionales_Retencion> Datos_Adicionales_Retencion { get; set; }
+        public virtual DbSet<Detalle_Compra> Detalle_Compra { get; set; }
         public virtual DbSet<Detalle_factura> Detalle_factura { get; set; }
         public virtual DbSet<Detalle_Liquidacion> Detalle_Liquidacion { get; set; }
         public virtual DbSet<Detalle_nota_credito> Detalle_nota_credito { get; set; }
@@ -55,14 +60,21 @@ namespace Facturacion_Electronica
         public virtual DbSet<Formas_de_Pago> Formas_de_Pago { get; set; }
         public virtual DbSet<Guia_remision> Guia_remision { get; set; }
         public virtual DbSet<Guia_remision_destinatario> Guia_remision_destinatario { get; set; }
+        public virtual DbSet<impresion_comprobantes> impresion_comprobantes { get; set; }
+        public virtual DbSet<Impuesto_Detalle_Compra> Impuesto_Detalle_Compra { get; set; }
         public virtual DbSet<Impuesto_porcentaje_retencion> Impuesto_porcentaje_retencion { get; set; }
+        public virtual DbSet<Impuestos_Compra> Impuestos_Compra { get; set; }
         public virtual DbSet<Impuestos_producto> Impuestos_producto { get; set; }
         public virtual DbSet<Impuestos_retencion> Impuestos_retencion { get; set; }
+        public virtual DbSet<Ingresos_bodega> Ingresos_bodega { get; set; }
+        public virtual DbSet<Ingresos_bodega_detalle> Ingresos_bodega_detalle { get; set; }
         public virtual DbSet<Liquidacion_Compra> Liquidacion_Compra { get; set; }
+        public virtual DbSet<Log> Log { get; set; }
         public virtual DbSet<Nota_credito> Nota_credito { get; set; }
         public virtual DbSet<Nota_debito> Nota_debito { get; set; }
         public virtual DbSet<Porcentaje_impuesto_producto> Porcentaje_impuesto_producto { get; set; }
         public virtual DbSet<Producto> Producto { get; set; }
+        public virtual DbSet<Productos_x_bodega> Productos_x_bodega { get; set; }
         public virtual DbSet<Proforma> Proforma { get; set; }
         public virtual DbSet<Puntos_emisior> Puntos_emisior { get; set; }
         public virtual DbSet<Retencion> Retencion { get; set; }
@@ -76,20 +88,70 @@ namespace Facturacion_Electronica
         public virtual DbSet<Tipo_producto> Tipo_producto { get; set; }
         public virtual DbSet<Transportistas> Transportistas { get; set; }
         public virtual DbSet<Usuario> Usuario { get; set; }
-        public virtual DbSet<Cuentas_correo> Cuentas_correo { get; set; }
-        public virtual DbSet<impresion_comprobantes> impresion_comprobantes { get; set; }
         public virtual DbSet<vw_comprobantes_no_autorizados> vw_comprobantes_no_autorizados { get; set; }
-        public virtual DbSet<Compra> Compra { get; set; }
-        public virtual DbSet<Detalle_Compra> Detalle_Compra { get; set; }
-        public virtual DbSet<Impuesto_Detalle_Compra> Impuesto_Detalle_Compra { get; set; }
-        public virtual DbSet<Impuestos_Compra> Impuestos_Compra { get; set; }
-        public virtual DbSet<Datos_Adicionales_Cliente> Datos_Adicionales_Cliente { get; set; }
-        public virtual DbSet<Avisos> Avisos { get; set; }
-        public virtual DbSet<Log> Log { get; set; }
+        public virtual DbSet<Detalle_Transferencia_Inventario> Detalle_Transferencia_Inventario { get; set; }
+        public virtual DbSet<Transferencia_Inventario> Transferencia_Inventario { get; set; }
+        public virtual DbSet<Clientes> Clientes { get; set; }
+        public virtual DbSet<Detalle_pedido> Detalle_pedido { get; set; }
+        public virtual DbSet<Pedido> Pedido { get; set; }
+        public virtual DbSet<Abonos_Pedido> Abonos_Pedido { get; set; }
+        public virtual DbSet<Atributos_fichas_clientes> Atributos_fichas_clientes { get; set; }
+        public virtual DbSet<Fichas_clientes> Fichas_clientes { get; set; }
     
         public virtual int consultas_comprobantes(ObjectParameter lista)
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("consultas_comprobantes", lista);
+        }
+    
+        public virtual int SP_Reporte_Facturas(Nullable<int> idEmisor, string fechaDesde, string fechaHasta, ObjectParameter report)
+        {
+            var idEmisorParameter = idEmisor.HasValue ?
+                new ObjectParameter("idEmisor", idEmisor) :
+                new ObjectParameter("idEmisor", typeof(int));
+    
+            var fechaDesdeParameter = fechaDesde != null ?
+                new ObjectParameter("fechaDesde", fechaDesde) :
+                new ObjectParameter("fechaDesde", typeof(string));
+    
+            var fechaHastaParameter = fechaHasta != null ?
+                new ObjectParameter("fechaHasta", fechaHasta) :
+                new ObjectParameter("fechaHasta", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_Reporte_Facturas", idEmisorParameter, fechaDesdeParameter, fechaHastaParameter, report);
+        }
+    
+        public virtual int SP_Kardex_fechas(Nullable<int> idProducto, string fechaDesde, string fechaHasta, ObjectParameter report)
+        {
+            var idProductoParameter = idProducto.HasValue ?
+                new ObjectParameter("idProducto", idProducto) :
+                new ObjectParameter("idProducto", typeof(int));
+    
+            var fechaDesdeParameter = fechaDesde != null ?
+                new ObjectParameter("fechaDesde", fechaDesde) :
+                new ObjectParameter("fechaDesde", typeof(string));
+    
+            var fechaHastaParameter = fechaHasta != null ?
+                new ObjectParameter("fechaHasta", fechaHasta) :
+                new ObjectParameter("fechaHasta", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_Kardex_fechas", idProductoParameter, fechaDesdeParameter, fechaHastaParameter, report);
+        }
+    
+        public virtual int SP_Kardex_ultimas(Nullable<int> idProducto, string fechaDesde, string fechaHasta, ObjectParameter report)
+        {
+            var idProductoParameter = idProducto.HasValue ?
+                new ObjectParameter("idProducto", idProducto) :
+                new ObjectParameter("idProducto", typeof(int));
+    
+            var fechaDesdeParameter = fechaDesde != null ?
+                new ObjectParameter("fechaDesde", fechaDesde) :
+                new ObjectParameter("fechaDesde", typeof(string));
+    
+            var fechaHastaParameter = fechaHasta != null ?
+                new ObjectParameter("fechaHasta", fechaHasta) :
+                new ObjectParameter("fechaHasta", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SP_Kardex_ultimas", idProductoParameter, fechaDesdeParameter, fechaHastaParameter, report);
         }
     }
 }

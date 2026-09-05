@@ -41,6 +41,33 @@ function CargarDiasRestantesHabilitacion() {
     });
 }
 
+function EliminarUsuario(id) {
+    $.ajax({
+        type: "POST",
+        url: "/Usuario/Delete/",
+        cache: false,
+        data: { id },
+        success: function (result) {
+            if (result.eliminado) {
+                swal('Usario eliminado');
+                setTimeout(() => {
+                    window.location.href = '/Usuario/Index/';
+                }, 2000);
+            } else {
+                swal(result.mensaje);
+            }
+            
+        },
+        failure: function (response) {
+            alert(response.responseText);
+            alert("error ");
+        },
+        error: function (response) {
+            alert(response.responseText);
+        }
+    });
+}
+
 $(document).ready(function () {
     $(".txt-mayusc").keyup(function () {
         $(this).val($(this).val().toUpperCase());

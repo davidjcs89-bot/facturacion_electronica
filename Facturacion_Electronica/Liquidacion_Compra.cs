@@ -48,8 +48,6 @@ namespace Facturacion_Electronica
         public int Estado { get; set; }
         public Nullable<System.DateTime> fecha_autorizacion { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
-        public virtual Clientes Clientes1 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Datos_Adicionales_Liquidacion> Datos_Adicionales_Liquidacion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -58,5 +56,7 @@ namespace Facturacion_Electronica
         public virtual ICollection<Detalle_pago_Liquidacion> Detalle_pago_Liquidacion { get; set; }
         public virtual Emisor Emisor { get; set; }
         public virtual Puntos_emisior Puntos_emisior { get; set; }
+        public virtual Clientes Clientes { get; set; }
+        public virtual Clientes Clientes1 { get; set; }
     }
 }

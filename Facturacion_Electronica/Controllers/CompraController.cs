@@ -29,17 +29,57 @@ namespace Facturacion_Electronica.Controllers
                 ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
             }
+
+            ViewBag.FechaDesde = DateTime.Now.ToString("yyyy-MM-dd");
+            ViewBag.FechaHasta = DateTime.Now.ToString("yyyy-MM-dd");
+            var busquedaInicial = new ModeloBuscarCompra
+            {
+                BuscarFechaDesde = DateTime.Now.Date,
+                BuscarFechaHasta = DateTime.Now.Date
+            };
+            busquedaInicial.Compras = compraBusiness.BuscarCompras(busquedaInicial, idEmisor, true);
+            return View(busquedaInicial);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Index(ModeloBuscarCompra modeloBuscar)
+        {
+
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            modeloBuscar.Compras = compraBusiness.BuscarCompras(modeloBuscar, idEmisor);
+            if (modeloBuscar.BuscarFechaDesde != null)
+            {
+                ViewBag.FechaDesde = modeloBuscar.BuscarFechaDesde.Value.ToString("yyyy-MM-dd");
+            }
+            if (modeloBuscar.BuscarFechaHasta != null)
+            {
+                ViewBag.FechaHasta = modeloBuscar.BuscarFechaHasta.Value.ToString("yyyy-MM-dd");
+            }
+
+            return View(modeloBuscar);
+        }
+
+        // GET: Compra
+        public ActionResult ImportarXML()
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            if (idEmisor == 0)
+            {
+                ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
+                return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Index(HttpPostedFileBase archivo)
+        public ActionResult ImportarXML(HttpPostedFileBase archivo)
         {
-
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
             if (archivo == null)
             {
-                ModelState.AddModelError("","Debe cargar un archivo xml");
+                ModelState.AddModelError("", "Debe cargar un archivo xml");
                 return View();
             }
 
@@ -62,6 +102,7 @@ namespace Facturacion_Electronica.Controllers
                 return View();
             }
 
+            ViewBag.Bodegas = new SelectList(db.Bodegas.Where(x => x.id_emisor == idEmisor && x.activa), "id", "nombre");
             return View("Create", xml);
         }
 
@@ -71,6 +112,7 @@ namespace Facturacion_Electronica.Controllers
             {
                 return RedirectToAction("Index");
             }
+
             return View(compra);
         }
 
@@ -83,7 +125,9 @@ namespace Facturacion_Electronica.Controllers
                 var idEmisor = GetUsuarioLogeado().IdEmisor;
                 if (ModelState.IsValid)
                 {
-                    compraBusiness.GudardarCompra(modelo, idEmisor);
+                    compraBusiness.GuardarCompra(modelo, idEmisor);
+                    //return RedirectToAction("Index")
+                    ViewBag.Correcto = "Archivo xml cargado Correctamrnte";
                     return RedirectToAction("Index");
                 }
                 return View("Create", modelo);
@@ -94,6 +138,25 @@ namespace Facturacion_Electronica.Controllers
                 return View("Create",modelo);
             }
 
+        }
+
+        public ActionResult Details(int id)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            if (idEmisor == 0)
+            {
+                ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
+                return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
+
+            var compra = db.Compra.FirstOrDefault(x=>x.id == id && x.id_emisor == idEmisor);
+
+            if (compra == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            return View(compra);
         }
 
         [NonAction]

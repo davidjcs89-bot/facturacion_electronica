@@ -49,7 +49,6 @@ namespace Facturacion_Electronica
         public int id_porcentaje_iva { get; set; }
         public Nullable<System.DateTime> fecha_autorizacion { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Datos_Adicionales_Nota_Debito> Datos_Adicionales_Nota_Debito { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -62,5 +61,6 @@ namespace Facturacion_Electronica
         public virtual Nota_debito Nota_debito2 { get; set; }
         public virtual Porcentaje_impuesto_producto Porcentaje_impuesto_producto { get; set; }
         public virtual Puntos_emisior Puntos_emisior { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

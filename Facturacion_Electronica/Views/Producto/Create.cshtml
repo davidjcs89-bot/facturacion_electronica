@@ -164,8 +164,16 @@
 </div>
 @section Styles {
     @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
 }
 
 @Scripts.Render("~/bundles/moment")
 @Scripts.Render("~/bundles/jquery")
 @Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@if (ViewBag.Mensaje != null)
+{
+    <script type="text/javascript">
+            swal('@ViewBag.Mensaje');
+    </script>
+}

@@ -1,5 +1,7 @@
-﻿using ElectronicBilling.WebServices;
+﻿using DocumentFormat.OpenXml.Packaging;
+using ElectronicBilling.WebServices;
 using Facturacion_Electronica.Models.Factura;
+using Facturacion_Electronica.Models.Producto;
 using iTextSharp.text;
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
@@ -33,10 +35,10 @@ namespace Facturacion_Electronica.Business
 
             if (ultimos)
             {
-                return db.Factura.Where(x=>x.id_emisor == IdEmisor).OrderByDescending(x => x.id).Take(10).ToList();
+                return db.Factura.Where(x => x.id_emisor == IdEmisor).OrderByDescending(x => x.id).Take(10).ToList();
             }
 
-            listado = db.Factura.Where(x=>x.id_emisor == IdEmisor).ToList();
+            listado = db.Factura.Where(x => x.id_emisor == IdEmisor).ToList();
             if (modeloBuscar.BuscarFechaDesde != null && modeloBuscar.BuscarFechaHasta != null)
             {
                 var fechaHasta = modeloBuscar.BuscarFechaHasta.Value.AddDays(1);
@@ -71,7 +73,8 @@ namespace Facturacion_Electronica.Business
                 Clave_de_Acceso = "",
                 fecha_modificacion = DateTime.Now,
                 Estado = EnumEstadosComprobante.PENDIENTE,
-                desde_proforma = false
+                desde_proforma = false,
+                es_mayorista = modeloFactura.EsMayorista
             };
             db.Factura.Add(factura);
             db.SaveChanges();
@@ -118,6 +121,7 @@ namespace Facturacion_Electronica.Business
             {
                 return null;
             }
+
             var modelo = new ModeloFactura();
             modelo.Id = factura.id;
             modelo.Ambiente = factura.Emisor.Tipo_ambientes.Descripcion_ambiente;
@@ -142,6 +146,7 @@ namespace Facturacion_Electronica.Business
             modelo.TotalDescuento = factura.Total_descuento;
             modelo.Total = factura.Total;
             modelo.Estado = factura.Estado;
+            modelo.EsMayorista = factura.es_mayorista;
             modelo.Detalles = new List<ModeloFacturaDetalle>();
             modelo.Pagos = new List<ModeloFacturaPago>();
             modelo.Adicionales = new List<ModeloDatoAdicional>();
@@ -150,21 +155,36 @@ namespace Facturacion_Electronica.Business
 
             foreach (var detalle in factura.Detalle_factura.ToList())
             {
-                modelo.Detalles.Add(new ModeloFacturaDetalle
+                var detalleModelo = new ModeloFacturaDetalle();
+
+                detalleModelo.Id = detalle.id;
+                detalleModelo.Cantidad = detalle.Cantidad;
+                detalleModelo.Descuento = detalle.Decuento_porcentaje;
+                detalleModelo.ValorDescuento = detalle.Descuento;
+                detalleModelo.IdProducto = detalle.id_producto;
+                detalleModelo.Producto = productobusiness.GenerarModeloProducto(detalle.id_producto);
+                detalleModelo.PrecioUnitario = detalle.Precio_unitario;
+                detalleModelo.IvaUnitario = detalle.Valor_iva / detalle.Cantidad;
+                detalleModelo.IceUnitrario = detalle.Valor_ice / detalle.Cantidad;
+                detalleModelo.IrbpnrUnitario = detalle.Valor_irbpnr / detalle.Cantidad;
+
+                //Aumentar el descuento, si es mayor a cero
+                if (detalle.Decuento_porcentaje > 0)
                 {
-                    Id = detalle.id,
-                    Cantidad = detalle.Cantidad,
-                    Descuento = detalle.Descuento,
-                    IdProducto = detalle.id_producto,
-                    Producto = productobusiness.GenerarModeloProducto(detalle.id_producto),
-                    PrecioUnitario = detalle.Precio_unitario,
-                    ValorIva = detalle.Valor_iva,
-                    ValorIce = detalle.Valor_ice,
-                    ValorIrbpnr = detalle.Valor_irbpnr,
-                    Subtotal = detalle.Sub_total,
-                    Total = detalle.Total,
-                    Adicional = detalle.Adicional
-                });
+                    detalleModelo.IvaUnitario = detalleModelo.IvaUnitario * (1 + (detalle.Decuento_porcentaje / 100));
+                    detalleModelo.IceUnitrario = detalleModelo.IceUnitrario * (1 + (detalle.Decuento_porcentaje / 100));
+                    detalleModelo.IrbpnrUnitario = detalleModelo.IrbpnrUnitario * (1 + (detalle.Decuento_porcentaje / 100));
+                }
+
+                detalleModelo.ValorIva = detalle.Valor_iva;
+                detalleModelo.ValorIce = detalle.Valor_ice;
+                detalleModelo.ValorIrbpnr = detalle.Valor_irbpnr;
+                detalleModelo.Subtotal = detalle.Sub_total;
+                detalleModelo.Total = detalle.Total;
+                detalleModelo.Adicional = detalle.Adicional;
+                detalleModelo.PrecioConImpuestos = detalleModelo.PrecioUnitario + detalleModelo.IvaUnitario + detalleModelo.IceUnitrario + detalleModelo.IrbpnrUnitario;
+
+                modelo.Detalles.Add(detalleModelo);
             }
 
             foreach (var pago in factura.Detalle_pago_Factura.ToList())
@@ -195,8 +215,8 @@ namespace Facturacion_Electronica.Business
 
         public int ImportarDesdeProforma(int idProforma, int idEmisor)
         {
-            var proforma = db.Proforma.FirstOrDefault(x=>x.id == idProforma);
-            var puntoEmision = db.Puntos_emisior.FirstOrDefault(x=>x.Id_emisor == idEmisor);
+            var proforma = db.Proforma.FirstOrDefault(x => x.id == idProforma);
+            var puntoEmision = db.Puntos_emisior.FirstOrDefault(x => x.Id_emisor == idEmisor);
             if (proforma == null && puntoEmision != null)
             {
                 return 0;
@@ -229,9 +249,38 @@ namespace Facturacion_Electronica.Business
                 Detalle_factura = new List<Detalle_factura>()
             };
 
-           foreach(var detalle in proforma.Detalle_Proforma.ToList())
+            foreach (var detalle in proforma.Detalle_Proforma.ToList())
             {
-                factura.Detalle_factura.Add(new Detalle_factura { 
+                var idControlInvetario = 0;
+                var cantidadDetalle = detalle.cantidad;
+
+                //Control de inventario
+                if (proforma.Emisor.control_inventario)
+                {
+                    var controlInventario = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == puntoEmision.id_bodega);
+
+                    //Si no existe control de inventario para el producto, continuar con el siguiente
+                    if (controlInventario == null)
+                    {
+                        continue;
+                    }
+
+                    idControlInvetario = controlInventario.id;
+
+                    if (controlInventario.stock == 0)
+                    {
+                        continue;
+                    }
+
+                    //Si el stock de inventario es menor a la cantidad solicitada, colocar el stock actual
+                    if (controlInventario.stock < detalle.cantidad)
+                    {
+                        cantidadDetalle = controlInventario.stock;
+                    }
+                }
+
+                factura.Detalle_factura.Add(new Detalle_factura
+                {
                     Adicional = detalle.adicional,
                     Cantidad = detalle.cantidad,
                     Decuento_porcentaje = detalle.descuento_porcentaje,
@@ -244,6 +293,88 @@ namespace Facturacion_Electronica.Business
                     Valor_irbpnr = detalle.valor_irbpnr,
                     Valor_iva = detalle.valor_iva
                 });
+
+                //Control de inventario
+                if (proforma.Emisor.control_inventario)
+                {
+                    var controlInventario = db.Productos_x_bodega.Find(idControlInvetario);
+
+                    if (controlInventario != null)
+                    {
+                        controlInventario.stock -= cantidadDetalle;
+                    }
+                }
+            }
+
+            db.Factura.Add(factura);
+            db.SaveChanges();
+            return factura.id;
+        }
+
+        public int ImportarDesdePedido(int idPedido, int idEmisor)
+        {
+            var pedido = db.Pedido.FirstOrDefault(x => x.id == idPedido);
+            var puntoEmision = db.Puntos_emisior.FirstOrDefault(x => x.Id_emisor == idEmisor);
+            if (pedido == null && puntoEmision != null)
+            {
+                return 0;
+            }
+
+            var factura = new Factura
+            {
+                id_cliente = pedido.id_cliente,
+                id_emisor = pedido.id_emisor,
+                Fecha_emision = DateTime.Now,
+                fecha_creacion = DateTime.Now,
+                fecha_modificacion = DateTime.Now,
+                id_punto_emison = puntoEmision.id,
+                Numero = "",
+                Clave_de_Acceso = "",
+                Estado = EnumEstadosComprobante.PENDIENTE,
+                Subtotal_excento_iva = pedido.Subtotal_excento_iva,
+                Subtotal_sin_impuestos = pedido.Subtotal_sin_impuestos,
+                Subtotal_ice = pedido.Subtotal_ice,
+                Subtotal_iva = pedido.Subtotal_iva,
+                Subtotal_irbpnr = pedido.Subtotal_irbpnr,
+                Subtotal_no_objeto_iva = pedido.Subtotal_no_objeto_iva,
+                Subtotal_iva_cero = pedido.Subtotal_iva_cero,
+                Valor_ice = pedido.Valor_ice,
+                Valor_irbpnr = pedido.Valor_irbpnr,
+                Valor_iva = pedido.Valor_iva,
+                Total = pedido.Total,
+                Total_descuento = pedido.Total_descuento,
+                desde_proforma = true,
+                Detalle_factura = new List<Detalle_factura>()
+            };
+
+            foreach (var detalle in pedido.Detalle_pedido.ToList())
+            {
+
+                //Control de inventario
+
+                var controlInventario = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == puntoEmision.id_bodega);
+
+                //Si no existe control de inventario para el producto, continuar con el siguiente
+                if (controlInventario != null)
+                {
+                    controlInventario.stock -= detalle.Cantidad;
+                }
+
+                factura.Detalle_factura.Add(new Detalle_factura
+                {
+                    Adicional = detalle.Adicional,
+                    Cantidad = detalle.Cantidad,
+                    Decuento_porcentaje = detalle.Decuento_porcentaje,
+                    Descuento = detalle.Descuento,
+                    id_producto = detalle.id_producto,
+                    Precio_unitario = detalle.Precio_unitario,
+                    Sub_total = detalle.Sub_total,
+                    Total = detalle.Total,
+                    Valor_ice = detalle.Valor_ice,
+                    Valor_irbpnr = detalle.Valor_irbpnr,
+                    Valor_iva = detalle.Valor_iva
+                });
+
             }
 
             db.Factura.Add(factura);
@@ -253,8 +384,8 @@ namespace Facturacion_Electronica.Business
 
         public void CambiarPuntoEstablecimiento(int id, int idPuntoEmision, int idEmisor)
         {
-            var punto = db.Puntos_emisior.FirstOrDefault(x=>x.Id_emisor == idEmisor && x.id == idPuntoEmision);
-            var factura = db.Factura.FirstOrDefault(x=>x.id == id && x.id_emisor == idEmisor);
+            var punto = db.Puntos_emisior.FirstOrDefault(x => x.Id_emisor == idEmisor && x.id == idPuntoEmision);
+            var factura = db.Factura.FirstOrDefault(x => x.id == id && x.id_emisor == idEmisor);
 
             if (punto == null || factura == null)
             {
@@ -265,26 +396,46 @@ namespace Facturacion_Electronica.Business
             db.SaveChanges();
         }
 
-        public void AgregarProducto(int idFactura, int idProducto, int idEmisor)
+        public string AgregarProducto(int idFactura, int idProducto, int cantidad, int idEmisor, bool grabarCambios)
         {
             var producto = db.Producto.FirstOrDefault(x => x.id == idProducto && x.id_emisor == idEmisor);
 
             var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
             if (producto == null || factura == null)
             {
-                return;
+                return "No existe el producto a actualizarse";
             }
 
             var iva = producto.Porcentaje_impuesto_producto2;
             var ice = producto.Porcentaje_impuesto_producto;
             var irbpnr = producto.Porcentaje_impuesto_producto1;
+            var idControlInventarioProducto = 0;
+
+            //Realizar control de inventario
+            /*if (factura.Emisor.control_inventario)
+            {
+                //Validar que exista stock
+                var stock = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == idProducto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+                if (stock == null)
+                {
+                    return "No existe stock disponible para este producto";
+                }
+
+                if (stock.stock < 1)
+                {
+                    return "El stock del producto es insuficiente";
+                }
+
+                idControlInventarioProducto = stock.id;
+            }*/
 
             var detalle = new Detalle_factura
             {
                 id_producto = idProducto,
-                Cantidad = 1,
+                Cantidad = cantidad,
                 Precio_unitario = producto.Precio,
-                Sub_total = producto.Precio,
+                Sub_total = producto.Precio * cantidad,
                 Descuento = 0
             };
             detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
@@ -330,56 +481,328 @@ namespace Facturacion_Electronica.Business
             factura.Total += detalle.Total;
 
             factura.Detalle_factura.Add(detalle);
-            db.SaveChanges();
+
+            if (factura.Total > EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL && factura.Clientes.identificacion == EnumDatosGenerales.NUMERO_IDENTIFICACION_CONSUMIDOR_FINAL)
+            {
+                return $"El total de la factura sobrepasa los ${EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL}, permitido a Consumidor Final";
+            }
+
+            //Realizar control de inventario
+            //if (factura.Emisor.control_inventario)
+            // {
+            var controlStock = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == idProducto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+            if (controlStock != null)
+            {
+                controlStock.stock -= 1;
+            }
+            //}
+
+            //Si es factura mayorista no guardar cambios en este punto
+            if (grabarCambios)
+            {
+                db.SaveChanges();
+            }
+
+            return null;
         }
 
-        public void ActualizarAdicionalDetalle(int id, int idFactura, int idEmisor, string adicional)
+        public string AgregarProductoMasivo(ModeloBuscarProducto modelo, int idEmisor)
+        {
+            //Recorrer cada detalle del modelo
+            foreach (var detalle in modelo.Productos)
+            {
+                //Solo si se coloco cantidad
+                if (detalle.Cantidad_producto.HasValue && detalle.Cantidad_producto.Value > 0)
+                {
+                    string mensaje = this.AgregarProducto(modelo.IdFactura, detalle.id, detalle.Cantidad_producto.Value, idEmisor, false);
+
+                    if (mensaje != null)
+                    {
+                        return mensaje;
+                    }
+                }
+            }
+
+            db.SaveChanges();
+            return null;
+        }
+
+        public string AgregarProductoMasivoExcel(ModeloBuscarProducto modelo, int idEmisor)
+        {
+
+            //Recorrer cada detalle del modelo
+            foreach (var detalle in modelo.Productos)
+            {
+                //Solo si se coloco cantidad
+                if (detalle.Cantidad_producto.HasValue && detalle.Cantidad_producto.Value > 0)
+                {
+                    string mensaje = this.AgregarDetalle(modelo.IdFactura, detalle.id, idEmisor, detalle.Precio,  detalle.Cantidad_producto.Value,0 , detalle.Nombre);
+
+                    if (mensaje != null)
+                    {
+                        return mensaje;
+                    }
+                }
+            }
+
+            var factura = db.Factura.FirstOrDefault(x => x.id == modelo.IdFactura && x.id_emisor == idEmisor);
+            if (factura == null)
+            {
+                return "No existe la factura";
+            }
+
+            ActutalizarTotales(factura);
+
+            db.SaveChanges();
+            return null;
+        }
+
+        public string AgregarDetalle(int idFactura, int idProducto, int idEmisor, decimal nuevoPrecio, int nuevacantidad, decimal porcentajeDescuento, string adicional)
+        {
+            var producto = db.Producto.FirstOrDefault(x => x.id == idProducto && x.id_emisor == idEmisor);
+
+            var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
+            if (producto == null || factura == null)
+            {
+                return "No existe el producto a actualizarse";
+            }
+
+            var iva = producto.Porcentaje_impuesto_producto2;
+            var ice = producto.Porcentaje_impuesto_producto;
+            var irbpnr = producto.Porcentaje_impuesto_producto1;
+            var idControlInventarioProducto = 0;
+
+            //Realizar control de inventario
+            /*if (factura.Emisor.control_inventario)
+            {
+                //Validar que exista stock
+                var stock = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+                if (stock == null)
+                {
+                    return "No existe stock disponible para este producto";
+                }
+
+                //Sumar el stock actual mas la cantidad que ya existe en el detalle de la factura
+                if ((stock.stock + detalle.Cantidad) < nuevacantidad)
+                {
+                    return "El stock del producto es insuficiente";
+                }
+
+                idControlInventarioProducto = stock.id;
+            }*/
+
+            var detalle = new Detalle_factura
+            {
+                id_producto = idProducto,
+                Cantidad = nuevacantidad,
+                Precio_unitario = producto.Precio,
+                Sub_total = producto.Precio * nuevacantidad,
+                Descuento = 0
+            };
+
+            var cantidadDetalleOriginal = detalle.Cantidad;
+
+            var precioSinIva = nuevoPrecio / (1 + (iva.Porcentaje / 100));
+            var subtotalSinIva = precioSinIva * nuevacantidad;
+
+            detalle.Precio_unitario = Decimal.Round(precioSinIva, 2);
+            detalle.Decuento_porcentaje = porcentajeDescuento;
+            detalle.Cantidad = nuevacantidad;
+
+            detalle.Sub_total = Decimal.Round(subtotalSinIva, 2);
+
+            var subTotalDescontado = subtotalSinIva - (subtotalSinIva * (detalle.Decuento_porcentaje / 100));
+
+            detalle.Descuento = Decimal.Round(subtotalSinIva * (detalle.Decuento_porcentaje / 100), 2);
+
+            detalle.Sub_total -= detalle.Descuento;
+
+            detalle.Valor_ice = Decimal.Round(subTotalDescontado * ice.Porcentaje / 100, 2);
+            detalle.Valor_irbpnr = Decimal.Round(subTotalDescontado * irbpnr.Porcentaje / 100, 2);
+
+            detalle.Valor_iva = Decimal.Round(subTotalDescontado * iva.Porcentaje / 100, 2);
+
+            detalle.Total = detalle.Sub_total + detalle.Valor_iva;
+
+            if (!string.IsNullOrEmpty(adicional))
+            {
+                detalle.Adicional = adicional;
+            }
+
+            factura.Valor_iva += detalle.Valor_iva;
+            factura.Valor_ice += detalle.Valor_ice;
+            factura.Valor_irbpnr += detalle.Valor_irbpnr;
+
+            factura.Total_descuento += detalle.Descuento;
+            factura.Total += detalle.Total;
+
+            factura.Detalle_factura.Add(detalle);
+
+            //ActutalizarTotales(factura);
+
+            if (factura.Total > EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL && factura.Clientes.identificacion == EnumDatosGenerales.NUMERO_IDENTIFICACION_CONSUMIDOR_FINAL)
+            {
+                return $"El total de la factura sobrepasa los ${EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL}, permitido a Consumidor Final";
+            }
+
+            //Realizar control de inventario
+            //if (factura.Emisor.control_inventario)
+            //{
+            var controlStock = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+            if (controlStock != null)
+            {
+                //Restar el resultado de la resta de la nueva cantidad menos el valor ya registrado en el detalle
+                controlStock.stock -= (nuevacantidad - cantidadDetalleOriginal);
+            }
+            //}
+
+            db.SaveChanges();
+
+            return null;
+        }
+
+        public string ActualizarDetalle(int id, int idFactura, int idEmisor, decimal nuevoPrecio, int nuevacantidad, decimal porcentajeDescuento, string adicional)
         {
             var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
             if (factura == null)
             {
-                return;
-            }
-
-            var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
-            if (detalle == null && adicional != null)
-            {
-                return;
-            }
-            detalle.Adicional = adicional;
-
-            db.SaveChanges();
-        }
-
-        public void ActualizarPrecioDetalle(int id, int idFactura, int idEmisor, decimal nuevoPrecio)
-        {
-            var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
-            if (factura == null)
-            {
-                return;
+                return "No existe la factura";
             }
 
             var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
             if (detalle == null)
             {
-                return;
+                return "No existe el detalle de la factura a actualizar";
             }
+
+            var idControlInventarioProducto = 0;
+            var cantidadDetalleOriginal = detalle.Cantidad;
+
+            //Realizar control de inventario
+            /*if (factura.Emisor.control_inventario)
+            {
+                //Validar que exista stock
+                var stock = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+                if (stock == null)
+                {
+                    return "No existe stock disponible para este producto";
+                }
+
+                //Sumar el stock actual mas la cantidad que ya existe en el detalle de la factura
+                if ((stock.stock + detalle.Cantidad) < nuevacantidad)
+                {
+                    return "El stock del producto es insuficiente";
+                }
+
+                idControlInventarioProducto = stock.id;
+            }*/
 
             var iva = detalle.Producto.Porcentaje_impuesto_producto2;
             var ice = detalle.Producto.Porcentaje_impuesto_producto;
             var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
 
-            detalle.Precio_unitario = nuevoPrecio;
-            detalle.Sub_total = detalle.Precio_unitario * detalle.Cantidad;
-            detalle.Descuento = detalle.Sub_total * (detalle.Decuento_porcentaje / 100);
+            var precioSinIva = nuevoPrecio / (1 + (iva.Porcentaje / 100));
+            var subtotalSinIva = precioSinIva * nuevacantidad;
+
+            detalle.Precio_unitario = Decimal.Round(precioSinIva, 2);
+            detalle.Decuento_porcentaje = porcentajeDescuento;
+            detalle.Cantidad = nuevacantidad;
+
+            detalle.Sub_total = Decimal.Round(subtotalSinIva, 2);
+
+            var subTotalDescontado = subtotalSinIva - (subtotalSinIva * (detalle.Decuento_porcentaje / 100));
+
+            detalle.Descuento = Decimal.Round(subtotalSinIva * (detalle.Decuento_porcentaje / 100), 2);
+
             detalle.Sub_total -= detalle.Descuento;
-            detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
-            detalle.Valor_irbpnr = (detalle.Sub_total * irbpnr.Porcentaje / 100);
-            detalle.Valor_iva = (detalle.Sub_total * iva.Porcentaje / 100);
-            detalle.Total = detalle.Sub_total + detalle.Valor_ice + detalle.Valor_irbpnr + detalle.Valor_iva;
+
+            detalle.Valor_ice = Decimal.Round(subTotalDescontado * ice.Porcentaje / 100, 2);
+            detalle.Valor_irbpnr = Decimal.Round(subTotalDescontado * irbpnr.Porcentaje / 100, 2);
+
+            detalle.Valor_iva = Decimal.Round(subTotalDescontado * iva.Porcentaje / 100, 2);
+
+            detalle.Total = detalle.Sub_total + detalle.Valor_iva;
+
+            if (!string.IsNullOrEmpty(adicional))
+            {
+                detalle.Adicional = adicional;
+            }
+
             ActutalizarTotales(factura);
+
+            if (factura.Total > EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL && factura.Clientes.identificacion == EnumDatosGenerales.NUMERO_IDENTIFICACION_CONSUMIDOR_FINAL)
+            {
+                return $"El total de la factura sobrepasa los ${EnumDatosGenerales.MONTO_MAXIMO_CONSUMIFOR_FINAL}, permitido a Consumidor Final";
+            }
+
+            //Realizar control de inventario
+            //if (factura.Emisor.control_inventario)
+            //{
+            var controlStock = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+            if (controlStock != null)
+            {
+                //Restar el resultado de la resta de la nueva cantidad menos el valor ya registrado en el detalle
+                controlStock.stock -= (nuevacantidad - cantidadDetalleOriginal);
+            }
+            //}
+
             db.SaveChanges();
+
+            return null;
         }
+
+        //public void ActualizarAdicionalDetalle(int id, int idFactura, int idEmisor, string adicional)
+        //{
+        //    var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
+        //    if (factura == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
+        //    if (detalle == null && adicional != null)
+        //    {
+        //        return;
+        //    }
+        //    detalle.Adicional = adicional;
+
+        //    db.SaveChanges();
+        //}
+
+        //public void ActualizarPrecioDetalle(int id, int idFactura, int idEmisor, decimal nuevoPrecio)
+        //{
+        //    var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
+        //    if (factura == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
+        //    if (detalle == null)
+        //    {
+        //        return;
+        //    }
+
+        //    var iva = detalle.Producto.Porcentaje_impuesto_producto2;
+        //    var ice = detalle.Producto.Porcentaje_impuesto_producto;
+        //    var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+
+        //    detalle.Precio_unitario = nuevoPrecio;
+        //    detalle.Sub_total = detalle.Precio_unitario * detalle.Cantidad;
+        //    detalle.Descuento = detalle.Sub_total * (detalle.Decuento_porcentaje / 100);
+        //    detalle.Sub_total -= detalle.Descuento;
+        //    detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
+        //    detalle.Valor_irbpnr = (detalle.Sub_total * irbpnr.Porcentaje / 100);
+        //    detalle.Valor_iva = (detalle.Sub_total * iva.Porcentaje / 100);
+        //    detalle.Total = detalle.Sub_total + detalle.Valor_ice + detalle.Valor_irbpnr + detalle.Valor_iva;
+        //    ActutalizarTotales(factura);
+        //    db.SaveChanges();
+        //}
 
         public void ActualizarFecha(int idFactura, DateTime nuevaFecha, int idEmisor)
         {
@@ -394,65 +817,65 @@ namespace Facturacion_Electronica.Business
             db.SaveChanges();
         }
 
-        public void ActualizarCantidadDetalle(int id, int idFactura, int idEmisor, int nuevaCantidad)
-        {
-            var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
-            if (factura == null)
-            {
-                return;
-            }
+        //public void ActualizarCantidadDetalle(int id, int idFactura, int idEmisor, int nuevaCantidad)
+        //{
+        //    var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
+        //    if (factura == null)
+        //    {
+        //        return;
+        //    }
 
-            var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
-            if (detalle == null)
-            {
-                return;
-            }
+        //    var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
+        //    if (detalle == null)
+        //    {
+        //        return;
+        //    }
 
-            var iva = detalle.Producto.Porcentaje_impuesto_producto2;
-            var ice = detalle.Producto.Porcentaje_impuesto_producto;
-            var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+        //    var iva = detalle.Producto.Porcentaje_impuesto_producto2;
+        //    var ice = detalle.Producto.Porcentaje_impuesto_producto;
+        //    var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
 
-            detalle.Cantidad = nuevaCantidad;
-            detalle.Sub_total = detalle.Precio_unitario * detalle.Cantidad;
-            detalle.Descuento = detalle.Sub_total * (detalle.Decuento_porcentaje / 100);
-            detalle.Sub_total -= detalle.Descuento;
-            detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
-            detalle.Valor_irbpnr = (detalle.Sub_total * irbpnr.Porcentaje / 100);
-            detalle.Valor_iva = (detalle.Sub_total * iva.Porcentaje / 100);
-            detalle.Total = detalle.Sub_total + detalle.Valor_ice + detalle.Valor_irbpnr + detalle.Valor_iva;
-            ActutalizarTotales(factura);
-            db.SaveChanges();
-        }
+        //    detalle.Cantidad = nuevaCantidad;
+        //    detalle.Sub_total = detalle.Precio_unitario * detalle.Cantidad;
+        //    detalle.Descuento = detalle.Sub_total * (detalle.Decuento_porcentaje / 100);
+        //    detalle.Sub_total -= detalle.Descuento;
+        //    detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
+        //    detalle.Valor_irbpnr = (detalle.Sub_total * irbpnr.Porcentaje / 100);
+        //    detalle.Valor_iva = (detalle.Sub_total * iva.Porcentaje / 100);
+        //    detalle.Total = detalle.Sub_total + detalle.Valor_ice + detalle.Valor_irbpnr + detalle.Valor_iva;
+        //    ActutalizarTotales(factura);
+        //    db.SaveChanges();
+        //}
 
-        public void ActualizarPorcentajeDescuentoDetalle(int id, int idFactura, int idEmisor, decimal porcentaje)
-        {
-            var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
-            if (factura == null)
-            {
-                return;
-            }
+        //public void ActualizarPorcentajeDescuentoDetalle(int id, int idFactura, int idEmisor, decimal porcentaje)
+        //{
+        //    var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
+        //    if (factura == null)
+        //    {
+        //        return;
+        //    }
 
-            var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
-            if (detalle == null)
-            {
-                return;
-            }
+        //    var detalle = factura.Detalle_factura.FirstOrDefault(x => x.id == id);
+        //    if (detalle == null)
+        //    {
+        //        return;
+        //    }
 
-            var iva = detalle.Producto.Porcentaje_impuesto_producto2;
-            var ice = detalle.Producto.Porcentaje_impuesto_producto;
-            var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
+        //    var iva = detalle.Producto.Porcentaje_impuesto_producto2;
+        //    var ice = detalle.Producto.Porcentaje_impuesto_producto;
+        //    var irbpnr = detalle.Producto.Porcentaje_impuesto_producto1;
 
-            detalle.Decuento_porcentaje = porcentaje;
-            detalle.Descuento = detalle.Sub_total * (porcentaje / 100);
-            detalle.Sub_total = detalle.Precio_unitario * detalle.Cantidad;
-            detalle.Sub_total -= detalle.Descuento;
-            detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
-            detalle.Valor_irbpnr = (detalle.Sub_total * irbpnr.Porcentaje / 100);
-            detalle.Valor_iva = (detalle.Sub_total * iva.Porcentaje / 100);
-            detalle.Total = detalle.Sub_total + detalle.Valor_ice + detalle.Valor_irbpnr + detalle.Valor_iva;
-            ActutalizarTotales(factura);
-            db.SaveChanges();
-        }
+        //    detalle.Decuento_porcentaje = porcentaje;
+        //    detalle.Descuento = detalle.Sub_total * (porcentaje / 100);
+        //    detalle.Sub_total = detalle.Precio_unitario * detalle.Cantidad;
+        //    detalle.Sub_total -= detalle.Descuento;
+        //    detalle.Valor_ice = (detalle.Sub_total * ice.Porcentaje / 100);
+        //    detalle.Valor_irbpnr = (detalle.Sub_total * irbpnr.Porcentaje / 100);
+        //    detalle.Valor_iva = (detalle.Sub_total * iva.Porcentaje / 100);
+        //    detalle.Total = detalle.Sub_total + detalle.Valor_ice + detalle.Valor_irbpnr + detalle.Valor_iva;
+        //    ActutalizarTotales(factura);
+        //    db.SaveChanges();
+        //}
 
         public void EliminarDetalle(int id, int idFactura, int idEmisor)
         {
@@ -467,6 +890,19 @@ namespace Facturacion_Electronica.Business
             {
                 return;
             }
+
+            //Restaurar stock
+            //if (factura.Emisor.control_inventario)
+            // {
+            var controlInventario = db.Productos_x_bodega.FirstOrDefault(x => x.id_producto == detalle.id_producto && x.id_bodega == factura.Puntos_emisior.id_bodega);
+
+            if (controlInventario != null)
+            {
+                var control = db.Productos_x_bodega.Find(controlInventario.id);
+                control.stock += detalle.Cantidad;
+            }
+            // }
+
             db.Detalle_factura.Remove(detalle);
             ActutalizarTotales(factura);
             db.SaveChanges();
@@ -525,6 +961,39 @@ namespace Facturacion_Electronica.Business
                 factura.Total_descuento += detalle.Descuento;
                 factura.Total += detalle.Total;
             }
+        }
+
+        public void ActualizarTotalesFinalizada(int id, int idEmisor)
+        {
+            var factura = db.Factura.FirstOrDefault(x => x.id == id && x.id_emisor == idEmisor);
+            if (factura == null || factura.Estado == EnumEstadosComprobante.ANULADO || factura.Estado == EnumEstadosComprobante.AUTORIZADO)
+            {
+                return;
+            }
+
+            // Recalcular valores
+            ActutalizarTotales(factura);
+
+            // Actualizar pagos
+            if (factura.Detalle_pago_Factura.Count > 0)
+            {
+                var pago = db.Detalle_pago_Factura.Find(factura.Detalle_pago_Factura.ToList()[0].id);
+                pago.Valor = factura.Total;
+            }
+
+            db.SaveChanges();
+        }
+
+        public void AnularFactura(int id, int idEmisor)
+        {
+            var factura = db.Factura.FirstOrDefault(x => x.id == id && x.id_emisor == idEmisor);
+            if (factura == null || factura.Estado == EnumEstadosComprobante.ANULADO)
+            {
+                return;
+            }
+
+            factura.Estado = EnumEstadosComprobante.ANULADO;
+            db.SaveChanges();
         }
 
         public void AgregarPago(ModeloFacturaPago modeloPago, int idFactura, int idEmisor)
@@ -629,23 +1098,68 @@ namespace Facturacion_Electronica.Business
 
         public void CambiarPuntoEmision(int idFactura, int idPuntoEmision, int idEmisor)
         {
-            var factura = db.Factura.FirstOrDefault(x=>x.id == idFactura && x.id_emisor == idEmisor);
+            var factura = db.Factura.FirstOrDefault(x => x.id == idFactura && x.id_emisor == idEmisor);
             if (factura == null)
             {
                 return;
             }
 
-            if (db.Puntos_emisior.Any(x=>x.Id_emisor == idEmisor && x.id == idPuntoEmision))
+            if (db.Puntos_emisior.Any(x => x.Id_emisor == idEmisor && x.id == idPuntoEmision))
             {
                 factura.id_punto_emison = idPuntoEmision;
                 db.SaveChanges();
             }
         }
 
-        public void GenerarXml(Factura modelo)
+        public bool GenerarXml(Factura modelo)
+        {
+            var xml = GenerarXmlFacturaStr(modelo);
+
+            if (xml == null)
+            {
+                return false;
+            }
+            var documentoElectronico = new Documentos_Electronicos();
+            var tipoDocumento = db.Tipo_documento.FirstOrDefault(x => x.id == EnumTipoDocumento.FACTURA);
+            documentoElectronico.id_comprobante = modelo.id;
+            documentoElectronico.id_tipo_comprobante = tipoDocumento.id;
+            documentoElectronico.xml_generado = xml.ToString();
+            db.Documentos_Electronicos.Add(documentoElectronico);
+            db.SaveChanges();
+
+            db.Cola_envio_comprobantes.Add(new Cola_envio_comprobantes { id_comprobante = modelo.id, id_documento_electronico = documentoElectronico.id, id_tipo_comprobante = EnumTipoDocumento.FACTURA });
+            db.SaveChanges();
+            return true;
+        }
+
+        public bool RegenerarXml(Factura modelo, int idDocumento)
+        {
+            var documentoElectronico = db.Documentos_Electronicos.Find(idDocumento);
+
+            if (documentoElectronico == null)
+            {
+                return false;
+            }
+
+            // Generar nuevamente el xml
+            var xml = GenerarXmlFacturaStr(modelo);
+
+            if (xml == null)
+            {
+                return false;
+            }
+
+            // Modificar xml
+            documentoElectronico.xml_generado = xml.ToString();
+            db.SaveChanges();
+
+            return true;
+        }
+
+        private XDocument GenerarXmlFacturaStr(Factura modelo)
         {
             var emisor = modelo.Emisor;
-            var documentoElectronico = new Documentos_Electronicos();
+
             var tipoDocumento = db.Tipo_documento.FirstOrDefault(x => x.id == EnumTipoDocumento.FACTURA);
             var ivaActual = emisor.Porcentaje_impuesto_producto;
             var ivaCero = db.Porcentaje_impuesto_producto.FirstOrDefault(x => x.id == EnumIvaProducto.IvaCeroId);
@@ -654,10 +1168,10 @@ namespace Facturacion_Electronica.Business
             var impuestoIva = db.Impuestos_producto.FirstOrDefault(x => x.id == EnumImpuestoProducto.IVA);
             var impuestoIce = db.Impuestos_producto.FirstOrDefault(x => x.id == EnumImpuestoProducto.ICE);
             var impuestoIrvpnr = db.Impuestos_producto.FirstOrDefault(x => x.id == EnumImpuestoProducto.IRBPNR);
-            string contenidoXml = "";
+
             if (emisor == null || tipoDocumento == null || ivaActual == null || ivaCero == null || ivaExcento == null || ivaNoOnjeto == null)
             {
-                return;
+                return null;
             }
             try
             {
@@ -685,7 +1199,7 @@ namespace Facturacion_Electronica.Business
                 fact.Add(new XElement("tipoIdentificacionComprador", modelo.Clientes.Tipo_Identificacion1.Codigo));
                 fact.Add(new XElement("razonSocialComprador", CompartidaBusiness.CleanText(modelo.Clientes.nombre_cliente)));
                 fact.Add(new XElement("identificacionComprador", modelo.Clientes.identificacion));
-                fact.Add(new XElement("direccionComprador", !string.IsNullOrEmpty(modelo.Clientes.Direccion)?CompartidaBusiness.CleanText(modelo.Clientes.Direccion):"SIN DIRECCION"));
+                fact.Add(new XElement("direccionComprador", !string.IsNullOrEmpty(modelo.Clientes.Direccion) ? CompartidaBusiness.CleanText(modelo.Clientes.Direccion) : "SIN DIRECCION"));
                 fact.Add(new XElement("totalSinImpuestos", modelo.Subtotal_sin_impuestos));
                 fact.Add(new XElement("totalDescuento", modelo.Total_descuento));
 
@@ -712,11 +1226,11 @@ namespace Facturacion_Electronica.Business
                 }
                 else if (modelo.Subtotal_excento_iva > 0)
                 {
-                    var itemIva = new XElement("impuesto");
+                    var itemIva = new XElement("totalImpuesto");
                     itemIva.Add(new XElement("codigo", impuestoIva.Codigo));
                     itemIva.Add(new XElement("codigoPorcentaje", ivaExcento.Codigo));
                     itemIva.Add(new XElement("baseImponible", modelo.Subtotal_excento_iva));
-                    itemIva.Add(new XElement("tarifa", 0));
+                    itemIva.Add(new XElement("valor", 0));
                     impustosFactura.Add(itemIva);
                 }
                 else if (modelo.Subtotal_no_objeto_iva > 0)
@@ -725,7 +1239,7 @@ namespace Facturacion_Electronica.Business
                     itemIva.Add(new XElement("codigo", impuestoIva.Codigo));
                     itemIva.Add(new XElement("codigoPorcentaje", ivaNoOnjeto.Codigo));
                     itemIva.Add(new XElement("baseImponible", modelo.Subtotal_no_objeto_iva));
-                    itemIva.Add(new XElement("tarifa", 0));
+                    itemIva.Add(new XElement("valor", 0));
                     impustosFactura.Add(itemIva);
                 }
 
@@ -743,7 +1257,7 @@ namespace Facturacion_Electronica.Business
                         $"and i.Id_impuesto = ip.id " +
                         $"and d.Valor_ice > 0 " +
                         $"group by ip.Codigo,i.Codigo,i.Porcentaje";
-                   // Dictionary<int, string> dict = new Dictionary<int, string>();
+                    // Dictionary<int, string> dict = new Dictionary<int, string>();
                     using (var rdr = cmd.ExecuteReader())
                     {
                         while (rdr.Read())
@@ -796,7 +1310,17 @@ namespace Facturacion_Electronica.Business
                 {
                     var detalle = new XElement("detalle");
                     detalle.Add(new XElement("codigoPrincipal", CompartidaBusiness.CleanText(detalleFactura.Producto.Codigo)));
-                    detalle.Add(new XElement("descripcion", CompartidaBusiness.CleanText(detalleFactura.Producto.Nombre)));
+
+                    // Si es igual a referencia, colocar el texto de adicional
+                    if (detalleFactura.Producto.Nombre.Equals("REFERENCIA") && !String.IsNullOrEmpty(detalleFactura.Adicional))
+                    {
+                        detalle.Add(new XElement("descripcion", CompartidaBusiness.CleanText(detalleFactura.Adicional)));
+                    }
+                    else
+                    {
+                        detalle.Add(new XElement("descripcion", CompartidaBusiness.CleanText(detalleFactura.Producto.Nombre)));
+                    }
+
                     detalle.Add(new XElement("cantidad", detalleFactura.Cantidad));
                     detalle.Add(new XElement("precioUnitario", detalleFactura.Precio_unitario));
                     detalle.Add(new XElement("descuento", detalleFactura.Descuento));
@@ -871,38 +1395,23 @@ namespace Facturacion_Electronica.Business
 
                     detalle.Add(impuestosProducto);
 
-
-
-
                     items.Add(detalle);
                 }
 
                 xml.Add(items);
                 var extra = new XElement("infoAdicional");
                 foreach (var adicional in modelo.Datos_Adicionales_Factura.ToList())
-                {                    
+                {
                     extra.Add(new XElement("campoAdicional", adicional.Descripcion, new XAttribute("nombre", adicional.Nombre)));
                     xml.Add(extra);
                 }
 
-                var documento = new XDocument(xml);
-                documentoElectronico.id_comprobante = modelo.id;
-                documentoElectronico.id_tipo_comprobante = tipoDocumento.id;
-                documentoElectronico.xml_generado = documento.ToString();
-                contenidoXml = documento.ToString();
-                db.Documentos_Electronicos.Add(documentoElectronico);
-                db.SaveChanges();
+                return new XDocument(xml);
             }
             catch (Exception ex)
             {
-                documentoElectronico.mensajes = ex.ToString();
-                db.Documentos_Electronicos.Add(documentoElectronico);
-                db.SaveChanges();
-                return;
+                return null;
             }
-
-            db.Cola_envio_comprobantes.Add(new Cola_envio_comprobantes { id_comprobante = modelo.id, id_documento_electronico = documentoElectronico.id, id_tipo_comprobante = EnumTipoDocumento.FACTURA });
-            db.SaveChanges();            
         }
 
         public void GenerarComprobanteElectronico(int idDocumento, int idFactura)
@@ -918,6 +1427,9 @@ namespace Facturacion_Electronica.Business
                     db.SaveChanges();
                     return;
                 }
+
+                // Generar xml de factura
+                var xmlFacturaCreado = this.RegenerarXml(factura, idDocumento);
 
                 var comprobanteCola = db.Cola_envio_comprobantes.FirstOrDefault(x => x.id_comprobante == factura.id && x.id_documento_electronico == idDocumento);
 
@@ -1310,52 +1822,70 @@ namespace Facturacion_Electronica.Business
                 index.BorderColor = BaseColor.WHITE;
                 index.BackgroundColor = BaseColor.WHITE; ;
                 index.AddElement(new Paragraph(i.ToString(), FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                tableDetails.AddCell(index);
                 i++;
 
                 var code = new PdfPCell();
                 code.BorderColor = BaseColor.WHITE;
                 code.BackgroundColor = BaseColor.WHITE; ;
                 code.AddElement(new Paragraph(detail.Producto.Codigo, FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                tableDetails.AddCell(code);
 
-                var descr = new PdfPCell();
-                descr.BorderColor = BaseColor.WHITE;
-                descr.BackgroundColor = BaseColor.WHITE; ;
-                descr.AddElement(new Paragraph(detail.Producto.Nombre, FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                // Si es igual a referencia, colocar el texto de adicional
+                if (detail.Producto.Nombre.Equals("REFERENCIA") && !String.IsNullOrEmpty(detail.Adicional))
+                {
+                    var descr = new PdfPCell();
+                    descr.BorderColor = BaseColor.WHITE;
+                    descr.BackgroundColor = BaseColor.WHITE; ;
+                    descr.AddElement(new Paragraph(detail.Adicional, FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                    tableDetails.AddCell(descr);
 
-                var adic = new PdfPCell();
-                adic.BorderColor = BaseColor.WHITE;
-                adic.BackgroundColor = BaseColor.WHITE; ;
-                adic.AddElement(new Paragraph(detail.Adicional??"", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                    var adic = new PdfPCell();
+                    adic.BorderColor = BaseColor.WHITE;
+                    adic.BackgroundColor = BaseColor.WHITE; ;
+                    adic.AddElement(new Paragraph("", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                    tableDetails.AddCell(adic);
+                }
+                else
+                {
+                    var descr = new PdfPCell();
+                    descr.BorderColor = BaseColor.WHITE;
+                    descr.BackgroundColor = BaseColor.WHITE; ;
+                    descr.AddElement(new Paragraph(detail.Producto.Nombre, FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                    tableDetails.AddCell(descr);
+
+                    var adic = new PdfPCell();
+                    adic.BorderColor = BaseColor.WHITE;
+                    adic.BackgroundColor = BaseColor.WHITE; ;
+                    adic.AddElement(new Paragraph(detail.Adicional ?? "", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                    tableDetails.AddCell(adic);
+                }
 
                 var price = new PdfPCell();
                 price.BorderColor = BaseColor.WHITE;
                 price.BackgroundColor = BaseColor.WHITE; ;
                 price.AddElement(new Paragraph(detail.Precio_unitario + "", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                tableDetails.AddCell(price);
 
                 var qty = new PdfPCell();
                 qty.BorderColor = BaseColor.WHITE;
                 qty.BackgroundColor = BaseColor.WHITE; ;
                 qty.AddElement(new Paragraph(detail.Cantidad.ToString(), FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                tableDetails.AddCell(qty);
 
                 var discount = new PdfPCell();
                 discount.BorderColor = BaseColor.WHITE;
                 discount.BackgroundColor = BaseColor.WHITE; ;
                 discount.AddElement(new Paragraph(detail.Descuento + "", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
+                tableDetails.AddCell(discount);
 
                 var total = new PdfPCell();
                 total.BorderColor = BaseColor.WHITE;
                 total.BackgroundColor = BaseColor.WHITE; ;
                 total.AddElement(new Paragraph(detail.Sub_total + "", FontFactory.GetFont(FontFactory.TIMES_ROMAN, 9)));
-
-                tableDetails.AddCell(index);
-                tableDetails.AddCell(code);
-                tableDetails.AddCell(descr);
-                tableDetails.AddCell(adic);
-                tableDetails.AddCell(price);
-                tableDetails.AddCell(qty);
-                tableDetails.AddCell(discount);
                 tableDetails.AddCell(total);
             }
+
             doc.Add(tableDetails);
             doc.Add(new Paragraph(" "));
 
@@ -1398,7 +1928,7 @@ namespace Facturacion_Electronica.Business
             tableTotal.AddCell(aditionalCell);
 
             var totalTable = new PdfPTable(2);
-            totalTable.SetWidths(new float[] { 7f,3f});
+            totalTable.SetWidths(new float[] { 7f, 3f });
 
             var totalCellData = new PdfPCell();
             totalCellData.BorderColor = BaseColor.WHITE;

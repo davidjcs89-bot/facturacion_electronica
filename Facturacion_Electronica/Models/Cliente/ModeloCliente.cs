@@ -14,6 +14,8 @@ namespace Facturacion_Electronica.Models.Cliente
         [Required(ErrorMessage = "Dato requerido.")]
         [Display(Name = "Razon social o Apellido y Nombre:")]
         public string RazonSocial { get; set; }
+        [Display(Name = "Código")]
+        public string Codigo { get; set; }
         [Display(Name = "Tipo de Identificacion")]
         public int TipoIdentificacionId { get; set; }
         [Display(Name = "Tipo de Cliente")]

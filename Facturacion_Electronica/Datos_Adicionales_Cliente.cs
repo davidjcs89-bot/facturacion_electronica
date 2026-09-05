@@ -20,7 +20,7 @@ namespace Facturacion_Electronica
         public System.DateTime fecha_creacion { get; set; }
         public int id_usuario { get; set; }
     
-        public virtual Clientes Clientes { get; set; }
         public virtual Usuario Usuario { get; set; }
+        public virtual Clientes Clientes { get; set; }
     }
 }

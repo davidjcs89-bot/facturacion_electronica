@@ -14,5 +14,6 @@ namespace Facturacion_Electronica.Business
         public static int NO_RECIBIDO = 5;
         public static int AUTORIZADO = 6;
         public static int NO_AUTORIZADO = 7;
+        public static int ANULADO = 8;
     }
 }

@@ -1,0 +1,171 @@
+﻿@model Facturacion_Electronica.Transferencia_Inventario
+@using Facturacion_Electronica.Models.Transferencias;
+
+@{
+    ViewBag.Title = "Transferencia de Inventario";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Transferencia de Inventario</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="container">
+        @Html.HiddenFor(model => model.id, new { @class = "text-danger", @id = "id-transferencia" })
+
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Datos de la Transferencia
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <div class="row">
+                            <div class="col-md-12" style="border-style: solid;">
+                                <fieldset>
+                                    <legend></legend>
+                                    <p>Fecha de Creaci&oacute;n: <strong>@Model.fecha_creacion.ToString("dd/MM/yyyy HH:mm")</strong></p>
+                                    <p>Número: <strong id="numero-factura">@Model.id</strong></p>
+                                    <p>Bodega Origen: <strong>@Model.Bodegas.nombre</strong></p>
+                                    <p>Bodega Destino: <strong>@Model.Bodegas1.nombre</strong></p>
+                                    <p>
+                                        Estado:
+                                        @{
+                                            if (Model.estado == (int)EstadoTransferencia.PENDIENTE)
+                                            {
+                                                <strong>PENDIENTE</strong>
+                                            }
+                                            if (Model.estado == (int)EstadoTransferencia.FINALIZADO)
+                                            {
+                                                <strong>FINALIZADO</strong>
+                                            }
+                                            if (Model.estado == (int)EstadoTransferencia.ANULADO)
+                                            {
+                                                <strong>ANULADO</strong>
+                                            }
+                                        }
+                                    </p>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="row">
+            <div class="col-md-12" style="border-style: solid;">
+                <div class="table-responsive">
+                    <fieldset>
+                        <legend>Detalle de Transferencia</legend>
+
+                        <button type="button" id="agregar-producto" class="btn bg-info" data-target="#agregarProducto" onclick="CargarAgregarProducto()">
+                            Agregar Nuevo Producto
+                        </button>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        C&oacute;digo Principal
+                                    </th>
+                                    <th>
+                                        C&oacute;digo Auxiliar
+                                    </th>
+                                    <th>
+                                        Producto
+                                    </th>
+                                    <th>
+                                        Cantidad
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Detalle_Transferencia_Inventario)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Producto.Codigo)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Producto.Codigo_auxiliar)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.cantidad)
+                                        </td>
+                                        <td>
+                                            <button type="button" id="eliminar-detalle" class="btn btn-danger" onclick="EliminarDetalle(@item.id)">
+                                                <span class="glyphicon glyphicon-trash"></span>
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                }
+
+                            </tbody>
+
+
+                        </table>
+
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <button type="button" id="finalizar" class="btn bg-success" onclick="Finalizar()">
+        Finalizar
+    </button>
+
+    <button type="button" id="anular" class="btn btn-danger" onclick="Anular()()">
+        Anular
+    </button>
+
+}
+<br />
+<div>
+    @Html.ActionLink("Regresar", "Index")
+</div>
+
+@section BodyArea {
+    <div id="agregarProducto" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="add-item" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Agregar Producto</h4>
+                </div>
+                <div id="vistaAgregarProducto">
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+    @Styles.Render("~/bundles/SweetAlertCss")
+    @Styles.Render("~/bundles/ProformaCSS")
+}
+
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")
+@Scripts.Render("~/bundles/SweetAlert")
+@Scripts.Render("~/bundles/TransferenciaJs")
+@Scripts.Render("~/bundles/GeneralJS")

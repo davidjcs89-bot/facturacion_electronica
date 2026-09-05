@@ -1,10 +1,15 @@
-﻿using Facturacion_Electronica.Business;
+﻿using ClosedXML.Excel;
+using ExcelDataReader;
+using Facturacion_Electronica.Business;
 using Facturacion_Electronica.Models.Cliente;
 using Facturacion_Electronica.Models.Factura;
 using Facturacion_Electronica.Models.Producto;
 using Facturacion_Electronica.Models.Usuario;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Entity.Core.Objects;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -34,6 +39,12 @@ namespace Facturacion_Electronica.Controllers
                 ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
             }
+
+            if (GetUsuarioLogeado().IdEstado != EnumEstadoUsuario.ACTIVO)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+
             ViewBag.FechaDesde = DateTime.Now.ToString("yyyy-MM-dd");
             ViewBag.FechaHasta = DateTime.Now.ToString("yyyy-MM-dd");
             var busquedaInicial = new ModeloBuscarFactura
@@ -41,7 +52,7 @@ namespace Facturacion_Electronica.Controllers
                 BuscarFechaDesde = DateTime.Now.Date,
                 BuscarFechaHasta = DateTime.Now.Date
             };
-            busquedaInicial.Facturas = facturaBusiness.BuscarFacturas(busquedaInicial, idEmisor,true);
+            busquedaInicial.Facturas = facturaBusiness.BuscarFacturas(busquedaInicial, idEmisor, true);
             return View(new ModeloBuscarFactura { Facturas = busquedaInicial.Facturas });
         }
 
@@ -58,7 +69,7 @@ namespace Facturacion_Electronica.Controllers
             {
                 ViewBag.FechaHasta = modeloBuscar.BuscarFechaHasta.Value.ToString("yyyy-MM-dd");
             }
-            
+
             return View(modeloBuscar);
         }
 
@@ -78,7 +89,7 @@ namespace Facturacion_Electronica.Controllers
             var idEmisor = GetUsuarioLogeado().IdEmisor;
             var lista = new List<byte[]>();
 
-            var factura = db.Factura.FirstOrDefault(x=>x.id == id && x.id_emisor == idEmisor);
+            var factura = db.Factura.FirstOrDefault(x => x.id == id && x.id_emisor == idEmisor);
             if (factura != null && (factura.Estado == EnumEstadosComprobante.FINALIZADO || factura.Estado == EnumEstadosComprobante.AUTORIZADO))
             {
                 foreach (var item in factura.Detalle_factura.ToList())
@@ -92,13 +103,23 @@ namespace Facturacion_Electronica.Controllers
             return View("~/Views/Admin/Imagenes.cshtml", lista);
         }
 
-        public ActionResult Create()
+        public ActionResult CreateGranel()
+        {
+            return RedirectToAction("Create", new { esMayorista = true });
+        }
+
+        public ActionResult Create(bool? esMayorista)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
             if (idEmisor == 0)
             {
                 ViewBag.MensajeError = "Aun no a configurado los datos de emisor | Menú: Configuración —> Emisor —> ";
                 return PartialView("~/Views/Shared/_NoConfigurado.cshtml");
+            }
+
+            if (GetUsuarioLogeado().IdEstado != EnumEstadoUsuario.ACTIVO)
+            {
+                return RedirectToAction("Login", "Login");
             }
 
             var emisor = emisorBusiness.BuscarEmisor(idEmisor);
@@ -155,6 +176,7 @@ namespace Facturacion_Electronica.Controllers
             modeloFactura.EsConsumidorFinal = true;
             modeloFactura.PuntoEmisionId = puntoEmision.id;
             modeloFactura.FechaEmison = DateTime.Now;
+            modeloFactura.EsMayorista = esMayorista.HasValue && esMayorista.Value;
             modeloFactura.Cliente = clienteBusiness.GenerarModeloCliente(EnumDatosGenerales.ID_CONSUMIDOR_FINAL);
             modeloFactura.Id = facturaBusiness.GuardarFactura(modeloFactura, idEmisor);
             modeloFactura.Detalles = new List<ModeloFacturaDetalle>();
@@ -246,6 +268,7 @@ namespace Facturacion_Electronica.Controllers
             if (ModelState.IsValid)
             {
                 var idEmisor = GetUsuarioLogeado().IdEmisor;
+
                 int facturaId = facturaBusiness.GuardarFactura(modeloFactura, idEmisor);
                 return RedirectToAction("Edit", new { id = facturaId });
             }
@@ -266,23 +289,27 @@ namespace Facturacion_Electronica.Controllers
             return Content("s");
         }
 
-        public ActionResult AgregarProducto()
+        public ActionResult AgregarProducto(int idFactura)
         { 
             var idEmisor = GetUsuarioLogeado().IdEmisor;
+            var emisor = db.Emisor.FirstOrDefault(x=>x.id == idEmisor);
             var productos = db.Producto.Where(x=> (x.Codigo.Equals("servicio", StringComparison.OrdinalIgnoreCase) || x.Codigo.Equals("producto", StringComparison.OrdinalIgnoreCase)) && x.id_emisor == idEmisor ).ToList();
 
-            if (productos == null)
+            //Lista vacia si maneja control de inventario
+            /*if (productos == null || emisor == null || emisor.control_inventario)
             {
-                return View(new ModeloBuscarProducto { Productos = new List<Producto>() });
-            }
-            return View(new ModeloBuscarProducto { Productos = productos });
+                return View(new ModeloBuscarProducto {IdFactura = idFactura,  Productos = new List<Producto>() });
+            }*/
+            return View(new ModeloBuscarProducto { IdFactura = idFactura, Productos = productos });
 
         }
 
         [HttpPost]
         public ActionResult AgregarProducto(ModeloBuscarProducto modelo)
         {
-            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor);
+            var factura = db.Factura.Find(modelo.IdFactura);
+
+            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor, factura.Puntos_emisior.id_bodega);
             modelo.Productos = productos;
             return View(modelo);
         }
@@ -291,29 +318,53 @@ namespace Facturacion_Electronica.Controllers
         public ActionResult AgregarProductoFactura(int id, int idFactura)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
-            facturaBusiness.AgregarProducto(idFactura, id, idEmisor);
-            return RedirectToAction("Edit", new { id = idFactura });
+            string mensaje = facturaBusiness.AgregarProducto(idFactura, id, 1, idEmisor, true);
+            //return RedirectToAction("Edit", new { id = idFactura });
+            return Json(new { detalleAgregado = string.IsNullOrEmpty(mensaje), mensaje });
+        }
 
+        public ActionResult AgregarProductoMasivo(int idFactura)
+        {
+            return View(new ModeloBuscarProducto { IdFactura = idFactura, Productos = new List<Producto>() });
         }
 
         [HttpPost]
-        public ActionResult ActualizarPrecioDetalle(int id, int idFactura, decimal nuevoPrecio)
+        public ActionResult AgregarProductoMasivo(ModeloBuscarProducto modelo)
+        {
+            var factura = db.Factura.Find(modelo.IdFactura);
+
+            var productos = productobusiness.BuscarProductos(modelo, GetUsuarioLogeado().IdEmisor, factura.Puntos_emisior.id_bodega);
+            modelo.Productos = productos;
+            return View(modelo);
+        }
+
+        [HttpPost]
+        public ActionResult AgregarProductosMasivoFactura(ModeloBuscarProducto modelo)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
-            try
-            {
-                if (nuevoPrecio <= 0)
-                {
-                    return RedirectToAction("Edit", new { id = idFactura });
-                }
-                facturaBusiness.ActualizarPrecioDetalle(id, idFactura, idEmisor, nuevoPrecio);
-                return RedirectToAction("Edit", new { id = idFactura });
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", new { id = idFactura });
-            }
+            string mensaje = facturaBusiness.AgregarProductoMasivo(modelo, idEmisor);
+            //return RedirectToAction("Edit", new { id = idFactura });
+            return Json(new { detalleAgregado = string.IsNullOrEmpty(mensaje), mensaje });
         }
+
+        //[HttpPost]
+        //public ActionResult ActualizarPrecioDetalle(int id, int idFactura, decimal nuevoPrecio)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (nuevoPrecio <= 0)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idFactura });
+        //        }
+        //        facturaBusiness.ActualizarPrecioDetalle(id, idFactura, idEmisor, nuevoPrecio);
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //}
 
         [HttpPost]
         public ActionResult ActualizarFechaFactura(int idFactura, string nuevaFecha)
@@ -335,64 +386,84 @@ namespace Facturacion_Electronica.Controllers
             }
         }
 
-        [HttpPost]
-        public ActionResult ActualizarAdicionalDetalle(int id, int idFactura, string adicional)
-        {
-            var idEmisor = GetUsuarioLogeado().IdEmisor;
-            try
-            {
-                if (adicional == null)
-                {
-                    return RedirectToAction("Edit", new { id = idFactura });
-                }
-                facturaBusiness.ActualizarAdicionalDetalle(id, idFactura, idEmisor, adicional);
-                return RedirectToAction("Edit", new { id = idFactura });
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", new { id = idFactura });
-            }
-        }
+        //[HttpPost]
+        //public ActionResult ActualizarAdicionalDetalle(int id, int idFactura, string adicional)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (adicional == null)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idFactura });
+        //        }
+        //        facturaBusiness.ActualizarAdicionalDetalle(id, idFactura, idEmisor, adicional);
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //}
+
+        //[HttpPost]
+        //public ActionResult ActualizarCantidadDetalle(int id, int idFactura, int nuevaCantidad)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (nuevaCantidad <= 0)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idFactura });
+        //        }
+        //        facturaBusiness.ActualizarCantidadDetalle(id, idFactura, idEmisor, nuevaCantidad);
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //}
+
+        //[HttpPost]
+        //public ActionResult ActualizarPorcentajeDescuentoDetalle(int id, int idFactura, decimal porcentaje)
+        //{
+        //    var idEmisor = GetUsuarioLogeado().IdEmisor;
+        //    try
+        //    {
+        //        if (porcentaje < 0)
+        //        {
+        //            return RedirectToAction("Edit", new { id = idFactura });
+        //        }
+        //        else if (porcentaje > 100)
+        //        {
+        //            porcentaje = 100;
+        //        }
+        //        facturaBusiness.ActualizarPorcentajeDescuentoDetalle(id, idFactura, idEmisor, porcentaje);
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return RedirectToAction("Edit", new { id = idFactura });
+        //    }
+        //}
+
 
         [HttpPost]
-        public ActionResult ActualizarCantidadDetalle(int id, int idFactura, int nuevaCantidad)
+        public ActionResult ActualizarDetalle(int id, int idFactura, decimal nuevoPrecio, int nuevacantidad, decimal porcentajeDescuento, string adicional)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
             try
             {
-                if (nuevaCantidad <= 0)
+                if (nuevoPrecio <= 0 || nuevacantidad <= 0 || porcentajeDescuento < 0)
                 {
-                    return RedirectToAction("Edit", new { id = idFactura });
+                    return Json(new { detalleActualizado = false, mensaje = "Los datos estan incorrectos" });
                 }
-                facturaBusiness.ActualizarCantidadDetalle(id, idFactura, idEmisor, nuevaCantidad);
-                return RedirectToAction("Edit", new { id = idFactura });
+                string mensaje = facturaBusiness.ActualizarDetalle(id, idFactura, idEmisor, nuevoPrecio, nuevacantidad, porcentajeDescuento, adicional);
+                return Json(new { detalleActualizado = string.IsNullOrEmpty(mensaje), mensaje });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return RedirectToAction("Edit", new { id = idFactura });
-            }
-        }
-
-        [HttpPost]
-        public ActionResult ActualizarPorcentajeDescuentoDetalle(int id, int idFactura, decimal porcentaje)
-        {
-            var idEmisor = GetUsuarioLogeado().IdEmisor;
-            try
-            {
-                if (porcentaje < 0)
-                {
-                    return RedirectToAction("Edit", new { id = idFactura });
-                }
-                else if (porcentaje > 100)
-                {
-                    porcentaje = 100;
-                }
-                facturaBusiness.ActualizarPorcentajeDescuentoDetalle(id, idFactura, idEmisor, porcentaje);
-                return RedirectToAction("Edit", new { id = idFactura });
-            }
-            catch (Exception)
-            {
-                return RedirectToAction("Edit", new { id = idFactura });
+                return Json(new { detalleActualizado = false, mensaje = "Error, no se pudo actualizar el detalle, " + ex.Message });
             }
         }
 
@@ -596,12 +667,29 @@ namespace Facturacion_Electronica.Controllers
             }
             return View(modeloDatoAdicional);
         }
+        
         [HttpPost]
         public ActionResult EliminarAdicional(int id, int idFactura)
         {
             var idEmisor = GetUsuarioLogeado().IdEmisor;
             facturaBusiness.EliminarAdicional(id, idFactura, idEmisor);
             return RedirectToAction("Edit", new { id = idFactura });
+        }
+
+        [HttpPost]
+        public ActionResult RecualcularFactura(int idFactura)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            facturaBusiness.ActualizarTotalesFinalizada(idFactura, idEmisor);
+            return RedirectToAction("View", new { id = idFactura });
+        }
+
+        [HttpPost]
+        public ActionResult AnularFactura(int idFactura)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+            facturaBusiness.AnularFactura(idFactura, idEmisor);
+            return RedirectToAction("View", new { id = idFactura });
         }
 
         [HttpPost]
@@ -721,6 +809,144 @@ namespace Facturacion_Electronica.Controllers
             return File(new byte[0], nombreArchivo, "application/xml");
         }
 
+        public ActionResult ReporteExcel()
+        {
+            ViewBag.DateFrom = DateTime.Now.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = DateTime.Now.ToString("yyyy-MM-dd");
+            return View(new ModeloReporte());
+        }
+
+        [HttpPost]
+        public ActionResult ReporteExcel(ModeloReporte reportModel)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+
+            ObjectParameter res = new ObjectParameter("Report", typeof(string));
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+
+            db.SP_Reporte_Facturas(idEmisor, reportModel.FechaDesde.ToString("yyyy-MM-dd"), reportModel.FechaHasta.AddDays(1).ToString("yyyy-MM-dd"), res);          
+
+            var dataReport = JsonConvert.DeserializeObject<DataSet>(res.Value.ToString());
+
+            var wbook = new XLWorkbook();
+            if (dataReport != null && dataReport.Tables != null)
+            {
+                var wsDetailedData = wbook.Worksheets.Add(dataReport.Tables[0], "Facturas");
+
+                wsDetailedData.Columns().AdjustToContents();
+                wsDetailedData.Rows().AdjustToContents();
+
+                using (memoryStream)
+                {
+                    wbook.SaveAs(memoryStream);
+                    memoryStream.Close();
+                }
+                            }
+
+            ViewBag.DateFrom = reportModel.FechaDesde.ToString("yyyy-MM-dd");
+            ViewBag.DateTo = reportModel.FechaHasta.ToString("yyyy-MM-dd");
+            return File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ReporteFacturacion.xlsx");
+        }
+
+        public ActionResult ImportarDetalle(int id)
+        {
+            return View(new ModeloFactura { Id = id});
+        }
+
+        [HttpPost]        
+        public ActionResult ImportarDetalle(ModeloFactura modelo, HttpPostedFileBase archivo)
+        {
+            var idEmisor = GetUsuarioLogeado().IdEmisor;
+
+            if (archivo == null)
+            {
+                ViewBag.Error = "Debe selecconar un archivo";
+                return View(modelo);
+            }
+
+            if (!FileIsValid(archivo))
+            {
+                ViewBag.Error = "Archivo en formato incorrecto";
+                return View(modelo);
+            }
+
+            var producto = db.Producto.FirstOrDefault(x => x.Codigo.Equals("producto", StringComparison.OrdinalIgnoreCase) && x.id_emisor == idEmisor);
+
+            if (producto == null)
+            {
+                ViewBag.Error = "No existe el producto genérico";
+                return View(modelo);
+            }
+
+            var modeloIngreso = new ModeloBuscarProducto { IdFactura = modelo.Id, Productos = new List<Producto>()};
+
+            using (var stream = archivo.InputStream)
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    int i = 0;
+                    try
+                    {
+                        while (reader.Read())
+                        {
+                            if (i == 0)
+                            {
+                                i++;
+                                continue;
+                            }
+
+                            var codigo = reader.GetValue(0);
+                            var descripcion = reader.GetValue(1);
+                            var cantidadObj = reader.GetValue(2);
+                            var precio = reader.GetValue(3);
+
+                            if (codigo == null || string.IsNullOrEmpty(codigo.ToString()))
+                            {
+                                continue;
+                            }
+
+                            modeloIngreso.Productos.Add(new Producto
+                            {
+                                id = producto.id, 
+                                Cantidad_producto = Convert.ToInt32(cantidadObj),
+                                Precio = Convert.ToDecimal(precio),
+                                Nombre = descripcion.ToString()
+                            });
+
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        ViewBag.Error = "Los datos esta incorrectos<br/>" + e.Message;
+                        return View(modelo);
+                    }
+
+                }
+            }
+
+            var resultado = facturaBusiness.AgregarProductoMasivoExcel(modeloIngreso, idEmisor);
+            ViewBag.Error = "Los datos esta incorrectos<br/>" + resultado;
+
+            return Json(new { ingresoExitoso = string.IsNullOrEmpty(resultado), mensaje = resultado });
+        }
+
+        private bool FileIsValid(HttpPostedFileBase fileUpload)
+        {
+            if (fileUpload == null)
+            {
+                return false;
+            }
+            if (fileUpload.ContentType == "application/vnd.ms-excel" ||
+                fileUpload.ContentType == "application/excel" ||
+                fileUpload.ContentType == "application/x-msexcel" ||
+                fileUpload.ContentType == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" //this is xlsx format
+                )
+                return true;
+
+            return false;
+        }
+
         [NonAction]
         private ModeloUsuarioSesion GetUsuarioLogeado()
         {
@@ -729,12 +955,13 @@ namespace Facturacion_Electronica.Controllers
             if (authCookie == null) return null;
             var ticket = FormsAuthentication.Decrypt(authCookie.Value); //Decrypt it
             var emisor = db.Usuario.Where(x => x.Nombre_usuario == ticket.Name).FirstOrDefault();
-
+            if (emisor == null) return null;
 
             var modelo = new ModeloUsuarioSesion
             {
                 NombreUsuario = ticket.Name,
-                IdEmisor = (emisor == null || emisor.Emisor == null) ? 0 : emisor.id_emisor.Value
+                IdEmisor = (emisor == null || emisor.Emisor == null) ? 0 : emisor.id_emisor.Value,
+                IdEstado = emisor.Estado
             };
             return modelo;
         }

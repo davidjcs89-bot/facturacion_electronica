@@ -1,0 +1,90 @@
+﻿@model Facturacion_Electronica.Bodegas
+@{
+    ViewBag.Title = "Existencias de Bodega";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Existencias de Bodegas</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;margin-bottom:15px">
+
+        <div class="form-horizontal" style="margin-top:15px">
+            <div class="form-group">
+                <label class="control-label col-md-2">Seleccionar una Bodega</label>
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.id, (IEnumerable<SelectListItem>)ViewBag.bodegas, null, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.id, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    if (Model != null && Model.Productos_x_bodega != null && Model.Productos_x_bodega.Count > 0)
+    {
+        <div class="table-responsive">
+            <table class="table">
+                <tr>
+                    <th>
+                        Indice
+                    </th>
+                    <th>
+                        Código de Producto
+                    </th>
+                    <th>
+                        Nombre de Producto
+                    </th>
+                    <th>
+                        Stock
+                    </th>
+                    <td></td>
+                </tr>
+
+                @{
+                    var indice = 1;
+                }
+
+                @foreach (var item in Model.Productos_x_bodega.Where(x => x.stock != 0).ToList())
+                {
+
+                    <tr>
+                        <td>@indice</td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.Codigo)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Producto.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.stock)
+                        </td>
+
+                        <td>
+                            <button type="button" id="editarProforma" class="btn btn-info btn-default" data-target="#editarProforma" onclick="window.open('@Url.Action("Kardex", "Producto", new { codigo = item.Producto.Codigo, target = "_blank" })')">
+                                Ver Kardex
+                            </button>
+                        </td>
+                    </tr>
+
+                    indice += 1;
+
+                }
+
+            </table>
+        </div>
+    }
+
+
+
+}

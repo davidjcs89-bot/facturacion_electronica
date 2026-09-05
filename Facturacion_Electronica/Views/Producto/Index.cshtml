@@ -5,6 +5,165 @@
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
+<style>
+    /* Contenedor principal */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Botón de tres puntos */
+    .dropdown-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #999;
+        padding: 6px;
+    }
+
+        .dropdown-btn:hover {
+            color: #333;
+        }
+
+    /* Menú oculto por defecto */
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        right: 100%;
+        left: auto;
+        top: 30px; /* se ajusta dinámicamente */
+        bottom: auto; /* se ajusta dinámicamente */
+        background: #fff;
+        min-width: 160px;
+        border-radius: 8px;
+        box-shadow: 0 3px 12px rgba(0,0,0,0.12);
+        padding: 8px 0;
+        z-index: 10;
+    }
+
+    /* Items del menú */
+    .dropdown-item {
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+    }
+
+        .dropdown-item:hover {
+            background: #f5f7fa;
+        }
+
+    /* Línea divisoria */
+    .dropdown-divider {
+        height: 1px;
+        background: #e6e6e6;
+        margin: 6px 0;
+    }
+
+    /* Opción eliminar */
+    .dropdown-item.delete {
+        color: #e15241;
+    }
+
+        .dropdown-item.delete:hover {
+            background: #ffe7e5;
+        }
+
+    /* Mostrar menú */
+    .dropdown.show .dropdown-menu {
+        display: block;
+    }
+    /* Última columna sticky */
+    table td:last-child,
+    table th:last-child {
+        position: sticky;
+        right: 0;
+        background: #fff; /* para que no se vea el scroll debajo */
+        z-index: 10; /* para que quede por encima del resto */
+    }
+
+    .pagination {
+        display: flex;
+        gap: 6px;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+        .pagination button {
+            padding: 6px 12px;
+            border: 1px solid #d1d5db;
+            background: white;
+            cursor: pointer;
+            border-radius: 6px;
+        }
+
+            .pagination button.active {
+                background: #0073ff;
+                color: white;
+                border-color: #0073ff;
+            }
+
+    .btn-clean {
+        border: none;
+        outline: none;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+        text-align: left; 
+        width: 100%;
+    }
+</style>
+
+<script>
+    const filasPorPagina = 10;
+    let paginaActual = 1;
+
+    function mostrarTabla(pagina) {
+        const tabla = document.getElementById("table-pagination");
+        const tbody = tabla.querySelector("tbody");
+        const filas = tbody.querySelectorAll("tr");
+
+        const totalFilas = filas.length;
+        const totalPaginas = Math.ceil(totalFilas / filasPorPagina);
+
+        // Ocultar todas las filas
+        filas.forEach(f => f.style.display = "none");
+
+        // Mostrar solo las filas que corresponden a la página
+        const inicio = (pagina - 1) * filasPorPagina;
+        const fin = inicio + filasPorPagina;
+
+        for (let i = inicio; i < fin && i < totalFilas; i++) {
+            filas[i].style.display = "";
+        }
+
+        generarBotones(totalPaginas, pagina);
+    }
+
+    function generarBotones(total, actual) {
+        const contenedor = document.getElementById("paginacion");
+        contenedor.innerHTML = "";
+
+        for (let i = 1; i <= total; i++) {
+            const btn = document.createElement("button");
+            btn.textContent = i;
+
+            if (i === actual) btn.classList.add("active");
+
+            btn.addEventListener("click", () => {
+                paginaActual = i;
+                mostrarTabla(paginaActual);
+            });
+
+            contenedor.appendChild(btn);
+        }
+    }
+
+    // Iniciar paginado
+    mostrarTabla(paginaActual);
+</script>
+
 <h2>Producto</h2>
 
 <td>
@@ -19,7 +178,7 @@
 {
 
     @Html.AntiForgeryToken()
-    <div class="container" style="border-style: solid;">
+    <div class="" style="border-style: solid;width:100%">
 
         <div class="accordion" id="accordion2">
             <div class="accordion-group">
@@ -92,91 +251,124 @@
 
     </div>
     <div class="table-responsive">
-        <table class="table">
-            <tr>
-                <th>
-                    Codigo
-                </th>
-                <th>
-                    Estilo
-                </th>
-                <th>
-                    Tipo Producto
-                </th>
-                <th>
-                    Nombre
-                </th>
-                <th>
-                    Precio
-                </th>
-                <th>
-                    impuesto IVA
-                </th>
-                <th>
-                    Impuesto ICE
-                </th>
-                <th>
-                    Impuesto IRBPNR
-                </th>
-                <th>
-                    Fecha Creacion
-                </th>
-                <th>
-                    Fecha Modificacion
-                </th>
-                <th></th>
-            </tr>
-
-            @foreach (var item in Model.Productos)
-            {
+        <table class="table" id="table-pagination" style="margin-bottom:85px">
+            <thead>
                 <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Codigo)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Codigo_auxiliar)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Tipo_producto)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Nombre)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Precio)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto2.Descripcion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto.Descripcion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto1.Descripcion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.fecha_creacion)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Fecha_modificacion)
-                    </td>
-                    <td>
-                        @*<button type="button" id="editarProducto" class="btn btn-info btn-editar" data-target="#editarCliete" onclick="location.href='/Producto/Edit/@item.id','_blank'">
-                            Editar
-                        </button>*@
-                        
-                        <button type="button" id="editarProducto" class="btn btn-info btn-editar" data-target="#editarCliete" onclick="window.open('@Url.Action("Edit", "Producto", new { id= item.id, target = "_blank" })')">
-                            Editar
-                        </button>
-                    </td>
-                    <td>
-                        <button type="button" id="eliminarProducto" class="btn btn-danger" data-target="#editarCliete" onclick="location.href='/Producto/Delete/@item.id'">
-                            Eliminar
-                        </button>
-                    </td>
+                    <th>#</th>
+                    <th>
+                        Codigo
+                    </th>
+                    <th>
+                        Estilo
+                    </th>
+                    <th>
+                        Tipo Producto
+                    </th>
+                    <th>
+                        Nombre
+                    </th>
+                    <th>
+                        Precio
+                    </th>
+                    <th>
+                        impuesto IVA
+                    </th>
+                    <th>
+                        Impuesto ICE
+                    </th>
+                    <th>
+                        Impuesto IRBPNR
+                    </th>
+                    <th>
+                        Fecha Creacion
+                    </th>
+                    <th>
+                        Fecha Modificacion
+                    </th>
+                    <th></th>
                 </tr>
+            </thead>
+            @{ 
+                var index = 1;
             }
+            <tbody>
+                @foreach (var item in Model.Productos)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Codigo)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Codigo_auxiliar)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Tipo_producto)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nombre)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Precio)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto2.Descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto.Descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Porcentaje_impuesto_producto1.Descripcion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.fecha_creacion)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Fecha_modificacion)
+                        </td>
+                        @*<td>
+                            <button type="button" id="editarProducto" class="btn btn-info btn-editar" data-target="#editarCliete" onclick="window.open('@Url.Action("Edit", "Producto", new { id= item.id, target = "_blank" })')">
+                                Editar
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" id="eliminarProducto" class="btn btn-danger" data-target="#editarCliete" onclick="location.href='/Producto/Delete/@item.id'">
+                                Eliminar
+                            </button>
+                        </td>*@
+                        <td>
+                            <div type="button" class="dropdown">
+                                <button class="dropdown-btn">⋯</button>
+                                <div class="dropdown-menu">
+                                    <div class="dropdown-item">
+                                        <button type="button" id="editarProducto" data-target="#editarCliete" class="btn-clean" onclick="window.open('@Url.Action("Edit", "Producto", new { id= item.id, target = "_blank" })')">
+                                            Editar
+                                        </button>
+                                    </div>
+                                    <div class="dropdown-item">
+                                        <button type="button" id="editarProducto" data-target="#editarCliete" class="btn-clean" onclick="window.open('@Url.Action("Kardex", "Producto", new { codigo = item.Codigo, target = "_blank" })')">
+                                            Ver Kardex
+                                        </button>
+                                    </div>
+                                    <div class="dropdown-item delete">
+                                        <button type="button" id="eliminarProducto" class="btn-clean" data-target="#editarCliete" onclick="location.href='/Producto/Delete/@item.id'">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                        index++;
+                    
+                }
+            </tbody>
+
 
         </table>
+        <div id="paginacion" class="pagination"></div>
     </div>
 }
+
+@Scripts.Render("~/bundles/ProductoJs")

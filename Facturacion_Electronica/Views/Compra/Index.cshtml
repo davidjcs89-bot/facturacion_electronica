@@ -1,36 +1,169 @@
-﻿
+﻿@model Facturacion_Electronica.Models.Compra.ModeloBuscarCompra
+
 @{
-    ViewBag.Title = "Cargar Compra";
+    ViewBag.Title = "Compras";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h2>Importar Compra</h2>
-<br />
-@using (Html.BeginForm("Index", "Compra", null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+<h2>
+    Compras
+</h2>
+<p>
+    <button type="button" id="nuevaCompra" class="btn btn-success" data-target="#nuevaCompra" onclick="location.href='/Compra/ImportarXML'" style="margin-top:15px">
+        Imporar Compra
+    </button>
+</p>
+
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Busqueda de Compras
+                        </a>
+                    </h4>
+                </div>
 
-    <div class="form-horizontal">
-        <div class="text-center">
-            <small class="text-danger" style="font-style:italic">*** Solo se puede importar facturas descargadas del SRI. No las que llegan directamente del Vendedor ***</small>
-            <br />
-            <br />
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <fieldset>
 
-        </div>
-        <div class="form-group">
-            <label class="control-label col-md-2">Seleccionar Archivo:</label>
-            <div class="col-md-7">
-                <input type="file" id="archivo" name="archivo" accept=".xml" />
-                @if (ViewBag.Error != null)
-                {
-                    <label class="control-label text-danger">@ViewBag.Error</label>
-                }
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNumero, htmlAttributes: new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.BuscarPorNumero, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorIdCliente, htmlAttributes: new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.EditorFor(model => model.BuscarPorIdCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                </div>
 
             </div>
-            <div class="col-md-3 pull-right">
-                <button type="submit" class="btn btn-info">Cargar</button>
-            </div>
         </div>
+
     </div>
-}
+    <br />
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    Numero Factura
+                </th>
+                <th>
+                    Fecha Emision
+                </th>
+                <th>
+                    Fecha Creacion
+                </th>
+                <th>
+                    Total $
+                </th>
+                <th>
+                    Bodega
+                </th>
+                <th>
+                    Estado
+                </th>
 
+            </tr>
+
+            @foreach (var item in Model.Compras)
+            {
+
+        <tr>
+
+            <td>
+                <button type="button" id="editarCompra" style="color:black" class="btn bg-info" data-target="#editarCompra" onclick="window.open('@Url.Action("Details", "Compra", new { id = item.id, target = "_blank" })')">
+                    Ver
+                </button>
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            @{
+                var cliente = item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente;
+            }
+            <td>
+                @Html.Raw(cliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.numero)
+            </td>
+            <td>
+                @Convert.ToDateTime(item.fecha).ToString("dd/MM/yyyy HH:mm")
+            </td>
+            <td>
+                @Convert.ToDateTime(item.fecha_creacion).ToString("dd/MM/yyyy HH:mm")
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.total)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bodegas.nombre)
+            </td>
+            <td>
+                @if (item.estado == 1)
+                {
+                    <p>INGRESADA</p>
+                }
+                else
+                {
+                    <p>ANULADA</p>
+                }
+            </td>
+        </tr>
+            }
+
+        </table>
+    </div>
+
+}

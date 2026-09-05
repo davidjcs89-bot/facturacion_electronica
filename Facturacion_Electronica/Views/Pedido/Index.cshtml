@@ -1,0 +1,243 @@
+﻿
+
+@model Facturacion_Electronica.Models.Pedido.ModeloBuscarPedido
+
+@{
+    ViewBag.Title = "Pedidos";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>
+    Facturas
+</h2>
+<p>
+    <button type="button" id="nuevaPedido" class="btn btn-success" data-target="#nuevaPedido" onclick="location.href='/Pedido/Create'" style="margin-top:15px">
+        Crear nuevo Pedido
+    </button>
+
+</p>
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="container" style="border-style: solid;">
+        <div class="accordion" id="accordion2">
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <h4 class="mb-0">
+                        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo" style="color: #656565;">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            Busqueda de Pedidos
+                        </a>
+                    </h4>
+                </div>
+
+                <div id="collapseTwo" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <fieldset>
+
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNumero, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorNumero, new { htmlAttributes = new { @class = "form-control", @id = "buscar-id" } })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorNombreCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorNombreCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorIdCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorIdCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-nombre" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BuscarPorCodigoCliente, htmlAttributes: new { @class = "control-label col-md-2" })
+                                    <div class="col-md-10">
+                                        @Html.EditorFor(model => model.BuscarPorCodigoCliente, new { htmlAttributes = new { @class = "form-control", @id = "buscar-codigo" } })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaDesde, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaDesde, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Fecha de Emisón:</label>
+                                    <div class="input-group date datePickerBasicDate col-md-3">
+                                        @Html.EditorFor(model => model.BuscarFechaHasta, new { htmlAttributes = new { @class = "form-control", Value = ViewBag.FechaHasta, @type = "text" } })
+                                        <span class="input-group-addon">
+                                            <span class="fa fa-calendar"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-md-offset-2 col-md-10">
+                                        <input id="btn-buscar" type="submit" value="Buscar" class="btn btn-default" />
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>
+                    Numero
+                </th>
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    Total
+                </th>
+                <th>
+                    Abono
+                </th>
+                <th>
+                    Saldo
+                </th>
+                <th>
+                    Fecha Creacion
+                </th>
+                <th>
+                    Fecha Modificacion
+                </th>
+                <th>
+                    Estado
+                </th>
+
+            </tr>
+
+            @foreach (var item in Model.Pedidos)
+            {
+                var colorFila = "white";
+                var colorLetra = "black";
+
+                switch (item.Estado)
+                {
+                    case 1:
+                        colorFila = "#faaa99";
+                        break;
+                    case 2:
+                        colorFila = "white";
+                        break;
+                    case 3:
+                        colorFila = "#f3130c";
+                        colorLetra = "white";
+                        break;
+                    case 4:
+                        colorFila = "white";
+                        break;
+                    case 5:
+                        colorFila = "white";
+                        break;
+                    case 6:
+                        colorFila = "white";
+                        break;
+                    case 7:
+                        colorFila = "white";
+                        break;
+                }
+
+        <tr style="background-color:@colorFila;color:@colorLetra">
+            @if (item.Estado == 1)
+            {
+                <td>
+                    <button type="button" id="editarFactura" class="btn btn-info btn-editar" data-target="#editarFactura" onclick="window.open('@Url.Action("Edit", "Pedido", new { id = item.id, target = "_blank" })')">
+                        Editar
+                    </button>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <button type="button" id="editarFactura" style="color:black" class="btn bg-info" data-target="#editarFactura" onclick="window.open('@Url.Action("View", "Pedido", new { id = item.id, target = "_blank" })')">
+                        Ver
+                    </button>
+                </td>
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.Numero)
+            </td>
+            @{
+                var cliente = item.Clientes.identificacion + "<br/>" + item.Clientes.nombre_cliente;
+            }
+            <td>
+                @Html.Raw(cliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Total)
+            </td>
+            @{
+                var totalAbono = item.Abonos_Pedido.Sum(x => x.valor);
+                var totalSaldo = item.Total - totalAbono;
+            }
+            <td>
+                @Html.Raw(totalAbono)
+            </td>
+            <td>
+                @Html.Raw(totalSaldo)
+            </td>
+            <td>
+                @Convert.ToDateTime(item.fecha_creacion).ToString("dd/MM/yyyy HH:mm")
+            </td>
+            <td>
+                @Convert.ToDateTime(item.fecha_modificacion).ToString("dd/MM/yyyy HH:mm")
+            </td>
+            <td>
+                @switch (item.Estado)
+                {
+                    case 1:
+                        <p>ABIERTO</p>
+                        break;
+                    case 2: <p>FINALIZADO</p>
+                        break;
+                    case 3: <p>COMPLETADO</p>
+                        break;
+                    case 8: <p>ANULADO</p>
+                        break;
+                }
+            </td>
+
+        </tr>
+            }
+
+        </table>
+    </div>
+
+}
+
+@section Styles {
+    @Styles.Render("~/bundles/datetimePickerCss")
+}
+@Scripts.Render("~/bundles/moment")
+@Scripts.Render("~/bundles/jquery")
+@Scripts.Render("~/bundles/datetimePicker")

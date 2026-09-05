@@ -23,6 +23,11 @@ namespace Facturacion_Electronica.Models.Secuencias
         [Display(Name = "Direccion de Establecimiento:")]
         [RegularExpression(@"^[a-zA-Z'.''0-9'' '-]{4,100}$", ErrorMessage = "Nota importante: minimo 4, maximo 100 caracteres, simbolos permitidos:- .")]
         public string Direccion { get; set; }
+
+        [Required(ErrorMessage = "Dato requerido.")]
+        [Display(Name = "Bodega")]
+        public int IdBodega { get; set; }
+
         public List<ModeloSecuencia> Secuencias { get; set; }
     }
 }

@@ -11,5 +11,7 @@ namespace Facturacion_Electronica.Models.Usuario
         public int IdEmisor { get; set; }
         public int IdRol { get; set; }
         public int id { get; set; }
+
+        public int IdEstado { get; set; }
     }
 }

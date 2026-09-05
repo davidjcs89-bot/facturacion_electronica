@@ -1,0 +1,219 @@
+﻿@model Facturacion_Electronica.Models.Proforma.ModeloImpresionProforma
+@{
+    Layout = null;
+}
+<html>
+<head>
+</head>
+<body onload="window.print();">
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>
+                        @Model.Proforma.Emisor.Razon_social
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        RUC: @Model.Proforma.Emisor.Ruc
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Proforma#: @Model.Proforma.numero
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    @{
+                        var date = Model.Proforma.fecha_creacion.ToString("dd/MM/yyyy-HH:mm:ss");
+                    }
+                    <td>Fecha Emisión: @Html.DisplayFor(model => date)</td>
+                </tr>
+                <tr>
+                    <td>
+                        Id Cliente: @Html.DisplayFor(model => model.Proforma.Clientes.identificacion)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Nombre Cliente: @Html.DisplayFor(model => model.Proforma.Clientes.nombre_cliente)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            string address = Model.Proforma.Clientes.Direccion;
+
+                            if (address != null && Model.Proforma.Clientes.Direccion.Length > 20)
+                            {
+                                address = Model.Proforma.Clientes.Direccion.Substring(0, 20);
+                            }
+                        }
+                        Dirección: @Html.DisplayFor(model => address)
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Email
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        @{
+                            string email = Model.Proforma.Clientes.correo;
+
+                            if (email != null && Model.Proforma.Clientes.correo.Length > 24)
+                            {
+                                email = Model.Proforma.Clientes.correo.Substring(0, 24);
+                                email = email.ToUpper();
+                            }
+                            else if(email != null && Model.Proforma.Clientes.correo.Length <= 24)
+                            {
+                                email = Model.Proforma.Clientes.correo;
+                            }else
+                            {
+                                email = " ";
+                            }
+
+                        }
+                        @Html.DisplayFor(model => email)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Código
+                    </th>
+                    <th colspan="2">
+                        Producto
+                    </th>
+                    <th>
+                        Qty
+                    </th>
+                    <th>
+                        P.Unit
+                    </th>
+                    <th>
+                        Descuento
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Proforma.Detalle_Proforma.ToList())
+                {
+                    <tr>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(model => item.Producto.Codigo)
+                        </td>
+                        <td colspan="2" style="text-align: left">
+                            @{
+                                string descr = item.Producto.Nombre;
+
+                                if (item.Producto.Nombre.Length > 8)
+                                {
+                                    descr = item.Producto.Nombre.Substring(0, 8);
+                                }
+                            }
+                            @Html.DisplayFor(model => descr)
+                        </td>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(model => item.cantidad)
+                        </td>
+                        <td style="text-align: right">
+                            @Html.DisplayFor(model => item.precio)
+                        </td>
+                        <td style="text-align: center">
+                            @Html.DisplayFor(model => item.descuento)
+                        </td>
+                        <td style="text-align: right">
+                            @{
+                                var subtotal = item.sub_total - item.descuento;
+                            }
+                            @Html.DisplayFor(model => subtotal)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <table>
+            <tr>
+                <td>
+                    <table>
+                        <tr>
+                            <td><strong>Subtotal Sin Imp</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">$@Html.DisplayFor(model => model.Proforma.subtotal_sin_impuesto)</td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Descuento</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                $@Html.DisplayFor(model => model.Proforma.total_descuento)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Iva</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                $@Html.DisplayFor(model => model.Proforma.valor_iva)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table>
+                        <tr>
+                            <td>
+                                <strong>Total</strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right">
+                                $@Html.DisplayFor(model => model.Proforma.total)
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <br/>
+        <div style="font-size: small">
+            @Html.Raw(Model.Impresion.mensajes)
+        </div>
+
+        @if (Model.Impresion.firma)
+        {
+            <div>
+                <p>----------------------------------------------------------</p>
+                   Firma
+            </div>
+        }
+    </div>
+</body>
+</html>

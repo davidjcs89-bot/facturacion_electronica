@@ -1,0 +1,33 @@
+﻿@model Facturacion_Electronica.Models.Factura.ModeloFactura
+@{
+    ViewBag.Title = "ImportarDetalle";
+    Layout = null;
+}
+
+@using (Html.BeginForm("ImportarDetalle", "Factura", null, FormMethod.Post, new { id = "frm-importar-detalle", enctype = "multipart/form-data" }))
+{
+    <div class="modal-body">
+        @Html.HiddenFor(modelo => modelo.Id)
+        @Html.AntiForgeryToken()
+        @*<a href='@Url.Action("DescargarPlantillaImportacion", "Producto")' class="btn btn-info">Descargar Plantilla</a>*@
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="control-label col-md-2">Seleccionar Archivo:</label>
+                <div class="col-md-7">
+                    <input type="file" id="archivo" name="archivo" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" />
+                    @if (ViewBag.Error != null)
+                    {
+                        <label class="control-label text-danger">@ViewBag.Error</label>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer" style="margin-top:15px">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="button" class="btn btn-info" onclick="ImportarDetalle()">Cargar</button>
+        </div>
+    </div>
+
+}

@@ -15,15 +15,19 @@ namespace Facturacion_Electronica.Business
         {
             if (modeloBuscar.BuscarTodos)
             {
-                return _db.Emisor.ToList();
+                return _db.Emisor.Where(x=> x.estado != 3).OrderByDescending(x => x.id).ToList();
             }
             if (modeloBuscar.BuscarPorRuc != null && modeloBuscar.BuscarPorRuc.Trim().Length > 0)
             {
-                return _db.Emisor.Where(x => x.Ruc == modeloBuscar.BuscarPorRuc).ToList();
+                return _db.Emisor.Where(x => x.Ruc == modeloBuscar.BuscarPorRuc && x.estado != 3).OrderByDescending(x => x.id).ToList();
             }
             else if (modeloBuscar.BuscarPorRazonSocial != null && modeloBuscar.BuscarPorRazonSocial.Trim().Length > 0)
             {
-                return _db.Emisor.Where(x => x.Razon_social.ToUpper().Contains(modeloBuscar.BuscarPorRazonSocial.ToUpper())).ToList();
+                return _db.Emisor.Where(x => x.Razon_social.ToUpper().Contains(modeloBuscar.BuscarPorRazonSocial.ToUpper()) && x.estado != 3).OrderByDescending(x => x.id).ToList();
+            }
+            else if (modeloBuscar.BuscarPorEstadoUsuario != 0)
+            {
+                return _db.Emisor.Where(x => x.estado == modeloBuscar.BuscarPorEstadoUsuario).OrderByDescending(x => x.id).ToList();
             }
             else
             {
@@ -50,6 +54,7 @@ namespace Facturacion_Electronica.Business
                 Fecha_creacion = DateTime.Now,
                 fecha_modificacion = DateTime.Now,
                 adicionales_comprobantes = modeloEmisor.Adicionales,
+                control_inventario = modeloEmisor.ControlInventario,
                 Emisor_habilitacion = new Emisor_habilitacion { fecha_desde = DateTime.Now, fecha_hasta = DateTime.Now.AddDays(90) }
             };
             _db.Emisor.Add(emisor);
@@ -59,6 +64,9 @@ namespace Facturacion_Electronica.Business
             {
                 usuarario.id_emisor = emisor.id;
             }
+
+            // Crear bodega por defecto
+            emisor.Bodegas.Add(new Bodegas { activa = true, codigo = "1", nombre = "BODEGA PRINCIPAL" });
 
             _db.SaveChanges();
             this.CrearProductosPorDefecto(emisor.id, emisor.id_impuesto_iva_actual);
@@ -132,6 +140,7 @@ namespace Facturacion_Electronica.Business
                 Logo = emisor.Logo,
                 ContrasenaFirma = emisor.Contrasena,
                 IdImpuestoIva = emisor.id_impuesto_iva_actual,
+                ControlInventario = emisor.control_inventario,
                 Adicionales = emisor.adicionales_comprobantes
             };
 
@@ -209,12 +218,24 @@ namespace Facturacion_Electronica.Business
             emisor.fecha_modificacion = DateTime.Now;
             emisor.Ruc = modeloEmisor.Ruc;
             emisor.id_impuesto_iva_actual = modeloEmisor.IdImpuestoIva;
+            emisor.control_inventario = modeloEmisor.ControlInventario;
             emisor.adicionales_comprobantes = modeloEmisor.Adicionales;
             _db.SaveChanges();
         }
 
         public bool ValidarCedulaRuc(string ruc, bool esRuc = true)
         {
+
+            if (esRuc && ruc.Trim().Length != 13)
+            {
+                return false;
+            }
+
+            if (!esRuc && ruc.Trim().Length != 10)
+            {
+                return false;
+            }
+
             string pattern = @"^[0-9]{10,13}$";
             return new Regex(pattern).IsMatch(ruc);
             //if (esRuc && ruc.Length != 13)

@@ -12,6 +12,8 @@ namespace Facturacion_Electronica.Models.Cliente
         public string BuscarPorIdentificacion { get; set; }
         [Display(Name = "Razon social, Apellido y Nombre:")]
         public string BuscarPorRazonSocial { get; set; }
+        [Display(Name = "Código:")]
+        public string BuscarPorCodigo { get; set; }
         public List<Clientes> Clientes { get; set; }
         [Display(Name = "Ver todos los clientes")]
         public bool BuscarTodos { get; set; }
