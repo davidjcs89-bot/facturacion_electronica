@@ -1,0 +1,11 @@
+import { factura } from './src/lib/comprobantes/factura';
+import { sql } from './src/lib/db';
+import { generarRide } from './src/lib/sri/ride';
+import { writeFileSync } from 'node:fs';
+const id = Number(process.argv[2]);
+const mio = await factura.construirXml(id);
+const [d] = await sql`select xml_generado::text x from documentos_electronicos where id_tipo_comprobante=1 and id_comprobante=${id} order by id desc limit 1`;
+writeFileSync('/tmp/mio.xml', mio); writeFileSync('/tmp/legado.xml', d.x);
+const ride = await generarRide(await factura.modeloRide(id, { numeroAutorizacion: 'X', fechaAutorizacion: '2026-10-26T18:58:46-05:00' }));
+writeFileSync('/tmp/ride.pdf', ride);
+await sql.end();
