@@ -10,6 +10,25 @@ import { enviarCorreo, registrarLog } from '../correo';
 import { ESTADO } from '../constantes';
 import { money } from '../formato';
 
+/** Agrega al RIDE la configuracion de impresion del emisor (linea de firma y mensaje al pie) */
+async function conImpresion(tipoDoc: number, id: number, modelo: import('../sri/ride').ModeloRide) {
+  const m = manejador(tipoDoc);
+  const [cfg] = await sql<{ firma: boolean; mensajes: string | null }[]>`
+    select i.firma, i.mensajes from impresion_comprobantes i
+    join ${sql(m.tabla)} x on x.${sql(m.colEmisor)} = i.id_emisor
+    where x.id = ${id} and i.id_comprobante = ${tipoDoc}`;
+  if (!cfg) return modelo;
+  const pie = (cfg.mensajes ?? '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\r/g, '')
+    .replace(/\n{2,}/g, '\n')
+    .trim();
+  return { ...modelo, lineaFirma: cfg.firma, pie: pie && pie !== '.' ? pie : null };
+}
+
 export type ResultadoEmision = { ok: boolean; estado: number; mensaje: string };
 
 /**
@@ -182,7 +201,7 @@ export async function consultarAutorizacionYGuardar(tipoDoc: number, id: number,
   const ambiente = doc.clave.charAt(23) as Ambiente;
   const r = await consultarAutorizacion(ambiente, doc.clave);
   if (r.estado === 'AUTORIZADO') {
-    const ride = await generarRide(await m.modeloRide(id, { numeroAutorizacion: r.numeroAutorizacion, fechaAutorizacion: r.fechaAutorizacion }));
+    const ride = await generarRide(await conImpresion(tipoDoc, id, await m.modeloRide(id, { numeroAutorizacion: r.numeroAutorizacion, fechaAutorizacion: r.fechaAutorizacion })));
     await guardarDocumento(tipoDoc, id, {
       xml_retornado: r.xmlAutorizacion ?? null,
       ride: Buffer.from(ride),
@@ -268,5 +287,5 @@ export async function obtenerRide(tipoDoc: number, id: number): Promise<Uint8Arr
     order by id desc limit 1`;
   if (d?.ride) return d.ride;
   const m = manejador(tipoDoc);
-  return generarRide(await m.modeloRide(id, {}));
+  return generarRide(await conImpresion(tipoDoc, id, await m.modeloRide(id, {})));
 }

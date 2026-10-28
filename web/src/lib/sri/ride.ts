@@ -20,6 +20,9 @@ export type ModeloRide = {
   adicionales: [string, string][];
   pagos?: [string, string][];
   totales: [string, string][];
+  /** Opciones de impresion del emisor (Configuracion -> Impresion) */
+  pie?: string | null;
+  lineaFirma?: boolean;
 };
 
 const NEGRO = rgb(0, 0, 0);
@@ -211,9 +214,10 @@ export async function generarRide(m: ModeloRide): Promise<Uint8Array> {
       y -= h;
     };
     if (tb.titulo) {
-      if (y < MARGEN + 60) nuevaPagina();
-      texto(tb.titulo, MARGEN, y - 10, 9, true);
-      y -= 14;
+      const lineasTitulo = partir(tb.titulo, fb, 9, util);
+      if (y - lineasTitulo.length * 12 < MARGEN + 60) nuevaPagina();
+      lineasTitulo.forEach((l, i) => texto(l, MARGEN, y - 10 - i * 12, 9, true));
+      y -= 4 + lineasTitulo.length * 12;
     }
     if (y < MARGEN + 40) nuevaPagina();
     encabezado();
@@ -288,6 +292,22 @@ export async function generarRide(m: ModeloRide): Promise<Uint8Array> {
       texto(v, MARGEN + w1 + w2 - 4 - w, ya - 9, 7.5);
       ya -= 12;
     }
+  }
+
+  // linea de firma y mensaje al pie
+  let yPie = Math.min(yt, ya) - 18;
+  if (m.lineaFirma) {
+    if (yPie < MARGEN + 50) { nuevaPagina(); yPie = y; }
+    yPie -= 30;
+    pagina.drawLine({ start: { x: MARGEN + util / 2 - 100, y: yPie }, end: { x: MARGEN + util / 2 + 100, y: yPie }, thickness: 0.7, color: NEGRO });
+    const etq = 'Firma de recibido';
+    texto(etq, MARGEN + util / 2 - f.widthOfTextAtSize(etq, 8) / 2, yPie - 11, 8);
+    yPie -= 24;
+  }
+  if (m.pie && m.pie.trim()) {
+    const lineasPie = partir(m.pie, f, 8, util);
+    if (yPie - lineasPie.length * 10 < MARGEN) { nuevaPagina(); yPie = y; }
+    lineasPie.forEach((l, i) => texto(l, MARGEN + (util - f.widthOfTextAtSize(l, 8)) / 2, yPie - i * 10, 8, false, GRIS));
   }
 
   // numeracion de paginas
