@@ -24,6 +24,20 @@ function lista<T>(x: T | T[] | undefined | null): T[] {
   return Array.isArray(x) ? x : [x];
 }
 
+/** Si el SRI devolvió un SOAP Fault (error interno de su servidor), lanza un error con su texto */
+function revisarFalla(j: any, servicio: string) {
+  const f = j?.Envelope?.Body?.Fault;
+  if (!f) return;
+  const texto = String(f.faultstring ?? f.Reason?.Text ?? 'sin detalle').slice(0, 300);
+  throw new Error(`El servicio de ${servicio} del SRI tuvo un error interno y no procesó el comprobante (${texto}). ` +
+    'No es un error de su comprobante: vuelva a intentar más tarde.');
+}
+
+/** Primeros caracteres de una respuesta que no se pudo interpretar (para el mensaje de error) */
+function muestra(txt: string) {
+  return txt.replace(/\s+/g, ' ').slice(0, 200);
+}
+
 export function textoMensajes(m: Mensaje[]): string {
   return m
     .map((x) => [x.identificador && `[${x.identificador}]`, x.mensaje, x.informacionAdicional].filter(Boolean).join(' '))
@@ -61,8 +75,9 @@ export async function enviarComprobante(ambiente: Ambiente, xmlFirmado: string):
     `<soapenv:Header/><soapenv:Body><ec:validarComprobante><xml>${b64}</xml></ec:validarComprobante></soapenv:Body></soapenv:Envelope>`;
   const txt = await soap(URLS[ambiente].recepcion, cuerpo);
   const j = parser.parse(txt);
+  revisarFalla(j, 'recepción');
   const resp = j?.Envelope?.Body?.validarComprobanteResponse?.RespuestaRecepcionComprobante;
-  if (!resp) throw new Error('Respuesta de recepción del SRI no reconocida');
+  if (!resp) throw new Error(`Respuesta de recepción del SRI no reconocida: ${muestra(txt)}`);
   const mensajes: Mensaje[] = [];
   for (const comp of lista(resp.comprobantes?.comprobante)) {
     for (const m of lista((comp as { mensajes?: { mensaje?: Mensaje | Mensaje[] } }).mensajes?.mensaje)) mensajes.push(m);
@@ -89,8 +104,9 @@ export async function consultarAutorizacion(ambiente: Ambiente, claveAcceso: str
     `</ec:autorizacionComprobante></soapenv:Body></soapenv:Envelope>`;
   const txt = await soap(URLS[ambiente].autorizacion, cuerpo);
   const j = parser.parse(txt);
+  revisarFalla(j, 'autorización');
   const resp = j?.Envelope?.Body?.autorizacionComprobanteResponse?.RespuestaAutorizacionComprobante;
-  if (!resp) throw new Error('Respuesta de autorización del SRI no reconocida');
+  if (!resp) throw new Error(`Respuesta de autorización del SRI no reconocida: ${muestra(txt)}`);
   const auts = lista(resp.autorizaciones?.autorizacion) as Record<string, unknown>[];
   if (!auts.length) return { estado: Number(resp.numeroComprobantes ?? 0) === 0 ? 'SIN RESPUESTA' : 'EN PROCESO', mensajes: [] };
   // Si hay varias, preferir la autorizada
