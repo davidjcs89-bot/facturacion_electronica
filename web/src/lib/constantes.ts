@@ -39,3 +39,16 @@ export const IDENTIFICACION_CONSUMIDOR_FINAL = '9999999999999';
 export const MONTO_MAXIMO_CONSUMIDOR_FINAL = 50;
 
 export const TIEMPOS_PAGO = ['NINGUNO', 'DIAS', 'MESES', 'AÑOS'];
+
+/**
+ * Ficha tecnica SRI v2.34, Anexo 26 (Resolucion NAC-DGERCGC26-00000027): los comprobantes emitidos con un sistema
+ * de facturacion de un tercero llevan en infoAdicional el campo «RUC Proveedor» con el RUC del proveedor del sistema.
+ */
+export const CAMPO_RUC_PROVEEDOR = 'RUC Proveedor';
+export const RUC_PROVEEDOR_SISTEMA = process.env.RUC_PROVEEDOR_SISTEMA?.trim() || '0301741575001';
+
+/** Agrega «RUC Proveedor» a los campos adicionales (quitando uno igual que haya escrito el usuario) */
+export function conRucProveedor<T extends { nombre: string; descripcion: string }>(campos: T[]): { nombre: string; descripcion: string }[] {
+  const otros = campos.filter((c) => c.nombre?.trim().toLowerCase() !== CAMPO_RUC_PROVEEDOR.toLowerCase());
+  return [...otros, { nombre: CAMPO_RUC_PROVEEDOR, descripcion: RUC_PROVEEDOR_SISTEMA }];
+}

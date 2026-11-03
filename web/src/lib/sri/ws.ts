@@ -66,7 +66,14 @@ async function soap(url: string, cuerpo: string, timeoutMs = 25000): Promise<str
   }
 }
 
-export type RespuestaRecepcion = { estado: 'RECIBIDA' | 'DEVUELTA' | string; mensajes: Mensaje[]; yaRegistrada: boolean };
+export type RespuestaRecepcion = {
+  estado: 'RECIBIDA' | 'DEVUELTA' | string;
+  mensajes: Mensaje[];
+  /** Codigo 43: el SRI ya tiene esta clave de acceso (fue recibida antes) */
+  yaRegistrada: boolean;
+  /** Codigo 70: el SRI aun esta procesando un envio anterior de esta clave; no reenviar, solo consultar */
+  enProceso: boolean;
+};
 
 export async function enviarComprobante(ambiente: Ambiente, xmlFirmado: string): Promise<RespuestaRecepcion> {
   const b64 = Buffer.from(xmlFirmado, 'utf8').toString('base64');
@@ -82,9 +89,14 @@ export async function enviarComprobante(ambiente: Ambiente, xmlFirmado: string):
   for (const comp of lista(resp.comprobantes?.comprobante)) {
     for (const m of lista((comp as { mensajes?: { mensaje?: Mensaje | Mensaje[] } }).mensajes?.mensaje)) mensajes.push(m);
   }
-  // Codigo 43: "CLAVE ACCESO REGISTRADA" -> ya fue enviado antes; se puede consultar la autorizacion
-  const yaRegistrada = mensajes.some((m) => String(m.identificador) === '43' || /REGISTRAD/i.test(m.mensaje ?? ''));
-  return { estado: String(resp.estado ?? ''), mensajes, yaRegistrada };
+  // Ficha tecnica SRI, tabla de errores:
+  //  43 "CLAVE ACCESO REGISTRADA" -> ya fue enviado antes; se consulta la autorizacion.
+  //  70 "CLAVE DE ACCESO EN PROCESAMIENTO" -> no reenviar ni cambiar clave/secuencial; esperar la respuesta (max. 24 h).
+  // (El 45 "SECUENCIAL REGISTRADO" NO entra aqui: puede ser otro comprobante con el mismo numero.)
+  const codigo = (m: Mensaje) => String(m.identificador ?? '').trim();
+  const yaRegistrada = mensajes.some((m) => codigo(m) === '43' || /CLAVE\s+(DE\s+)?ACCESO\s+REGISTRADA/i.test(m.mensaje ?? ''));
+  const enProceso = mensajes.some((m) => codigo(m) === '70' || /EN\s+PROCESAMIENTO/i.test(m.mensaje ?? ''));
+  return { estado: String(resp.estado ?? ''), mensajes, yaRegistrada, enProceso };
 }
 
 export type RespuestaAutorizacion = {

@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type PDFImage } from 'pdf-lib';
 import { code128 } from './code128';
+import { conRucProveedor } from '../constantes';
 
 /** Modelo generico del RIDE (representacion impresa del documento electronico). */
 export type ColumnaRide = { titulo: string; ancho: number; alin?: 'izq' | 'der' | 'centro' };
@@ -80,7 +81,14 @@ function partir(texto: string, fuente: PDFFont, tam: number, ancho: number): str
   return lineas;
 }
 
-export async function generarRide(m: ModeloRide): Promise<Uint8Array> {
+export async function generarRide(modelo: ModeloRide): Promise<Uint8Array> {
+  // El RIDE muestra los mismos datos adicionales que el XML, incluido «RUC Proveedor» (Anexo 26 ficha SRI)
+  const m: ModeloRide = {
+    ...modelo,
+    adicionales: conRucProveedor(modelo.adicionales.map(([nombre, descripcion]) => ({ nombre, descripcion }))).map(
+      (c) => [c.nombre, c.descripcion] as [string, string],
+    ),
+  };
   const pdf = await PDFDocument.create();
   pdf.setTitle(`${m.titulo} ${m.numero}`);
   pdf.setProducer('Facturación Electrónica');

@@ -2,6 +2,7 @@ import 'server-only';
 import { sql } from '../db';
 import { el, t, limpiar, escTexto } from '../sri/xml';
 import type { ModeloRide } from '../sri/ride';
+import { conRucProveedor } from '../constantes';
 
 export type EmisorXml = {
   id: number; ruc: string; razon_social: string; nombre_comercial: string; direccion_matriz: string;
@@ -41,10 +42,12 @@ export function infoTributaria(e: EmisorXml, claveAcceso: string, codDoc: string
   );
 }
 
-/** Bloque infoAdicional (se omite si no hay campos) */
+/** Bloque infoAdicional; siempre incluye «RUC Proveedor» (Anexo 26 de la ficha tecnica del SRI) */
 export function infoAdicional(campos: { nombre: string; descripcion: string }[]) {
-  const validos = campos.filter((c) => c.nombre && c.descripcion);
-  if (!validos.length) return '';
+  const validos = conRucProveedor(campos.filter((c) => c.nombre && c.descripcion));
+  // El esquema del SRI admite maximo 15 campos adicionales
+  if (validos.length > 15)
+    throw new Error('El comprobante tiene demasiados datos adicionales: el SRI admite 15 y uno lo ocupa «RUC Proveedor». Deje máximo 14.');
   return el('infoAdicional', null, validos.map((c) => el('campoAdicional', { nombre: limpiar(c.nombre) }, escTexto(limpiar(c.descripcion)))));
 }
 

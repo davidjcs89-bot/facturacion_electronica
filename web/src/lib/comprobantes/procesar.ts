@@ -29,7 +29,13 @@ async function conImpresion(tipoDoc: number, id: number, modelo: import('../sri/
   return { ...modelo, lineaFirma: cfg.firma, pie: pie && pie !== '.' ? pie : null };
 }
 
-export type ResultadoEmision = { ok: boolean; estado: number; mensaje: string };
+export type ResultadoEmision = {
+  ok: boolean;
+  estado: number;
+  mensaje: string;
+  /** El envio fallo por un problema del SRI (caido, error interno, sin respuesta), no del comprobante */
+  fallaSri?: boolean;
+};
 
 /**
  * La emision real esta bloqueada mientras la app anterior siga emitiendo (comparten secuenciales).
@@ -117,7 +123,13 @@ const espera = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * Emision completa: numeracion -> XML -> firma -> envio al SRI -> autorizacion -> RIDE -> correo.
  * Si el SRI deja el comprobante "en proceso", queda en estado RECIBIDO para consultarlo despues.
  */
-export async function emitir(tipoDoc: number, id: number, emisorId: number): Promise<ResultadoEmision> {
+export async function emitir(
+  tipoDoc: number,
+  id: number,
+  emisorId: number,
+  opciones: { esperarAutorizacion?: boolean } = {},
+): Promise<ResultadoEmision> {
+  const esperarAutorizacion = opciones.esperarAutorizacion ?? true;
   const m = manejador(tipoDoc);
   const perm = await emisionPermitida(emisorId);
   if (!perm.permitido) return { ok: false, estado: 0, mensaje: perm.motivo! };
@@ -154,18 +166,31 @@ export async function emitir(tipoDoc: number, id: number, emisorId: number): Pro
   // Envio
   try {
     const r = await enviarComprobante(perm.ambiente, xmlFirmado);
-    if (r.estado !== 'RECIBIDA' && !r.yaRegistrada) {
+    // 43 (ya registrada) y 70 (en procesamiento) no son rechazos: el SRI ya lo tiene, se consulta la autorizacion
+    if (r.estado !== 'RECIBIDA' && !r.yaRegistrada && !r.enProceso) {
       const msg = textoMensajes(r.mensajes) || `El SRI devolvió el comprobante (${r.estado})`;
       await guardarDocumento(tipoDoc, id, { mensajes: msg });
       await cambiarEstado(tipoDoc, id, ESTADO.NO_RECIBIDO);
       return { ok: false, estado: ESTADO.NO_RECIBIDO, mensaje: msg };
     }
     await cambiarEstado(tipoDoc, id, ESTADO.RECIBIDO);
+    if (r.enProceso) await guardarDocumento(tipoDoc, id, { mensajes: 'El SRI aún está procesando un envío anterior de este comprobante; se consultará la autorización.' });
   } catch (e) {
+    // El SRI no lo recibio (caido o error interno). Queda Finalizado y en la cola: se reenvia con la misma clave y numero.
     const msg = `No se pudo enviar al SRI: ${(e as Error).message}`;
     await guardarDocumento(tipoDoc, id, { mensajes: msg });
     await encolar(tipoDoc, id);
-    return { ok: false, estado: ESTADO.FINALIZADO, mensaje: msg + '. Se reintentará con "Consultar SRI".' };
+    return {
+      ok: false,
+      estado: ESTADO.FINALIZADO,
+      fallaSri: true,
+      mensaje: msg + '. Quedó en la cola de pendientes y se reenviará con la misma clave y número.',
+    };
+  }
+
+  if (!esperarAutorizacion) {
+    await encolar(tipoDoc, id);
+    return { ok: true, estado: ESTADO.RECIBIDO, mensaje: 'Reenviado y recibido por el SRI; se consultará la autorización.' };
   }
 
   // Autorizacion (el SRI suele tardar unos segundos)
@@ -258,11 +283,40 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
   return err;
 }
 
-/** Procesa la cola de comprobantes pendientes de autorizacion (para el cron diario y el boton manual) */
+/**
+ * Procesa un comprobante de la cola de pendientes:
+ *  - Finalizado (el SRI nunca lo recibio, p. ej. por un error interno del SRI): se reenvia con la misma clave y numero.
+ *  - Recibido: se consulta la autorizacion.
+ * Si `omitirReenvio` es true (el SRI fallo con otro comprobante en esta misma pasada) no se reenvia, para no
+ * esperar el tiempo de respuesta del SRI por cada uno.
+ */
+export async function procesarPendiente(
+  tipoDoc: number,
+  id: number,
+  emisorId: number,
+  omitirReenvio = false,
+): Promise<ResultadoEmision> {
+  const m = manejador(tipoDoc);
+  const [doc] = await sql<{ estado: number }[]>`
+    select estado from ${sql(m.tabla)} where id = ${id} and ${sql(m.colEmisor)} = ${emisorId}`;
+  if (!doc) return { ok: false, estado: 0, mensaje: 'Comprobante no encontrado' };
+  if (doc.estado === ESTADO.AUTORIZADO || doc.estado === ESTADO.ANULADO) {
+    await desencolar(tipoDoc, id);
+    return { ok: true, estado: doc.estado, mensaje: 'Ya no está pendiente' };
+  }
+  if (doc.estado === ESTADO.FINALIZADO) {
+    if (omitirReenvio) return { ok: false, estado: doc.estado, fallaSri: true, mensaje: 'No se reenvió: el SRI sigue sin responder bien; queda en la cola.' };
+    return emitir(tipoDoc, id, emisorId, { esperarAutorizacion: false });
+  }
+  return consultarAutorizacionYGuardar(tipoDoc, id, emisorId);
+}
+
+/** Procesa la cola de comprobantes pendientes (reenvio de no recibidos y consulta de autorizacion) */
 export async function procesarCola(limite = 25) {
   const pendientes = await sql<{ id_comprobante: number; id_tipo_comprobante: number }[]>`
     select id_comprobante, id_tipo_comprobante from cola_envio_comprobantes order by id_documento_electronico limit ${limite}`;
   const resultados: string[] = [];
+  let sriFallando = false;
   for (const p of pendientes) {
     try {
       const m = manejador(p.id_tipo_comprobante);
@@ -271,7 +325,8 @@ export async function procesarCola(limite = 25) {
         await desencolar(p.id_tipo_comprobante, p.id_comprobante);
         continue;
       }
-      const r = await consultarAutorizacionYGuardar(p.id_tipo_comprobante, p.id_comprobante, x.emisor);
+      const r = await procesarPendiente(p.id_tipo_comprobante, p.id_comprobante, x.emisor, sriFallando);
+      if (r.fallaSri) sriFallando = true;
       resultados.push(`${m.nombre} ${p.id_comprobante}: ${r.mensaje}`);
     } catch (e) {
       resultados.push(`${p.id_tipo_comprobante}/${p.id_comprobante}: ${(e as Error).message}`);
