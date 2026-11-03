@@ -5,6 +5,7 @@ import { Cabecera, Estado, Vacio } from '@/components/ui';
 import { fecha, fechaHora } from '@/lib/formato';
 import { comprobantesConProblemas, colaDelEmisor, RUTAS } from './datos';
 import { BotonProcesar } from './BotonProcesar';
+import { EstadoSri } from './EstadoSri';
 
 export default async function NoAutorizados() {
   const s = await requerirEmisor();
@@ -18,6 +19,7 @@ export default async function NoAutorizados() {
   return (
     <>
       <Cabecera titulo="Comprobantes no autorizados" sub="Comprobantes finalizados que aún no tienen autorización del SRI" />
+      <EstadoSri />
       <BotonProcesar pendientes={cola.length} />
       <div className="card sin-padding">
         <div style={{ padding: '14px 16px 0' }}><h2>Pendientes o rechazados</h2></div>

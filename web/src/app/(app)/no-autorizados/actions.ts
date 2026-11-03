@@ -3,6 +3,8 @@ import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
 import { procesarPendiente } from '@/lib/comprobantes/procesar';
 import { colaDelEmisor } from './datos';
+import { sql } from '@/lib/db';
+import { revisarSri, type Revision } from '@/lib/sri/estado';
 
 export type EstadoForm = { ok?: boolean; mensaje?: string; detalle?: string[] };
 
@@ -29,4 +31,21 @@ export async function procesarPendientes(_p: EstadoForm): Promise<EstadoForm> {
   }
   revalidatePath('/no-autorizados');
   return { ok: true, mensaje: `Se procesaron ${cola.length} comprobantes; ${autorizados} quedaron autorizados.` + (sriFallando ? ' El SRI está fallando: los no recibidos siguen en la cola.' : ''), detalle };
+}
+
+export type EstadoSriForm = { revisiones?: Revision[]; ambiente?: string; hora?: string; error?: string };
+
+/** Revisa si los servicios del SRI del ambiente del emisor estan funcionando */
+export async function revisarEstadoSri(_p: EstadoSriForm): Promise<EstadoSriForm> {
+  const s = await requerirEmisor();
+  try {
+    const [e] = await sql<{ ruc: string; codigo_ambiente: string }[]>`
+      select e.ruc, a.codigo_ambiente from emisor e join tipo_ambientes a on a.id = e.tipo_ambiente where e.id = ${s.emisorId}`;
+    const ambiente = e.codigo_ambiente === '2' ? '2' : '1';
+    const revisiones = await revisarSri(ambiente, e.ruc);
+    const hora = new Date().toLocaleString('es-EC', { timeZone: 'America/Guayaquil' });
+    return { revisiones, ambiente: ambiente === '2' ? 'Producción' : 'Pruebas', hora };
+  } catch (err) {
+    return { error: (err as Error).message };
+  }
 }
