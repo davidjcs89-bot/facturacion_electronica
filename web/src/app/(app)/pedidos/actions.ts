@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { entero, decimal, texto } from '@/lib/params';
-import { enviarCorreo } from '@/lib/correo';
+import { enviarCorreoEmisor } from '@/lib/correo';
 import { ESTADO } from '@/lib/constantes';
 import { PEDIDO, agregarLineaDoc, actualizarLineaDoc, eliminarLineaDoc, convertirAFactura } from '../proformas/_comun/lineas';
 import { generarPdfPedido } from '../proformas/_comun/datos';
@@ -163,7 +163,7 @@ export async function enviarPedido(_p: EstadoForm, form: FormData): Promise<Esta
     const correo = texto(form.get('correo'));
     if (!correo) return { mensaje: 'Ingrese el correo de destino' };
     const { pdf, numero, emisor, cliente, total } = await generarPdfPedido(id, s.emisorId);
-    const err = await enviarCorreo(correo, `${emisor} Pedido #${numero}`,
+    const err = await enviarCorreoEmisor(s.emisorId, correo, `${emisor} Pedido #${numero}`,
       `<p>Estimado(a) ${cliente}</p><p>Adjunto encontrará el pedido N.º ${numero} por un valor de $${total.toFixed(2)}.</p><p>Atentamente,</p><p>${emisor}</p>`,
       [{ nombre: `Pedido-${numero}.pdf`, contenido: pdf, tipo: 'application/pdf' }]);
     return err ? { mensaje: err } : { ok: true, mensaje: 'Pedido enviado' };

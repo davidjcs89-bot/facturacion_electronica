@@ -6,7 +6,7 @@ import { leerCertificado, firmarComprobante } from '../sri/firma';
 import { enviarComprobante, consultarAutorizacion, textoMensajes, type Ambiente } from '../sri/ws';
 import { generarRide } from '../sri/ride';
 import { descifrar } from '../cifrado';
-import { enviarCorreo, registrarLog } from '../correo';
+import { enviarCorreoEmisor, registrarLog } from '../correo';
 import { ESTADO } from '../constantes';
 import { money } from '../formato';
 
@@ -240,8 +240,8 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
     select xml_retornado::text, ride from documentos_electronicos
     where id_tipo_comprobante = ${tipoDoc} and id_comprobante = ${id} and ride is not null order by id desc limit 1`;
   if (!d?.ride) return 'El comprobante no está autorizado';
-  const [e] = await sql<{ nombre_comercial: string; razon_social: string; clave: string }[]>`
-    select e.nombre_comercial, e.razon_social, x.${sql(m.colClave)} clave
+  const [e] = await sql<{ id: number; nombre_comercial: string; razon_social: string; clave: string }[]>`
+    select e.id, e.nombre_comercial, e.razon_social, x.${sql(m.colClave)} clave
     from ${sql(m.tabla)} x join emisor e on e.id = x.${sql(m.colEmisor)} where x.id = ${id}`;
   const asunto = `${e.nombre_comercial} ${m.nombre} #${datos.numero}`;
   const html =
@@ -250,7 +250,7 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
     `<p>Adjunto encontrará el RIDE en PDF y el archivo XML autorizado por el SRI.</p>` +
     (datos.total != null ? `<p>Valor total: $${money(datos.total)}</p>` : '') +
     `<p>Atentamente,</p><p>${e.razon_social}</p>`;
-  const err = await enviarCorreo(destino, asunto, html, [
+  const err = await enviarCorreoEmisor(e.id, destino, asunto, html, [
     { nombre: `${e.clave}.pdf`, contenido: d.ride, tipo: 'application/pdf' },
     ...(d.xml_retornado ? [{ nombre: `${e.clave}.xml`, contenido: d.xml_retornado, tipo: 'application/xml' }] : []),
   ]);
