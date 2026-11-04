@@ -1,5 +1,5 @@
 'use client';
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect, useRef, useState } from 'react';
 import {
   actualizarCabecera, agregarLinea, actualizarLinea, eliminarLinea, agregarPago, eliminarPago,
   agregarAdicional, eliminarAdicional, eliminarBorrador, emitirFactura, type Estado,
@@ -21,20 +21,26 @@ export function CabeceraFactura({ id, puntos, valores }: {
   valores: { id_punto_emision: number; fecha: string; guia: string; mayorista: boolean; cliente: { id: number; nombre: string; identificacion: string } };
 }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(actualizarCabecera, {});
+  const form = useRef<HTMLFormElement>(null);
+  // Al elegir otro cliente se guarda solo (antes habia que acordarse de pulsar "Guardar")
+  const alCambiarCliente = (idCliente: number | null) => {
+    if (idCliente) setTimeout(() => form.current?.requestSubmit(), 0);
+  };
   return (
-    <form action={accion} className="card">
+    <form action={accion} className="card" ref={form}>
+      <h2>1. Cliente y datos de la factura</h2>
       <Msg e={e} />
       <input type="hidden" name="id" value={id} />
       <div className="form-grid">
+        <SelectorCliente inicial={valores.cliente} tipo={1} permitirConsumidorFinal onCambio={alCambiarCliente} />
         <div className="campo"><label>Punto de emisión</label>
           <select name="id_punto_emision" defaultValue={valores.id_punto_emision}>{puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}</select>
         </div>
         <div className="campo"><label>Fecha de emisión</label><input type="date" name="fecha_emision" defaultValue={valores.fecha} /></div>
-        <div className="campo"><label>Guía de remisión</label><input name="guia_de_remision" defaultValue={valores.guia} /></div>
+        <div className="campo"><label>Guía de remisión (opcional)</label><input name="guia_de_remision" defaultValue={valores.guia} placeholder="001-001-000000001" /></div>
         <div className="campo check" style={{ alignSelf: 'end' }}><input type="checkbox" name="es_mayorista" id="may" defaultChecked={valores.mayorista} /><label htmlFor="may">Venta al por mayor</label></div>
-        <SelectorCliente inicial={valores.cliente} tipo={1} permitirConsumidorFinal />
       </div>
-      <div className="acciones" style={{ marginTop: 12 }}><button className="btn" disabled={pend}>{pend ? 'Guardando…' : 'Guardar datos generales'}</button></div>
+      <div className="acciones" style={{ marginTop: 12 }}><button className="btn" disabled={pend}>{pend ? 'Guardando…' : 'Guardar cambios'}</button></div>
     </form>
   );
 }
@@ -50,7 +56,7 @@ export function LineasFactura({ id, lineas }: { id: number; lineas: Linea[] }) {
   }, [e]);
   return (
     <div className="card">
-      <h2>Productos y servicios</h2>
+      <h2>2. Productos y servicios</h2>
       <Msg e={e} />
       <form action={accion} className="filtros" key={prod?.id ?? 'nuevo'}>
         <input type="hidden" name="id" value={id} />
@@ -72,6 +78,7 @@ export function LineasFactura({ id, lineas }: { id: number; lineas: Linea[] }) {
         <div className="campo" style={{ minWidth: 160 }}><label>Detalle adicional</label><input name="adicional" maxLength={100} /></div>
         <button className="btn primario" disabled={pend || !prod}>{pend ? 'Agregando…' : 'Agregar'}</button>
       </form>
+      {lineas.length === 0 && <p className="muted">Todavía no hay productos. Búsquelo arriba por código o nombre, indique la cantidad y pulse «Agregar».</p>}
       {lineas.length > 0 && (
         <div className="tabla-wrap">
           <table className="tabla">
@@ -142,7 +149,7 @@ export function PagosFactura({ id, formas, tiempos, pagos, pendiente }: {
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarPago, {});
   return (
     <div className="card">
-      <h2>Formas de pago</h2>
+      <h2>3. Forma de pago</h2>
       <Msg e={e} />
       {pagos.map((p) => (
         <div key={p.id} className="acciones" style={{ justifyContent: 'space-between', borderBottom: '1px solid var(--border)', padding: '6px 0' }}>
@@ -158,7 +165,7 @@ export function PagosFactura({ id, formas, tiempos, pagos, pendiente }: {
         <div className="campo busqueda"><label>Forma</label>
           <select name="id_form_pago" defaultValue={formas.find((f) => f.texto.startsWith('01'))?.id}>{formas.map((f) => <option key={f.id} value={f.id}>{f.texto}</option>)}</select>
         </div>
-        <div className="campo" style={{ minWidth: 100, maxWidth: 120 }}><label>Valor</label><input name="valor" type="number" step="0.01" min="0" placeholder={pendiente > 0 ? pendiente.toFixed(2) : ''} /></div>
+        <div className="campo" style={{ minWidth: 100, maxWidth: 120 }}><label>Valor</label><input name="valor" type="number" step="0.01" min="0" key={pendiente} defaultValue={pendiente > 0 ? pendiente.toFixed(2) : ''} /></div>
         <div className="campo" style={{ minWidth: 70, maxWidth: 90 }}><label>Plazo</label><input name="plazo" type="number" min="0" /></div>
         <div className="campo" style={{ minWidth: 100, maxWidth: 120 }}><label>Tiempo</label><select name="timpo">{tiempos.map((t) => <option key={t}>{t}</option>)}</select></div>
         <button className="btn" disabled={pend}>Agregar pago</button>
@@ -171,7 +178,8 @@ export function AdicionalesFactura({ id, adicionales }: { id: number; adicionale
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarAdicional, {});
   return (
     <div className="card">
-      <h2>Información adicional</h2>
+      <h2>4. Información adicional <span className="muted" style={{ fontWeight: 400, fontSize: '0.85rem' }}>(opcional)</span></h2>
+      <p className="muted" style={{ marginTop: 0, fontSize: '0.88rem' }}>Datos que se imprimen en la factura, por ejemplo «Vendedor» u «Orden de compra».</p>
       <Msg e={e} />
       {adicionales.map((a) => (
         <div key={a.id} className="acciones" style={{ justifyContent: 'space-between', borderBottom: '1px solid var(--border)', padding: '6px 0' }}>
@@ -189,10 +197,23 @@ export function AdicionalesFactura({ id, adicionales }: { id: number; adicionale
   );
 }
 
-export function BotonesFactura({ id, permitido }: { id: number; permitido: boolean }) {
+export type Requisito = { ok: boolean; texto: string };
+
+/** Lista de lo que falta para emitir + botones de emitir / eliminar borrador */
+export function BotonesFactura({ id, permitido, requisitos }: { id: number; permitido: boolean; requisitos: Requisito[] }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(emitirFactura, {});
+  const listo = requisitos.every((r) => r.ok);
   return (
     <div className="card">
+      <h2>5. Revisar y emitir</h2>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 12px', display: 'grid', gap: 6 }}>
+        {requisitos.map((r) => (
+          <li key={r.texto} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <span aria-hidden style={{ fontWeight: 700, color: r.ok ? 'var(--ok, #1a7f37)' : 'var(--danger)' }}>{r.ok ? '✓' : '✗'}</span>
+            <span style={{ color: r.ok ? undefined : 'var(--danger)' }}>{r.texto}</span>
+          </li>
+        ))}
+      </ul>
       <Msg e={e} />
       <div className="acciones" style={{ justifyContent: 'space-between' }}>
         <form action={eliminarBorrador}>
@@ -201,12 +222,13 @@ export function BotonesFactura({ id, permitido }: { id: number; permitido: boole
         </form>
         <form action={accion}>
           <input type="hidden" name="id" value={id} />
-          <button className="btn primario" disabled={pend || !permitido}
+          <button className="btn primario" disabled={pend || !permitido || !listo} title={!listo ? 'Complete lo marcado con ✗' : undefined}
             onClick={(ev) => { if (!confirm('Se asignará el número, se firmará y se enviará al SRI. ¿Continuar?')) ev.preventDefault(); }}>
             {pend ? 'Emitiendo…' : 'Emitir factura'}
           </button>
         </form>
       </div>
+      {!listo && <p className="muted" style={{ marginBottom: 0, fontSize: '0.85rem' }}>El botón se habilita cuando todo esté en ✓.</p>}
     </div>
   );
 }

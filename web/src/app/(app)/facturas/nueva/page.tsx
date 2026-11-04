@@ -9,7 +9,7 @@ export default async function NuevaFactura() {
   const puntos = await puntosEmision(s.emisorId);
   return (
     <>
-      <Cabecera titulo="Nueva factura" sub="Paso 1: datos generales. Luego agregará productos y formas de pago." />
+      <Cabecera titulo="Nueva factura" sub="Paso 1 de 2: elija el cliente. En el siguiente paso agregará productos y la forma de pago." />
       {puntos.length === 0 ? (
         <Alerta tipo="aviso">Primero configure un punto de emisión en Configuración → Puntos de emisión.</Alerta>
       ) : (

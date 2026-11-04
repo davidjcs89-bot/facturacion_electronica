@@ -22,7 +22,15 @@ export async function buscarProductos(q: string): Promise<ProductoBusqueda[]> {
     limit 20`;
 }
 
-export type ClienteBusqueda = { id: number; nombre_cliente: string; identificacion: string; correo: string | null; tipo_cliente: number; direccion: string | null };
+export type ClienteBusqueda = {
+  id: number; nombre_cliente: string; identificacion: string; correo: string | null; tipo_cliente: number; direccion: string | null;
+  telefono: string | null; tipo_identificacion: string | null;
+};
+
+const columnasCliente = () => sql`
+  c.id, c.nombre_cliente, c.identificacion, c.correo, c.tipo_cliente, c.direccion,
+  nullif(concat_ws(' / ', nullif(trim(c.telefono_movil), ''), nullif(trim(c.telefono_fijo), '')), '') telefono,
+  t.descripcion tipo_identificacion`;
 
 /** Busca clientes del emisor; tipo opcional (1 cliente, 2 sujeto retencion, 3 destinatario, 4 proveedor) */
 export async function buscarClientes(q: string, tipo?: number): Promise<ClienteBusqueda[]> {
@@ -30,11 +38,22 @@ export async function buscarClientes(q: string, tipo?: number): Promise<ClienteB
   const texto = q.trim();
   if (texto.length < 2) return [];
   return sql<ClienteBusqueda[]>`
-    select id, nombre_cliente, identificacion, correo, tipo_cliente, direccion
-    from clientes
-    where id_emisor = ${s.emisorId} and id <> ${ID_CONSUMIDOR_FINAL}
-      ${tipo ? sql`and tipo_cliente = ${tipo}` : sql``}
-      and (identificacion like ${texto + '%'} or nombre_cliente ilike ${'%' + texto + '%'} or codigo = ${texto})
-    order by nombre_cliente
+    select ${columnasCliente()}
+    from clientes c left join tipo_identificacion t on t.id = c.tipo_identificacion
+    where c.id_emisor = ${s.emisorId} and c.id <> ${ID_CONSUMIDOR_FINAL}
+      ${tipo ? sql`and c.tipo_cliente = ${tipo}` : sql``}
+      and (c.identificacion like ${texto + '%'} or c.nombre_cliente ilike ${'%' + texto + '%'} or c.codigo = ${texto})
+    order by c.nombre_cliente
     limit 15`;
+}
+
+/** Datos completos de un cliente del emisor (para mostrarlos al elegirlo) */
+export async function datosCliente(id: number): Promise<ClienteBusqueda | null> {
+  const s = await requerirEmisor();
+  if (!id || id === ID_CONSUMIDOR_FINAL) return null;
+  const [c] = await sql<ClienteBusqueda[]>`
+    select ${columnasCliente()}
+    from clientes c left join tipo_identificacion t on t.id = c.tipo_identificacion
+    where c.id = ${id} and c.id_emisor = ${s.emisorId}`;
+  return c ?? null;
 }
