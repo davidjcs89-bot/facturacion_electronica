@@ -193,8 +193,9 @@ export function PagosFactura({ id, formas, tiempos, pagos, pendiente }: {
   id: number; formas: Opcion[]; tiempos: string[]; pagos: { id: number; texto: string; valor: number; plazo: number | null; tiempo: string | null }[]; pendiente: number;
 }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarPago, {});
+  const [masPago, setMasPago] = useState(false);
   return (
-    <div className="card">
+    <div className="card" style={{ marginBottom: 0 }}>
       <h2>4. Forma de pago</h2>
       <Msg e={e} />
       {pagos.map((p) => (
@@ -206,15 +207,23 @@ export function PagosFactura({ id, formas, tiempos, pagos, pendiente }: {
         </div>
       ))}
       {Math.abs(pendiente) > 0.009 && <p className={pendiente > 0 ? 'muted' : ''} style={{ color: pendiente < 0 ? 'var(--danger)' : undefined }}>{pendiente > 0 ? `Falta asignar $${money(pendiente)}` : `Los pagos superan el total en $${money(-pendiente)}`}</p>}
-      <form action={accion} className="filtros" style={{ marginTop: 10 }}>
+      <form action={accion} style={{ marginTop: 10 }}>
         <input type="hidden" name="id" value={id} />
-        <div className="campo busqueda"><label>Forma</label>
+        <div className="campo"><label>Forma</label>
           <select name="id_form_pago" defaultValue={formas.find((f) => f.texto.startsWith('01'))?.id}>{formas.map((f) => <option key={f.id} value={f.id}>{f.texto}</option>)}</select>
         </div>
-        <div className="campo" style={{ minWidth: 100, maxWidth: 120 }}><label>Valor</label><input name="valor" type="number" step="0.01" min="0" key={pendiente} defaultValue={pendiente > 0 ? pendiente.toFixed(2) : ''} /></div>
-        <div className="campo" style={{ minWidth: 70, maxWidth: 90 }}><label>Plazo</label><input name="plazo" type="number" min="0" /></div>
-        <div className="campo" style={{ minWidth: 100, maxWidth: 120 }}><label>Tiempo</label><select name="timpo">{tiempos.map((t) => <option key={t}>{t}</option>)}</select></div>
-        <button className="btn" disabled={pend}>Agregar pago</button>
+        {/* Valor, plazo y tiempo quedan contraidos: el valor ya viene con lo que falta por pagar */}
+        <div className="filtros" style={{ marginTop: 10, marginBottom: 0, display: masPago ? undefined : 'none' }}>
+          <div className="campo" style={{ minWidth: 100, flex: 1 }}><label>Valor</label><input name="valor" type="number" step="0.01" min="0" key={pendiente} defaultValue={pendiente > 0 ? pendiente.toFixed(2) : ''} /></div>
+          <div className="campo" style={{ minWidth: 70, flex: 1 }}><label>Plazo</label><input name="plazo" type="number" min="0" /></div>
+          <div className="campo" style={{ minWidth: 100, flex: 1 }}><label>Tiempo</label><select name="timpo">{tiempos.map((t) => <option key={t}>{t}</option>)}</select></div>
+        </div>
+        <div className="acciones" style={{ justifyContent: 'space-between', marginTop: 10 }}>
+          <button type="button" className="btn chico" onClick={() => setMasPago(!masPago)} aria-expanded={masPago}>
+            {masPago ? '▾ Ocultar valor y plazo' : `▸ Valor${pendiente > 0 ? ` $${money(pendiente)}` : ''} y plazo`}
+          </button>
+          <button className="btn" disabled={pend}>{pend ? 'Agregando…' : 'Agregar pago'}</button>
+        </div>
       </form>
     </div>
   );
@@ -222,10 +231,14 @@ export function PagosFactura({ id, formas, tiempos, pagos, pendiente }: {
 
 export function AdicionalesFactura({ id, adicionales }: { id: number; adicionales: { id: number; nombre: string; descripcion: string }[] }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarAdicional, {});
+  const [nombre, setNombre] = useState('');
+  useEffect(() => {
+    if (e.ok) setNombre('');
+  }, [e]);
+  const abierto = nombre.trim().length > 0;
   return (
-    <div className="card">
+    <div className="card" style={{ marginBottom: 0 }}>
       <h2>5. Información adicional <span className="muted" style={{ fontWeight: 400, fontSize: '0.85rem' }}>(opcional)</span></h2>
-      <p className="muted" style={{ marginTop: 0, fontSize: '0.88rem' }}>Datos que se imprimen en la factura, por ejemplo «Vendedor» u «Orden de compra».</p>
       <Msg e={e} />
       {adicionales.map((a) => (
         <div key={a.id} className="acciones" style={{ justifyContent: 'space-between', borderBottom: '1px solid var(--border)', padding: '6px 0' }}>
@@ -233,11 +246,18 @@ export function AdicionalesFactura({ id, adicionales }: { id: number; adicionale
           <form action={eliminarAdicional}><input type="hidden" name="id" value={id} /><input type="hidden" name="id_adicional" value={a.id} /><button className="btn chico peligro">Quitar</button></form>
         </div>
       ))}
-      <form action={accion} className="filtros" style={{ marginTop: 10 }}>
+      <form action={accion} style={{ marginTop: 10 }}>
         <input type="hidden" name="id" value={id} />
-        <div className="campo" style={{ minWidth: 120 }}><label>Nombre</label><input name="nombre" maxLength={50} /></div>
-        <div className="campo busqueda"><label>Descripción</label><input name="descripcion" maxLength={300} /></div>
-        <button className="btn" disabled={pend}>Agregar</button>
+        <div className="campo"><label>Nombre</label>
+          <input name="nombre" maxLength={50} value={nombre} onChange={(ev) => setNombre(ev.target.value)} placeholder="Ej.: Vendedor, Orden de compra" />
+        </div>
+        {/* La descripcion aparece al escribir el nombre */}
+        <div style={{ display: abierto ? undefined : 'none' }}>
+          <div className="campo" style={{ marginTop: 10 }}><label>Descripción</label><input name="descripcion" maxLength={300} /></div>
+          <div className="acciones" style={{ justifyContent: 'flex-end', marginTop: 10 }}>
+            <button className="btn" disabled={pend}>{pend ? 'Agregando…' : 'Agregar'}</button>
+          </div>
+        </div>
       </form>
     </div>
   );

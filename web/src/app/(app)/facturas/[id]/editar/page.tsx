@@ -52,10 +52,12 @@ export default async function EditarFactura({ params }: { params: Promise<{ id: 
         descuento_pct: Number(d.decuento_porcentaje ?? 0),
         sub_total: Number(d.sub_total), valor_iva: Number(d.valor_iva), total: Number(d.total),
       }))} />
-      <PagosFactura id={id} formas={formas.map((x) => ({ id: x.id, texto: `${x.codigo} · ${x.descripcion_form_pago}` }))} tiempos={TIEMPOS_PAGO}
-        pagos={pagos.map((p) => ({ id: p.id, texto: p.descripcion, valor: Number(p.valor), plazo: p.plazo, tiempo: p.timpo }))}
-        pendiente={pendiente} />
-      <AdicionalesFactura id={id} adicionales={adicionales} />
+      <div className="grid c2" style={{ marginBottom: 16 }}>
+        <PagosFactura id={id} formas={formas.map((x) => ({ id: x.id, texto: `${x.codigo} · ${x.descripcion_form_pago}` }))} tiempos={TIEMPOS_PAGO}
+          pagos={pagos.map((p) => ({ id: p.id, texto: p.descripcion, valor: Number(p.valor), plazo: p.plazo, tiempo: p.timpo }))}
+          pendiente={pendiente} />
+        <AdicionalesFactura id={id} adicionales={adicionales} />
+      </div>
       <div className="grid c2">
         <Totales f={f} />
         <BotonesFactura id={id} permitido={perm.permitido} requisitos={requisitos} />
