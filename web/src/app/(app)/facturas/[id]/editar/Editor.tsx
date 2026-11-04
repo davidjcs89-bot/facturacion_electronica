@@ -1,7 +1,7 @@
 'use client';
 import { useActionState, useEffect, useRef, useState } from 'react';
 import {
-  actualizarCabecera, agregarLinea, actualizarLinea, eliminarLinea, agregarPago, eliminarPago,
+  actualizarDatosFactura, actualizarClienteFactura, agregarLinea, actualizarLinea, eliminarLinea, agregarPago, eliminarPago,
   agregarAdicional, eliminarAdicional, eliminarBorrador, emitirFactura, type Estado,
 } from '../../actions';
 import { SelectorCliente } from '@/components/comprobante/SelectorCliente';
@@ -16,31 +16,73 @@ function Msg({ e }: { e: Estado }) {
   return <div className={`alerta ${e.ok ? 'ok' : 'error'}`}>{e.mensaje}</div>;
 }
 
-export function CabeceraFactura({ id, puntos, valores }: {
+/** Indicador discreto de guardado automatico */
+function Guardado({ e, pend }: { e: Estado; pend: boolean }) {
+  if (pend) return <span className="muted" style={{ fontSize: '0.85rem' }}>Guardando…</span>;
+  if (e.mensaje && !e.ok) return <span style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>{e.mensaje}</span>;
+  if (e.ok) return <span style={{ color: 'var(--ok)', fontSize: '0.85rem' }}>✓ Guardado</span>;
+  return null;
+}
+
+/** Parte 1: punto de emision, fecha y guia. Contraida muestra solo punto y fecha; se guarda sola al cambiar. */
+export function DatosFactura({ id, puntos, valores }: {
   id: number; puntos: Opcion[];
-  valores: { id_punto_emision: number; fecha: string; guia: string; mayorista: boolean; cliente: { id: number; nombre: string; identificacion: string } };
+  valores: { id_punto_emision: number; fecha: string; guia: string };
 }) {
-  const [e, accion, pend] = useActionState<Estado, FormData>(actualizarCabecera, {});
+  const [e, accion, pend] = useActionState<Estado, FormData>(actualizarDatosFactura, {});
   const form = useRef<HTMLFormElement>(null);
-  // Al elegir otro cliente se guarda solo (antes habia que acordarse de pulsar "Guardar")
-  const alCambiarCliente = (idCliente: number | null) => {
-    if (idCliente) setTimeout(() => form.current?.requestSubmit(), 0);
-  };
+  const [abierto, setAbierto] = useState(false);
+  const [punto, setPunto] = useState(valores.id_punto_emision);
+  const [fecha, setFecha] = useState(valores.fecha);
+  const guardar = () => setTimeout(() => form.current?.requestSubmit(), 0);
+  const textoPunto = puntos.find((p) => p.id === punto)?.texto.split(' · ')[0] ?? '—';
+  const textoFecha = fecha ? fecha.split('-').reverse().join('/') : '—';
   return (
     <form action={accion} className="card" ref={form}>
-      <h2>1. Cliente y datos de la factura</h2>
-      <Msg e={e} />
       <input type="hidden" name="id" value={id} />
-      <div className="form-grid">
-        <SelectorCliente inicial={valores.cliente} tipo={1} permitirConsumidorFinal onCambio={alCambiarCliente} />
-        <div className="campo"><label>Punto de emisión</label>
-          <select name="id_punto_emision" defaultValue={valores.id_punto_emision}>{puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}</select>
-        </div>
-        <div className="campo"><label>Fecha de emisión</label><input type="date" name="fecha_emision" defaultValue={valores.fecha} /></div>
-        <div className="campo"><label>Guía de remisión (opcional)</label><input name="guia_de_remision" defaultValue={valores.guia} placeholder="001-001-000000001" /></div>
-        <div className="campo check" style={{ alignSelf: 'end' }}><input type="checkbox" name="es_mayorista" id="may" defaultChecked={valores.mayorista} /><label htmlFor="may">Venta al por mayor</label></div>
+      <div className="acciones" style={{ justifyContent: 'space-between' }}>
+        <button type="button" onClick={() => setAbierto(!abierto)} aria-expanded={abierto}
+          style={{ all: 'unset', cursor: 'pointer', display: 'flex', gap: 10, alignItems: 'baseline', flexWrap: 'wrap' }}>
+          <h2 style={{ margin: 0 }}>{abierto ? '▾' : '▸'} 1. Datos de la factura</h2>
+          {!abierto && <span className="muted">Punto {textoPunto} · Fecha {textoFecha}{valores.guia ? ` · Guía ${valores.guia}` : ''}</span>}
+        </button>
+        <span className="acciones">
+          <Guardado e={e} pend={pend} />
+          <button type="button" className="btn chico" onClick={() => setAbierto(!abierto)}>{abierto ? 'Ocultar' : 'Cambiar'}</button>
+        </span>
       </div>
-      <div className="acciones" style={{ marginTop: 12 }}><button className="btn" disabled={pend}>{pend ? 'Guardando…' : 'Guardar cambios'}</button></div>
+      <div className="form-grid" style={{ marginTop: 12, display: abierto ? undefined : 'none' }}>
+        <div className="campo"><label>Punto de emisión</label>
+          <select name="id_punto_emision" value={punto} onChange={(ev) => { setPunto(Number(ev.target.value)); guardar(); }}>
+            {puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}
+          </select>
+        </div>
+        <div className="campo"><label>Fecha de emisión</label>
+          <input type="date" name="fecha_emision" value={fecha} onChange={(ev) => setFecha(ev.target.value)} onBlur={guardar} />
+        </div>
+        <div className="campo"><label>Guía de remisión (opcional)</label>
+          <input name="guia_de_remision" defaultValue={valores.guia} placeholder="001-001-000000001" onBlur={(ev) => { if (ev.target.value !== valores.guia) guardar(); }} />
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/** Parte 2: cliente (nombre, identificacion, direccion, telefono y correo). Se guarda solo al elegirlo. */
+export function ClienteFactura({ id, cliente }: { id: number; cliente: { id: number; nombre: string; identificacion: string } }) {
+  const [e, accion, pend] = useActionState<Estado, FormData>(actualizarClienteFactura, {});
+  const form = useRef<HTMLFormElement>(null);
+  return (
+    <form action={accion} className="card" ref={form}>
+      <input type="hidden" name="id" value={id} />
+      <div className="acciones" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
+        <h2 style={{ margin: 0 }}>2. Datos del cliente</h2>
+        <Guardado e={e} pend={pend} />
+      </div>
+      <div className="form-grid">
+        <SelectorCliente inicial={cliente} tipo={1} permitirConsumidorFinal
+          onCambio={(idC) => { if (idC) setTimeout(() => form.current?.requestSubmit(), 0); }} />
+      </div>
     </form>
   );
 }
@@ -56,7 +98,7 @@ export function LineasFactura({ id, lineas }: { id: number; lineas: Linea[] }) {
   }, [e]);
   return (
     <div className="card">
-      <h2>2. Productos y servicios</h2>
+      <h2>3. Detalle: productos y servicios</h2>
       <Msg e={e} />
       <form action={accion} className="filtros" key={prod?.id ?? 'nuevo'}>
         <input type="hidden" name="id" value={id} />
@@ -82,18 +124,22 @@ export function LineasFactura({ id, lineas }: { id: number; lineas: Linea[] }) {
       {lineas.length > 0 && (
         <div className="tabla-wrap">
           <table className="tabla">
-            <thead><tr><th>Código</th><th>Descripción</th><th className="num">Cant.</th><th className="num">P.V.P.</th><th className="num">Desc. %</th><th className="num">Subtotal</th><th className="num">IVA</th><th className="num">Total</th><th></th></tr></thead>
+            <thead><tr>
+              <th>Descripción</th><th>Código</th><th className="num">Cant.</th><th className="num">P.V.P. con IVA</th><th className="num">Desc.</th>
+              <th className="num">P.V.P. con desc.</th><th className="num">Subtotal sin imp.</th><th className="num">IVA</th><th className="num">Total</th><th></th>
+            </tr></thead>
             <tbody>
               {lineas.map((l) =>
                 editando === l.id ? (
                   <FilaEdicion key={l.id} id={id} l={l} onFin={() => setEditando(null)} />
                 ) : (
                   <tr key={l.id}>
-                    <td className="nowrap">{l.codigo}</td>
                     <td>{l.nombre}{l.adicional ? <div className="muted">{l.adicional}</div> : null}</td>
+                    <td className="nowrap">{l.codigo}</td>
                     <td className="num">{l.cantidad}</td>
                     <td className="num">{money(l.pvp)}</td>
-                    <td className="num">{l.descuento_pct ? money(l.descuento_pct) : ''}</td>
+                    <td className="num">{l.descuento_pct ? `${money(l.descuento_pct)}%` : '—'}</td>
+                    <td className="num">{money(Math.round(l.pvp * (1 - l.descuento_pct / 100) * 100) / 100)}</td>
                     <td className="num">{money(l.sub_total)}</td>
                     <td className="num">{money(l.valor_iva)}</td>
                     <td className="num">{money(l.total)}</td>
@@ -124,17 +170,17 @@ function FilaEdicion({ id, l, onFin }: { id: number; l: Linea; onFin: () => void
   const f = `edit-${l.id}`;
   return (
     <tr>
-      <td className="nowrap">{l.codigo}</td>
       <td>
         {l.nombre}
         <form id={f} action={accion}><input type="hidden" name="id" value={id} /><input type="hidden" name="id_linea" value={l.id} /></form>
         <input form={f} name="adicional" defaultValue={l.adicional ?? ''} placeholder="Detalle adicional" style={{ marginTop: 4 }} />
         {e.mensaje && !e.ok && <div className="alerta error" style={{ marginTop: 4 }}>{e.mensaje}</div>}
       </td>
+      <td className="nowrap">{l.codigo}</td>
       <td className="num"><input form={f} name="cantidad" type="number" min="1" step="1" defaultValue={l.cantidad} style={{ width: 70 }} /></td>
       <td className="num"><input form={f} name="precio" type="number" step="0.01" min="0" defaultValue={l.pvp} style={{ width: 90 }} /></td>
       <td className="num"><input form={f} name="descuento" type="number" step="0.01" min="0" max="100" defaultValue={l.descuento_pct} style={{ width: 70 }} /></td>
-      <td colSpan={3}></td>
+      <td colSpan={4}></td>
       <td className="nowrap">
         <button form={f} className="btn chico primario" disabled={pend}>Guardar</button>{' '}
         <button type="button" className="btn chico" onClick={onFin}>Cancelar</button>
@@ -149,7 +195,7 @@ export function PagosFactura({ id, formas, tiempos, pagos, pendiente }: {
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarPago, {});
   return (
     <div className="card">
-      <h2>3. Forma de pago</h2>
+      <h2>4. Forma de pago</h2>
       <Msg e={e} />
       {pagos.map((p) => (
         <div key={p.id} className="acciones" style={{ justifyContent: 'space-between', borderBottom: '1px solid var(--border)', padding: '6px 0' }}>
@@ -178,7 +224,7 @@ export function AdicionalesFactura({ id, adicionales }: { id: number; adicionale
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarAdicional, {});
   return (
     <div className="card">
-      <h2>4. Información adicional <span className="muted" style={{ fontWeight: 400, fontSize: '0.85rem' }}>(opcional)</span></h2>
+      <h2>5. Información adicional <span className="muted" style={{ fontWeight: 400, fontSize: '0.85rem' }}>(opcional)</span></h2>
       <p className="muted" style={{ marginTop: 0, fontSize: '0.88rem' }}>Datos que se imprimen en la factura, por ejemplo «Vendedor» u «Orden de compra».</p>
       <Msg e={e} />
       {adicionales.map((a) => (
@@ -205,7 +251,7 @@ export function BotonesFactura({ id, permitido, requisitos }: { id: number; perm
   const listo = requisitos.every((r) => r.ok);
   return (
     <div className="card">
-      <h2>5. Revisar y emitir</h2>
+      <h2>Revisar y emitir</h2>
       <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 12px', display: 'grid', gap: 6 }}>
         {requisitos.map((r) => (
           <li key={r.texto} style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>

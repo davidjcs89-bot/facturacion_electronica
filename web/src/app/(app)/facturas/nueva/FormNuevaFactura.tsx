@@ -15,7 +15,6 @@ export function FormNuevaFactura({ puntos, hoy }: { puntos: { id: number; texto:
         </div>
         <div className="campo"><label>Fecha de emisión *</label><input type="date" name="fecha_emision" defaultValue={hoy} required /></div>
         <div className="campo"><label>Guía de remisión (opcional)</label><input name="guia_de_remision" placeholder="001-001-000000001" /></div>
-        <div className="campo check" style={{ alignSelf: 'end' }}><input type="checkbox" name="es_mayorista" id="may" /><label htmlFor="may">Venta al por mayor</label></div>
       </div>
       <div className="acciones" style={{ marginTop: 16 }}>
         <button className="btn primario" disabled={pendiente}>{pendiente ? 'Creando…' : 'Continuar a productos →'}</button>

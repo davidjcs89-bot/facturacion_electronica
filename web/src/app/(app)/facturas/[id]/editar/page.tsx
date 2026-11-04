@@ -10,7 +10,7 @@ import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { Totales } from '@/components/comprobante/Totales';
 import { ESTADO, TIEMPOS_PAGO, ID_CONSUMIDOR_FINAL, MONTO_MAXIMO_CONSUMIDOR_FINAL } from '@/lib/constantes';
 import { money } from '@/lib/formato';
-import { CabeceraFactura, LineasFactura, PagosFactura, AdicionalesFactura, BotonesFactura } from './Editor';
+import { DatosFactura, ClienteFactura, LineasFactura, PagosFactura, AdicionalesFactura, BotonesFactura } from './Editor';
 
 export default async function EditarFactura({ params }: { params: Promise<{ id: string }> }) {
   const s = await requerirEmisor();
@@ -39,30 +39,26 @@ export default async function EditarFactura({ params }: { params: Promise<{ id: 
   ];
   return (
     <>
-      <Cabecera titulo={`Factura · borrador #${f.id}`} sub={<><Estado id={f.estado} /> <span className="muted">· Complete los pasos 1 a 3 y emita en el paso 5. Todo se guarda al momento.</span></>}>
+      <Cabecera titulo={`Factura · borrador #${f.id}`} sub={<><Estado id={f.estado} /> <span className="muted">· Todo se guarda al momento. Cuando la lista de abajo esté en ✓, emita la factura.</span></>}>
         <Link className="btn" href="/facturas">Volver</Link>
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
-      <CabeceraFactura id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
-        valores={{ id_punto_emision: f.id_punto_emison, fecha: fechaInput(f.fecha_emision), guia: f.guia_de_remision ?? '', mayorista: f.es_mayorista,
-          cliente: { id: f.id_cliente, nombre: c.nombre_cliente, identificacion: c.identificacion } }} />
+      <DatosFactura id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+        valores={{ id_punto_emision: f.id_punto_emison, fecha: fechaInput(f.fecha_emision), guia: f.guia_de_remision ?? '' }} />
+      <ClienteFactura id={id} cliente={{ id: f.id_cliente, nombre: c.nombre_cliente, identificacion: c.identificacion }} />
       <LineasFactura id={id} lineas={detalles.map((d) => ({
         id: d.id, codigo: d.codigo, nombre: d.nombre, adicional: d.adicional, cantidad: Number(d.cantidad),
         pvp: Math.round(Number(d.precio_unitario) * (1 + Number(d.iva_pct) / 100) * 100) / 100,
         descuento_pct: Number(d.decuento_porcentaje ?? 0),
         sub_total: Number(d.sub_total), valor_iva: Number(d.valor_iva), total: Number(d.total),
       }))} />
+      <PagosFactura id={id} formas={formas.map((x) => ({ id: x.id, texto: `${x.codigo} · ${x.descripcion_form_pago}` }))} tiempos={TIEMPOS_PAGO}
+        pagos={pagos.map((p) => ({ id: p.id, texto: p.descripcion, valor: Number(p.valor), plazo: p.plazo, tiempo: p.timpo }))}
+        pendiente={pendiente} />
+      <AdicionalesFactura id={id} adicionales={adicionales} />
       <div className="grid c2">
-        <div>
-          <PagosFactura id={id} formas={formas.map((x) => ({ id: x.id, texto: `${x.codigo} · ${x.descripcion_form_pago}` }))} tiempos={TIEMPOS_PAGO}
-            pagos={pagos.map((p) => ({ id: p.id, texto: p.descripcion, valor: Number(p.valor), plazo: p.plazo, tiempo: p.timpo }))}
-            pendiente={pendiente} />
-          <AdicionalesFactura id={id} adicionales={adicionales} />
-        </div>
-        <div>
-          <Totales f={f} />
-          <BotonesFactura id={id} permitido={perm.permitido} requisitos={requisitos} />
-        </div>
+        <Totales f={f} />
+        <BotonesFactura id={id} permitido={perm.permitido} requisitos={requisitos} />
       </div>
     </>
   );

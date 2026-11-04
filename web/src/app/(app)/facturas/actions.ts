@@ -81,6 +81,48 @@ export async function actualizarCabecera(_p: Estado, form: FormData): Promise<Es
   }
 }
 
+/** Parte 1: punto de emision, fecha y guia (se guarda sola al cambiar un campo) */
+export async function actualizarDatosFactura(_p: Estado, form: FormData): Promise<Estado> {
+  try {
+    const id = Number(form.get('id'));
+    const { s } = await borrador(id);
+    const punto = entero(form.get('id_punto_emision'));
+    const fecha = texto(form.get('fecha_emision'));
+    if (!punto) return { mensaje: 'Elija el punto de emisión' };
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return { mensaje: 'Fecha no válida' };
+    const [okPunto] = await sql`select 1 from puntos_emisior where id = ${punto} and id_emisor = ${s.emisorId}`;
+    if (!okPunto) return { mensaje: 'Punto de emisión no válido' };
+    await sql`
+      update factura set id_punto_emison = ${punto}, fecha_emision = ${fecha}::timestamp,
+        guia_de_remision = ${texto(form.get('guia_de_remision')) || null},
+        fecha_modificacion = now() at time zone 'America/Guayaquil'
+      where id = ${id}`;
+    refrescar(id);
+    return { ok: true, mensaje: 'Guardado' };
+  } catch (e) {
+    return { mensaje: (e as Error).message };
+  }
+}
+
+/** Parte 2: cliente de la factura (se guarda solo al elegirlo) */
+export async function actualizarClienteFactura(_p: Estado, form: FormData): Promise<Estado> {
+  try {
+    const id = Number(form.get('id'));
+    const { s } = await borrador(id);
+    const cliente = entero(form.get('id_cliente'));
+    if (!cliente) return { mensaje: 'Elija el cliente' };
+    if (cliente !== ID_CONSUMIDOR_FINAL) {
+      const [okCli] = await sql`select 1 from clientes where id = ${cliente} and id_emisor = ${s.emisorId}`;
+      if (!okCli) return { mensaje: 'Cliente no válido' };
+    }
+    await sql`update factura set id_cliente = ${cliente}, fecha_modificacion = now() at time zone 'America/Guayaquil' where id = ${id}`;
+    refrescar(id);
+    return { ok: true, mensaje: 'Cliente guardado' };
+  } catch (e) {
+    return { mensaje: (e as Error).message };
+  }
+}
+
 export async function agregarLinea(_p: Estado, form: FormData): Promise<Estado> {
   try {
     const id = Number(form.get('id'));
