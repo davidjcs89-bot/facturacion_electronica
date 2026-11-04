@@ -8,7 +8,8 @@ import { validarIdentificacion, emailValido } from '@/lib/validaciones';
 
 export type EstadoForm = { error?: string; ok?: string };
 
-export async function guardarCliente(_prev: EstadoForm, form: FormData): Promise<EstadoForm> {
+/** Valida y guarda un cliente del emisor (crear si no trae id). Devuelve el id o el error. */
+async function guardarDatosCliente(form: FormData): Promise<{ error: string } | { id: number }> {
   const s = await requerirEmisor();
   const id = entero(form.get('id'));
   const datos = {
@@ -36,19 +37,34 @@ export async function guardarCliente(_prev: EstadoForm, form: FormData): Promise
     limit 1`;
   if (dup.length) return { error: 'Ya existe un cliente de ese tipo con esa identificación' };
 
-  let nuevoId = id;
   if (id) {
     const r = await sql`
       update clientes set ${sql(datos)}, fecha_modificacion = now() at time zone 'America/Guayaquil'
       where id = ${id} and id_emisor = ${s.emisorId} returning id`;
     if (!r.length) return { error: 'Cliente no encontrado' };
-  } else {
-    const [r] = await sql<{ id: number }[]>`
-      insert into clientes ${sql({ ...datos, id_emisor: s.emisorId })}
-      returning id`;
-    nuevoId = r.id;
+    revalidatePath('/clientes');
+    return { id };
   }
+  const [r] = await sql<{ id: number }[]>`
+    insert into clientes ${sql({ ...datos, id_emisor: s.emisorId })}
+    returning id`;
   revalidatePath('/clientes');
+  return { id: r.id };
+}
+
+export async function guardarCliente(_prev: EstadoForm, form: FormData): Promise<EstadoForm> {
+  const r = await guardarDatosCliente(form);
+  if ('error' in r) return { error: r.error };
   const volver = texto(form.get('volver'));
-  redirect(volver || `/clientes/${nuevoId}?guardado=1`);
+  redirect(volver || `/clientes/${r.id}?guardado=1`);
+}
+
+/** Guardado desde la ventana emergente de los comprobantes: no redirige, devuelve el id guardado */
+export async function guardarClienteVentana(form: FormData): Promise<{ error?: string; id?: number }> {
+  try {
+    const r = await guardarDatosCliente(form);
+    return 'error' in r ? { error: r.error } : { id: r.id };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 }

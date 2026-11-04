@@ -57,3 +57,24 @@ export async function datosCliente(id: number): Promise<ClienteBusqueda | null> 
     where c.id = ${id} and c.id_emisor = ${s.emisorId}`;
   return c ?? null;
 }
+
+export type ClienteEdicion = {
+  id: number; nombre_cliente: string; tipo_identificacion: number; tipo_cliente: number; identificacion: string;
+  telefono_fijo: string | null; telefono_movil: string | null; direccion: string | null; correo: string | null; codigo: string | null;
+};
+export type OpcionCatalogo = { id: number; descripcion: string };
+
+/** Datos para la ventana de crear/editar cliente: catalogos y, si se indica id, el cliente */
+export async function formularioCliente(id?: number): Promise<{ tiposId: OpcionCatalogo[]; tiposCli: OpcionCatalogo[]; cliente: ClienteEdicion | null }> {
+  const s = await requerirEmisor();
+  const [tiposId, tiposCli, cli] = await Promise.all([
+    sql<OpcionCatalogo[]>`select id, descripcion from tipo_identificacion order by id`,
+    sql<OpcionCatalogo[]>`select id, descripcion from tipo_cliente order by id`,
+    id && id !== ID_CONSUMIDOR_FINAL
+      ? sql<ClienteEdicion[]>`
+          select id, nombre_cliente, tipo_identificacion, tipo_cliente, identificacion, telefono_fijo, telefono_movil, direccion, correo, codigo
+          from clientes where id = ${id} and id_emisor = ${s.emisorId}`
+      : Promise.resolve([] as ClienteEdicion[]),
+  ]);
+  return { tiposId, tiposCli, cliente: cli[0] ?? null };
+}

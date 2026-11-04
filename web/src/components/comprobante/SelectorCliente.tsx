@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import { buscarClientes, datosCliente, type ClienteBusqueda } from '@/app/(app)/comprobantes/busquedas';
+import { VentanaCliente } from './VentanaCliente';
 
 type Sel = { id: number; nombre: string; identificacion: string } | null;
 
@@ -31,6 +31,7 @@ export function SelectorCliente({ nombre = 'id_cliente', inicial, tipo, permitir
   const [q, setQ] = useState('');
   const [res, setRes] = useState<ClienteBusqueda[]>([]);
   const [buscando, setBuscando] = useState(false);
+  const [ventana, setVentana] = useState<null | 'nuevo' | 'editar'>(null);
   const t = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Datos completos del cliente que ya venia elegido (al editar un borrador)
@@ -61,8 +62,20 @@ export function SelectorCliente({ nombre = 'id_cliente', inicial, tipo, permitir
 
   const esCF = sel?.id === ID_CONSUMIDOR_FINAL;
 
+  // Al guardar en la ventana: si se edito el mismo cliente solo se refresca la ficha; si es nuevo, se elige
+  function alGuardar(c: ClienteBusqueda) {
+    const nuevo = { id: c.id, nombre: c.nombre_cliente, identificacion: c.identificacion };
+    if (ventana === 'editar' && sel?.id === c.id) { setSel(nuevo); setFicha(c); }
+    else elegir(nuevo, c);
+    setVentana(null);
+  }
+
   return (
     <div className="campo ancho" style={{ gridColumn: '1 / -1' }}>
+      {ventana && (
+        <VentanaCliente idCliente={ventana === 'editar' ? sel?.id : undefined} tipoCliente={tipo} textoInicial={ventana === 'nuevo' ? q : undefined}
+          onCerrar={() => setVentana(null)} onGuardado={alGuardar} />
+      )}
       <label>{etiqueta} *</label>
       <input type="hidden" name={nombre} value={sel?.id ?? ''} />
       {sel ? (
@@ -75,7 +88,7 @@ export function SelectorCliente({ nombre = 'id_cliente', inicial, tipo, permitir
               </div>
             </div>
             <div className="acciones">
-              {!esCF && <Link className="btn chico" href={`/clientes/${sel.id}`} target="_blank">Editar datos</Link>}
+              {!esCF && <button type="button" className="btn chico" onClick={() => setVentana('editar')}>Editar datos</button>}
               <button type="button" className="btn chico" onClick={() => elegir(null, null)}>Cambiar</button>
             </div>
           </div>
@@ -101,7 +114,7 @@ export function SelectorCliente({ nombre = 'id_cliente', inicial, tipo, permitir
             {permitirConsumidorFinal && (
               <button type="button" className="btn" onClick={() => elegir(CONSUMIDOR_FINAL, null)}>Consumidor final</button>
             )}
-            <Link className="btn" href={`/clientes/nuevo${tipo ? `?tipo=${tipo}` : ''}`} target="_blank">+ Nuevo cliente</Link>
+            <button type="button" className="btn" onClick={() => setVentana('nuevo')}>+ Nuevo cliente</button>
           </div>
           {q.trim().length >= 2 && (
             <div className="card" style={{ position: 'absolute', zIndex: 30, left: 0, right: 0, top: '100%', marginTop: 4, padding: 0, maxHeight: 340, overflowY: 'auto' }}>
