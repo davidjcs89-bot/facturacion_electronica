@@ -9,6 +9,7 @@ import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { AccionesSri } from '@/components/comprobante/AccionesSri';
 import { money, fecha, fechaHora } from '@/lib/formato';
 import { ESTADO } from '@/lib/constantes';
+import { BotonDuplicar } from '../nueva/Importar';
 
 export default async function VerRetencion({ params }: { params: Promise<{ id: string }> }) {
   const s = await requerirEmisor();
@@ -27,6 +28,7 @@ export default async function VerRetencion({ params }: { params: Promise<{ id: s
     <>
       <Cabecera titulo={`Retención ${r.numero || `borrador #${r.id}`}`} sub={<>Emitida el {fecha(r.fecha_emision)} · <Estado id={r.estado} /></>}>
         {borrador && <Link className="btn primario" href={`/retenciones/${id}/editar`}>Editar</Link>}
+        <BotonDuplicar id={id} />
         <Link className="btn" href="/retenciones">Volver</Link>
       </Cabecera>
       {el.mensajes && r.estado !== ESTADO.AUTORIZADO && <Alerta tipo="error"><strong>Mensaje del SRI:</strong><div style={{ whiteSpace: 'pre-wrap' }}>{el.mensajes}</div></Alerta>}

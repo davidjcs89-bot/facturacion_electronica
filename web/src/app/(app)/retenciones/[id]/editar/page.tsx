@@ -10,7 +10,10 @@ import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { ESTADO } from '@/lib/constantes';
 import { CabeceraRetencion, ImpuestosRetencion, AdicionalesRetencion, BotonesRetencion } from './Editor';
 
-export default async function EditarRetencion({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditarRetencion({ params, searchParams }: {
+  params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | undefined>>;
+}) {
+  const sp = await searchParams;
   const s = await requerirEmisor();
   const id = Number((await params).id) || 0;
   const [ok] = await sql<{ estado: number }[]>`select estado from retencion where id = ${id} and id_emisor = ${s.emisorId}`;
@@ -26,15 +29,25 @@ export default async function EditarRetencion({ params }: { params: Promise<{ id
     where exists (select 1 from impuesto_porcentaje_retencion p where p.id_impuesto = i.id) order by i.id`;
   const porcentajes = await sql<{ id: number; id_impuesto: number; codigo: string; descripcion: string; porcentaje: number; porcentaje_fijo: boolean }[]>`
     select id, id_impuesto, codigo, descripcion, porcentaje, porcentaje_fijo from impuesto_porcentaje_retencion order by id_impuesto, codigo`;
+  // Datos propuestos al importar la factura del proveedor (vienen en la direccion)
+  const num = (sp.num ?? '').replace(/\D/g, '');
+  const sugerido = num.length === 15 ? {
+    idTipoDoc: tiposDoc.find((t) => t.codigo_doc === sp.doc)?.id,
+    numero: `${num.slice(0, 3)}-${num.slice(3, 6)}-${num.slice(6)}`,
+    fecha: /^\d{4}-\d{2}-\d{2}$/.test(sp.fecha ?? '') ? sp.fecha : undefined,
+    renta: Number(sp.renta) || 0,
+    iva: Number(sp.iva) || 0,
+  } : undefined;
   return (
     <>
       <Cabecera titulo={`Retención · borrador #${r.id}`} sub={<Estado id={r.estado} />}>
         <Link className="btn" href="/retenciones">Volver</Link>
       </Cabecera>
+      {sp.copiada && <Alerta tipo="ok">Se copiaron el sujeto retenido, los impuestos y los datos adicionales. Revise el número y la fecha del documento sustento antes de emitir.</Alerta>}
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
       <CabeceraRetencion id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
         valores={{ id_punto_emision: r.id_punto_emision, fecha: fechaInput(r.fecha_emision), sujeto: c && r.id_cliente ? { id: r.id_cliente, nombre: c.nombre_cliente, identificacion: c.identificacion } : null }} />
-      <ImpuestosRetencion id={id} hoy={hoyEcuadorISO()}
+      <ImpuestosRetencion id={id} hoy={hoyEcuadorISO()} sugerido={sugerido}
         tiposDoc={tiposDoc.map((t) => ({ id: t.id, texto: `${t.codigo_doc} · ${t.descripcion_doc}` }))}
         impuestos={impuestos.map((i) => ({ id: i.id, texto: i.descripcion }))}
         porcentajes={porcentajes.map((p) => ({ id: p.id, id_impuesto: p.id_impuesto, texto: `${p.codigo} · ${p.descripcion}`, porcentaje: Number(p.porcentaje), fijo: p.porcentaje_fijo }))}

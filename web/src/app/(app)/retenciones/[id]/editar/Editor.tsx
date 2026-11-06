@@ -38,15 +38,23 @@ export function CabeceraRetencion({ id, puntos, valores }: {
 type Porcentaje = { id: number; id_impuesto: number; texto: string; porcentaje: number; fijo: boolean };
 type Detalle = { id: number; doc: string; numero: string; fecha: string; impuesto: string; codigo: string; base: number; porcentaje: number; valor: number };
 
-export function ImpuestosRetencion({ id, hoy, tiposDoc, impuestos, porcentajes, detalles }: {
-  id: number; hoy: string; tiposDoc: Opcion[]; impuestos: Opcion[]; porcentajes: Porcentaje[]; detalles: Detalle[];
+export type Sugerido = { idTipoDoc?: number; numero?: string; fecha?: string; renta?: number; iva?: number };
+
+export function ImpuestosRetencion({ id, hoy, tiposDoc, impuestos, porcentajes, detalles, sugerido }: {
+  id: number; hoy: string; tiposDoc: Opcion[]; impuestos: Opcion[]; porcentajes: Porcentaje[]; detalles: Detalle[]; sugerido?: Sugerido;
 }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(agregarImpuesto, {});
   const [impuesto, setImpuesto] = useState<number>(impuestos.find((i) => /renta/i.test(i.texto))?.id ?? impuestos[0]?.id ?? 0);
   const opciones = porcentajes.filter((p) => p.id_impuesto === impuesto);
   const [idPct, setIdPct] = useState<number>(opciones[0]?.id ?? 0);
   const pct = porcentajes.find((p) => p.id === idPct);
-  const [base, setBase] = useState('');
+  // Base propuesta segun el impuesto: renta -> subtotal sin impuestos; IVA -> valor del IVA de la factura importada
+  const esIva = (idImp: number) => /iva/i.test(impuestos.find((i) => i.id === idImp)?.texto ?? '');
+  const baseSugerida = (idImp: number) => {
+    const v = esIva(idImp) ? sugerido?.iva : sugerido?.renta;
+    return v != null && v > 0 ? v.toFixed(2) : '';
+  };
+  const [base, setBase] = useState(() => baseSugerida(impuesto));
   const [manual, setManual] = useState('');
   const pctAplicado = pct?.fijo ? pct.porcentaje : Number(manual || 0);
   const valor = Math.round(Number(base || 0) * pctAplicado) / 100;
@@ -56,20 +64,28 @@ export function ImpuestosRetencion({ id, hoy, tiposDoc, impuestos, porcentajes, 
   return (
     <div className="card">
       <h2>Impuestos retenidos</h2>
+      {sugerido?.numero && (
+        <div className="alerta ok">
+          Datos de la factura del proveedor {sugerido.numero}: subtotal sin impuestos <strong>${money(sugerido.renta ?? 0)}</strong>
+          {' '}· IVA <strong>${money(sugerido.iva ?? 0)}</strong>. Elija el código de retención y pulse «Agregar impuesto»;
+          al cambiar a IVA la base cambia sola al valor del IVA.
+        </div>
+      )}
       <Msg e={e} />
       <form action={accion}>
         <input type="hidden" name="id" value={id} />
         <div className="form-grid">
           <div className="campo"><label>Documento sustento</label>
-            <select name="id_tipo_documento" defaultValue={1}>{tiposDoc.map((t) => <option key={t.id} value={t.id}>{t.texto}</option>)}</select>
+            <select name="id_tipo_documento" defaultValue={sugerido?.idTipoDoc ?? 1}>{tiposDoc.map((t) => <option key={t.id} value={t.id}>{t.texto}</option>)}</select>
           </div>
-          <div className="campo"><label>Número del documento</label><input name="numero_documento" placeholder="001-001-000000001" defaultValue={ultimo?.numero ?? ''} required /></div>
-          <div className="campo"><label>Fecha del documento</label><input type="date" name="fecha_documento" defaultValue={ultimo?.fecha ?? hoy} required /></div>
+          <div className="campo"><label>Número del documento</label><input name="numero_documento" placeholder="001-001-000000001" defaultValue={ultimo?.numero ?? sugerido?.numero ?? ''} required /></div>
+          <div className="campo"><label>Fecha del documento</label><input type="date" name="fecha_documento" defaultValue={ultimo?.fecha ?? sugerido?.fecha ?? hoy} required /></div>
           <div className="campo"><label>Impuesto</label>
             <select value={impuesto} onChange={(ev) => {
               const v = Number(ev.target.value);
               setImpuesto(v);
               setIdPct(porcentajes.find((p) => p.id_impuesto === v)?.id ?? 0);
+              if (sugerido) setBase(baseSugerida(v));
             }}>
               {impuestos.map((i) => <option key={i.id} value={i.id}>{i.texto}</option>)}
             </select>
