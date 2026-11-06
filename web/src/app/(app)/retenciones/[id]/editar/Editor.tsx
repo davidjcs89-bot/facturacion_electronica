@@ -14,18 +14,43 @@ function Msg({ e }: { e: Estado }) {
   return <div className={`alerta ${e.ok ? 'ok' : 'error'}`}>{e.mensaje}</div>;
 }
 
-export function CabeceraRetencion({ id, puntos, valores }: {
+/** Cuadro que muestra con que numeracion y en que ambiente saldra el comprobante */
+export function Numeracion({ texto, actual }: { texto?: string; actual?: string | null }) {
+  if (actual) {
+    return <div className="alerta ok" style={{ margin: '8px 0 0' }}>Número asignado: <strong>{actual}</strong></div>;
+  }
+  if (!texto) return <div className="alerta aviso" style={{ margin: '8px 0 0' }}>Este punto no se puede usar en esta app: elija otro.</div>;
+  const [numero, ambiente] = texto.split(' · ');
+  const prueba = ambiente === 'PRUEBAS';
+  return (
+    <div className={`alerta ${prueba ? 'aviso' : 'info'}`} style={{ margin: '8px 0 0' }}>
+      Al emitir tomará el número <strong>{numero}</strong> · ambiente <strong>{ambiente}</strong>
+      {prueba ? ' (no tiene validez tributaria)' : ' (comprobante real)'}
+    </div>
+  );
+}
+
+export function CabeceraRetencion({ id, puntos, valores, numeracion }: {
   id: number; puntos: Opcion[];
   valores: { id_punto_emision: number; fecha: string; sujeto: { id: number; nombre: string; identificacion: string } | null };
+  numeracion: Record<number, string>;
 }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(actualizarCabecera, {});
+  const enLista = puntos.some((p) => p.id === valores.id_punto_emision);
+  const [punto, setPunto] = useState<number>(enLista ? valores.id_punto_emision : puntos[0]?.id ?? 0);
   return (
     <form action={accion} className="card">
       <Msg e={e} />
       <input type="hidden" name="id" value={id} />
+      {!enLista && (
+        <div className="alerta aviso">
+          Este borrador tenía un punto de emisión del sistema anterior. Se propone {puntos[0]?.texto}; pulse «Guardar datos generales» para confirmarlo.
+        </div>
+      )}
       <div className="form-grid">
-        <div className="campo"><label>Punto de emisión</label>
-          <select name="id_punto_emision" defaultValue={valores.id_punto_emision}>{puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}</select>
+        <div className="campo"><label>Punto de emisión (numeración)</label>
+          <select name="id_punto_emision" value={punto} onChange={(ev) => setPunto(Number(ev.target.value))}>{puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}</select>
+          <Numeracion texto={numeracion[punto]} />
         </div>
         <div className="campo"><label>Fecha de emisión</label><input type="date" name="fecha_emision" defaultValue={valores.fecha} /></div>
         <SelectorCliente inicial={valores.sujeto} tipo={2} etiqueta="Sujeto retenido" />

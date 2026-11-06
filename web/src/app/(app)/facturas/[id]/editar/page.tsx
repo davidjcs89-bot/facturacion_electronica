@@ -4,7 +4,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { cargarFactura } from '@/lib/comprobantes/factura';
 import { emisionPermitida } from '@/lib/comprobantes/procesar';
-import { puntosEmision, formasPago } from '@/lib/catalogos';
+import { puntosEmision, formasPago, textoPunto, proximosNumeros } from '@/lib/catalogos';
 import { fechaInput } from '@/lib/formato';
 import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { Totales } from '@/components/comprobante/Totales';
@@ -43,7 +43,7 @@ export default async function EditarFactura({ params }: { params: Promise<{ id: 
         <Link className="btn" href="/facturas">Volver</Link>
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
-      <DatosFactura id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+      <DatosFactura id={id} numeracion={await proximosNumeros(s.emisorId, 1)} puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
         valores={{ id_punto_emision: f.id_punto_emison, fecha: fechaInput(f.fecha_emision), guia: f.guia_de_remision ?? '' }} />
       <ClienteFactura id={id} cliente={{ id: f.id_cliente, nombre: c.nombre_cliente, identificacion: c.identificacion }} />
       <LineasFactura id={id} lineas={detalles.map((d) => ({

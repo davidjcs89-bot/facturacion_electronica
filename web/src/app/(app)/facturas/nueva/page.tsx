@@ -1,5 +1,5 @@
 import { requerirEmisor } from '@/lib/auth';
-import { puntosEmision } from '@/lib/catalogos';
+import { puntosEmision, textoPunto } from '@/lib/catalogos';
 import { hoyEcuadorISO } from '@/lib/formato';
 import { Cabecera, Alerta } from '@/components/ui';
 import { FormNuevaFactura } from './FormNuevaFactura';
@@ -13,7 +13,7 @@ export default async function NuevaFactura() {
       {puntos.length === 0 ? (
         <Alerta tipo="aviso">Primero configure un punto de emisión en Configuración → Puntos de emisión.</Alerta>
       ) : (
-        <FormNuevaFactura puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))} hoy={hoyEcuadorISO()} />
+        <FormNuevaFactura puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))} hoy={hoyEcuadorISO()} />
       )}
     </>
   );

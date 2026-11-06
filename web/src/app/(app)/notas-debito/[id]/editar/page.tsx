@@ -4,7 +4,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { cargarNotaDebito } from '@/lib/comprobantes/nota_debito';
 import { emisionPermitida } from '@/lib/comprobantes/procesar';
-import { puntosEmision, formasPago } from '@/lib/catalogos';
+import { puntosEmision, formasPago, textoPunto } from '@/lib/catalogos';
 import { fechaInput, fecha } from '@/lib/formato';
 import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { Totales } from '@/components/comprobante/Totales';
@@ -29,7 +29,7 @@ export default async function EditarNotaDebito({ params }: { params: Promise<{ i
         <Link className="btn" href="/notas-debito">Volver</Link>
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
-      <CabeceraND id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+      <CabeceraND id={id} puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
         ivas={ivas.map((i) => ({ id: i.id, texto: i.descripcion }))}
         valores={{ id_punto_emision: n.id_punto_emision, fecha: fechaInput(n.fecha_emision), id_porcentaje_iva: n.id_porcentaje_iva }} />
       <MotivosND id={id} motivos={motivos.map((m) => ({ id: m.id, razon: m.razon_modificacion, valor: Number(m.valor_modificacion) }))} />

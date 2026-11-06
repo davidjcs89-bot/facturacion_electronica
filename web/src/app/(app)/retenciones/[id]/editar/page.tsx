@@ -4,7 +4,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { cargarRetencion } from '@/lib/comprobantes/retencion';
 import { emisionPermitida } from '@/lib/comprobantes/procesar';
-import { puntosEmision } from '@/lib/catalogos';
+import { puntosEmision, textoPunto, proximosNumeros } from '@/lib/catalogos';
 import { fechaInput, hoyEcuadorISO } from '@/lib/formato';
 import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { ESTADO } from '@/lib/constantes';
@@ -19,7 +19,9 @@ export default async function EditarRetencion({ params, searchParams }: {
   const [ok] = await sql<{ estado: number }[]>`select estado from retencion where id = ${id} and id_emisor = ${s.emisorId}`;
   if (!ok) notFound();
   if (ok.estado !== ESTADO.PENDIENTE && ok.estado !== ESTADO.PAGADO) redirect(`/retenciones/${id}`);
-  const [{ r, detalles, adicionales }, puntos, perm] = await Promise.all([cargarRetencion(id), puntosEmision(s.emisorId), emisionPermitida(s.emisorId)]);
+  const [{ r, detalles, adicionales }, puntos, perm, numeracion] = await Promise.all([
+    cargarRetencion(id), puntosEmision(s.emisorId), emisionPermitida(s.emisorId), proximosNumeros(s.emisorId, 6),
+  ]);
   const [c] = r.id_cliente
     ? await sql<{ nombre_cliente: string; identificacion: string }[]>`select nombre_cliente, identificacion from clientes where id = ${r.id_cliente}`
     : [];
@@ -45,7 +47,7 @@ export default async function EditarRetencion({ params, searchParams }: {
       </Cabecera>
       {sp.copiada && <Alerta tipo="ok">Se copiaron el sujeto retenido, los impuestos y los datos adicionales. Revise el número y la fecha del documento sustento antes de emitir.</Alerta>}
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
-      <CabeceraRetencion id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+      <CabeceraRetencion id={id} numeracion={numeracion} puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
         valores={{ id_punto_emision: r.id_punto_emision, fecha: fechaInput(r.fecha_emision), sujeto: c && r.id_cliente ? { id: r.id_cliente, nombre: c.nombre_cliente, identificacion: c.identificacion } : null }} />
       <ImpuestosRetencion id={id} hoy={hoyEcuadorISO()} sugerido={sugerido}
         tiposDoc={tiposDoc.map((t) => ({ id: t.id, texto: `${t.codigo_doc} · ${t.descripcion_doc}` }))}

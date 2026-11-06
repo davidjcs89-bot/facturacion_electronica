@@ -1,6 +1,6 @@
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
-import { puntosEmision } from '@/lib/catalogos';
+import { puntosEmision, textoPunto } from '@/lib/catalogos';
 import { hoyEcuadorISO, fecha, money } from '@/lib/formato';
 import { Cabecera, Alerta } from '@/components/ui';
 import { FormNuevaRetencion } from './FormNuevaRetencion';
@@ -15,7 +15,7 @@ export default async function NuevaRetencion() {
     from retencion r left join clientes c on c.id = r.id_cliente
     where r.id_emisor = ${s.emisorId}
     order by r.id desc limit 40`;
-  const opcionesPuntos = puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }));
+  const opcionesPuntos = puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }));
   return (
     <>
       <Cabecera titulo="Nuevo comprobante de retención" sub="Elija cómo empezar: desde la factura del proveedor, copiando otra retención o desde cero." />

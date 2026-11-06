@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
-import { puntosEmision } from '@/lib/catalogos';
+import { puntosEmision, textoPunto } from '@/lib/catalogos';
 import { hoyEcuadorISO } from '@/lib/formato';
 import { Cabecera, Alerta } from '@/components/ui';
 import { FormNuevaGuia } from './FormNuevaGuia';
@@ -19,7 +19,7 @@ export default async function NuevaGuia() {
       {transportistas.length === 0 && <Alerta tipo="aviso">Primero registre un transportista en <Link href="/transportistas">Catálogos → Transportistas</Link>.</Alerta>}
       {puntos.length > 0 && transportistas.length > 0 && (
         <FormNuevaGuia
-          puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+          puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
           transportistas={transportistas.map((t) => ({ id: t.id, texto: `${t.nombre} · ${t.numero_identificacion}`, placa: t.placa }))}
           hoy={hoy} partida={puntos[0]?.direccion ?? ''} />
       )}

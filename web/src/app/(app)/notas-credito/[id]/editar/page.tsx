@@ -4,7 +4,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { cargarNotaCredito, lineasFacturaOrigen } from '@/lib/comprobantes/nota_credito';
 import { emisionPermitida } from '@/lib/comprobantes/procesar';
-import { puntosEmision } from '@/lib/catalogos';
+import { puntosEmision, textoPunto } from '@/lib/catalogos';
 import { fechaInput, fecha, money, money3 } from '@/lib/formato';
 import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { Totales } from '@/components/comprobante/Totales';
@@ -31,7 +31,7 @@ export default async function EditarNotaCredito({ params }: { params: Promise<{ 
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
       {Number(n.total) - saldo > 0.009 && <Alerta tipo="error">El total de la nota (${money(n.total)}) supera el saldo de la factura (${money(saldo)}).</Alerta>}
-      <CabeceraNC id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+      <CabeceraNC id={id} puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
         valores={{ id_punto_emision: n.id_punto_emision, fecha: fechaInput(n.fecha_emision), motivo: n.motivo === '.' ? '' : n.motivo }} />
       <LineasNC id={id}
         lineas={detalles.map((d) => ({ id: d.id, id_producto: d.id_producto, codigo: d.codigo, nombre: d.nombre, cantidad: Number(d.cantidad), precio: money3(d.precio), descuento: money(d.descuento), subtotal: money(d.subtotal), iva: money(d.valor_iva), total: money(d.total) }))}

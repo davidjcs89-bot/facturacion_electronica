@@ -4,7 +4,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { cargarLiquidacion } from '@/lib/comprobantes/liquidacion_compra';
 import { emisionPermitida } from '@/lib/comprobantes/procesar';
-import { puntosEmision, formasPago } from '@/lib/catalogos';
+import { puntosEmision, formasPago, textoPunto } from '@/lib/catalogos';
 import { fechaInput } from '@/lib/formato';
 import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { Totales } from '@/components/comprobante/Totales';
@@ -28,7 +28,7 @@ export default async function EditarLiquidacion({ params }: { params: Promise<{ 
         <Link className="btn" href="/liquidaciones">Volver</Link>
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
-      <CabeceraLiquidacion id={id} puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+      <CabeceraLiquidacion id={id} puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
         valores={{ id_punto_emision: l.id_punto_emison, fecha: fechaInput(l.fecha_emision), cliente: { id: l.id_cliente, nombre: c?.nombre_cliente ?? '', identificacion: c?.identificacion ?? '' } }} />
       <LineasLiquidacion id={id} lineas={detalles.map((d) => ({
         id: d.id, codigo: d.codigo, nombre: d.nombre, adicional: d.adicional, cantidad: Number(d.cantidad),

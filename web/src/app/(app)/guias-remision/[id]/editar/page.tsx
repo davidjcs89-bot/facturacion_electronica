@@ -4,7 +4,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { cargarGuia } from '@/lib/comprobantes/guia_remision';
 import { emisionPermitida } from '@/lib/comprobantes/procesar';
-import { puntosEmision } from '@/lib/catalogos';
+import { puntosEmision, textoPunto } from '@/lib/catalogos';
 import { fechaInput } from '@/lib/formato';
 import { Cabecera, Estado, Alerta } from '@/components/ui';
 import { ESTADO } from '@/lib/constantes';
@@ -26,7 +26,7 @@ export default async function EditarGuia({ params }: { params: Promise<{ id: str
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
       <CabeceraGuia id={id}
-        puntos={puntos.map((p) => ({ id: p.id, texto: `${p.numero_establecimiento}-${p.numero_emision} · ${p.direccion}` }))}
+        puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
         transportistas={transportistas.map((t) => ({ id: t.id, texto: `${t.nombre} · ${t.numero_identificacion}`, placa: t.placa }))}
         valores={{ id_punto_emision: g.id_punto_emision, id_transportista: g.id_transportista, inicio: fechaInput(g.fecha_inicio_transporte), fin: fechaInput(g.fecha_fin_transporte), partida: g.direccion_partida, placa: g.placa }} />
       <DestinatariosGuia id={id} destinatarios={destinatarios.map((d) => ({

@@ -37,22 +37,62 @@ export type ResultadoEmision = {
   fallaSri?: boolean;
 };
 
-/**
- * La emision real esta bloqueada mientras la app anterior siga emitiendo (comparten secuenciales).
- * Se permite siempre en ambiente de PRUEBAS.
- */
-export async function emisionPermitida(emisorId: number): Promise<{ permitido: boolean; motivo?: string; ambiente: Ambiente }> {
+/** Puntos exclusivos de esta app para el emisor (id -> ambiente '1' pruebas / '2' produccion) */
+async function puntosApp(emisorId: number) {
+  const filas = await sql<{ id_punto: number; ambiente: string }[]>`
+    select a.id_punto, a.ambiente from punto_emision_app a join puntos_emisior p on p.id = a.id_punto where p.id_emisor = ${emisorId}`;
+  return new Map(filas.map((f) => [f.id_punto, f.ambiente as Ambiente]));
+}
+
+async function ambienteEmisor(emisorId: number): Promise<Ambiente> {
   const [e] = await sql<{ codigo_ambiente: string }[]>`
     select a.codigo_ambiente from emisor e join tipo_ambientes a on a.id = e.tipo_ambiente where e.id = ${emisorId}`;
-  const ambiente = (e?.codigo_ambiente === '2' ? '2' : '1') as Ambiente;
-  if (ambiente === '1') return { permitido: true, ambiente };
-  if (process.env.EMISION_HABILITADA === 'true') return { permitido: true, ambiente };
-  return {
-    permitido: false,
-    ambiente,
-    motivo:
-      'La emisión en PRODUCCIÓN está desactivada en esta app mientras el sistema anterior siga emitiendo (comparten la numeración). Se activa al hacer el cambio definitivo.',
-  };
+  return (e?.codigo_ambiente === '2' ? '2' : '1') as Ambiente;
+}
+
+/** Ambiente en que se emite un comprobante de ese punto: el del punto si es exclusivo de la app, si no el del emisor */
+export async function ambienteDelPunto(emisorId: number, idPunto: number): Promise<Ambiente> {
+  return (await puntosApp(emisorId)).get(idPunto) ?? (await ambienteEmisor(emisorId));
+}
+
+const MOTIVO_BLOQUEO =
+  'La emisión en PRODUCCIÓN está desactivada en esta app mientras el sistema anterior siga emitiendo (comparten la numeración). Se activa al hacer el cambio definitivo.';
+
+/**
+ * Si se puede emitir.
+ * - Con puntos exclusivos de la app (punto_emision_app): se emite solo en ellos, cada uno en su ambiente
+ *   (p. ej. 001-010 PRODUCCIÓN y 001-099 PRUEBAS). Los puntos del sistema anterior no se usan aquí.
+ * - Sin puntos exclusivos: PRUEBAS siempre; PRODUCCIÓN solo con EMISION_HABILITADA=true.
+ * `clave` (si el comprobante ya la tiene) manda: un reenvío va al ambiente con que se generó.
+ */
+export async function emisionPermitida(
+  emisorId: number,
+  idPunto?: number,
+  clave?: string | null,
+): Promise<{ permitido: boolean; motivo?: string; ambiente: Ambiente }> {
+  const propios = await puntosApp(emisorId);
+  const habilitada = process.env.EMISION_HABILITADA === 'true';
+  if (clave && clave.length === 49) {
+    const ambiente = clave.charAt(23) as Ambiente;
+    const ok = ambiente === '1' || habilitada || (idPunto != null && propios.has(idPunto));
+    return ok ? { permitido: true, ambiente } : { permitido: false, ambiente, motivo: MOTIVO_BLOQUEO };
+  }
+  if (propios.size) {
+    if (idPunto == null) return { permitido: true, ambiente: [...propios.values()][0] };
+    const amb = propios.get(idPunto);
+    if (amb) return { permitido: true, ambiente: amb };
+    const series = await sql<{ serie: string }[]>`
+      select p.numero_establecimiento || '-' || p.numero_emision serie from puntos_emisior p
+      where p.id = any(${[...propios.keys()]}) order by 1`;
+    return {
+      permitido: false,
+      ambiente: await ambienteEmisor(emisorId),
+      motivo: `Este punto de emisión es del sistema anterior. En esta app use ${series.map((x) => x.serie).join(' o ')} (Datos de la factura → Punto de emisión).`,
+    };
+  }
+  const ambiente = await ambienteEmisor(emisorId);
+  if (ambiente === '1' || habilitada) return { permitido: true, ambiente };
+  return { permitido: false, ambiente, motivo: MOTIVO_BLOQUEO };
 }
 
 /** Asigna numero (secuencial del punto de emision) y clave de acceso si aun no los tiene. */
@@ -75,9 +115,9 @@ export async function asignarNumeracion(tipoDoc: number, id: number, emisorId: n
       numero = `${sec.estab.padStart(3, '0')}-${sec.pto.padStart(3, '0')}-${String(sec.secuencial).padStart(9, '0')}`;
       await tx`update secuencias set secuencial = secuencial + 1 where id = ${sec.id}`;
     }
-    const [e] = await tx<{ ruc: string; codigo_ambiente: string }[]>`
-      select e.ruc, a.codigo_ambiente from emisor e join tipo_ambientes a on a.id = e.tipo_ambiente where e.id = ${emisorId}`;
-    const clave = generarClaveAcceso({ fecha: doc.fecha, codDoc: m.codDoc, ruc: e.ruc, ambiente: e.codigo_ambiente, numero });
+    const [e] = await tx<{ ruc: string }[]>`select e.ruc from emisor e where e.id = ${emisorId}`;
+    const ambiente = await ambienteDelPunto(emisorId, doc.punto);
+    const clave = generarClaveAcceso({ fecha: doc.fecha, codDoc: m.codDoc, ruc: e.ruc, ambiente, numero });
     await tx`
       update ${tx(m.tabla)} set ${tx(m.colNumero)} = ${numero}, ${tx(m.colClave)} = ${clave},
         estado = ${ESTADO.FINALIZADO}, fecha_modificacion = now() at time zone 'America/Guayaquil'
@@ -131,7 +171,10 @@ export async function emitir(
 ): Promise<ResultadoEmision> {
   const esperarAutorizacion = opciones.esperarAutorizacion ?? true;
   const m = manejador(tipoDoc);
-  const perm = await emisionPermitida(emisorId);
+  const [previo] = await sql<{ punto: number; clave: string | null }[]>`
+    select ${sql(m.colPunto)} punto, ${sql(m.colClave)} clave from ${sql(m.tabla)} where id = ${id} and ${sql(m.colEmisor)} = ${emisorId}`;
+  if (!previo) return { ok: false, estado: 0, mensaje: 'Comprobante no encontrado' };
+  const perm = await emisionPermitida(emisorId, previo.punto, previo.clave);
   if (!perm.permitido) return { ok: false, estado: 0, mensaje: perm.motivo! };
 
   // La firma se valida antes de consumir un secuencial
@@ -165,7 +208,8 @@ export async function emitir(
 
   // Envio
   try {
-    const r = await enviarComprobante(perm.ambiente, xmlFirmado);
+    // El ambiente de envio es siempre el de la clave de acceso (el del punto de emision)
+    const r = await enviarComprobante((doc.clave.charAt(23) === '2' ? '2' : '1') as Ambiente, xmlFirmado);
     // 43 (ya registrada) y 70 (en procesamiento) no son rechazos: el SRI ya lo tiene, se consulta la autorizacion
     if (r.estado !== 'RECIBIDA' && !r.yaRegistrada && !r.enProceso) {
       const msg = textoMensajes(r.mensajes) || `El SRI devolvió el comprobante (${r.estado})`;

@@ -28,7 +28,8 @@ export function infoTributaria(e: EmisorXml, claveAcceso: string, codDoc: string
   return el(
     'infoTributaria',
     null,
-    t('ambiente', e.codigo_ambiente),
+    // El ambiente lo fija la clave de acceso (puede ser el de un punto de PRUEBAS aunque el emisor esté en producción)
+    t('ambiente', /^\d{49}$/.test(claveAcceso) ? claveAcceso.charAt(23) : e.codigo_ambiente),
     t('tipoEmision', '1'),
     t('razonSocial', limpiar(e.razon_social)),
     t('nombreComercial', limpiar(e.nombre_comercial)),

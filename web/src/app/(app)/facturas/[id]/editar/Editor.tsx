@@ -16,6 +16,19 @@ function Msg({ e }: { e: Estado }) {
   return <div className={`alerta ${e.ok ? 'ok' : 'error'}`}>{e.mensaje}</div>;
 }
 
+/** Con que numero y en que ambiente saldra el comprobante */
+function Numeracion({ texto }: { texto?: string }) {
+  if (!texto) return null;
+  const [numero, ambiente] = texto.split(' · ');
+  const prueba = ambiente === 'PRUEBAS';
+  return (
+    <div className={`alerta ${prueba ? 'aviso' : 'info'}`} style={{ margin: '8px 0 0' }}>
+      Al emitir tomará el número <strong>{numero}</strong> · ambiente <strong>{ambiente}</strong>
+      {prueba ? ' (no tiene validez tributaria)' : ' (comprobante real)'}
+    </div>
+  );
+}
+
 /** Indicador discreto de guardado automatico */
 function Guardado({ e, pend }: { e: Estado; pend: boolean }) {
   if (pend) return <span className="muted" style={{ fontSize: '0.85rem' }}>Guardando…</span>;
@@ -25,17 +38,24 @@ function Guardado({ e, pend }: { e: Estado; pend: boolean }) {
 }
 
 /** Parte 1: punto de emision, fecha y guia. Contraida muestra solo punto y fecha; se guarda sola al cambiar. */
-export function DatosFactura({ id, puntos, valores }: {
+export function DatosFactura({ id, puntos, valores, numeracion }: {
   id: number; puntos: Opcion[];
   valores: { id_punto_emision: number; fecha: string; guia: string };
+  numeracion: Record<number, string>;
 }) {
+  const enLista = puntos.some((p) => p.id === valores.id_punto_emision);
   const [e, accion, pend] = useActionState<Estado, FormData>(actualizarDatosFactura, {});
   const form = useRef<HTMLFormElement>(null);
-  const [abierto, setAbierto] = useState(false);
-  const [punto, setPunto] = useState(valores.id_punto_emision);
+  const [abierto, setAbierto] = useState(!enLista);
+  const [punto, setPunto] = useState(enLista ? valores.id_punto_emision : puntos[0]?.id ?? 0);
   const [fecha, setFecha] = useState(valores.fecha);
   const guardar = () => setTimeout(() => form.current?.requestSubmit(), 0);
-  const textoPunto = puntos.find((p) => p.id === punto)?.texto.split(' · ')[0] ?? '—';
+  // Borrador con un punto del sistema anterior: se cambia solo al primer punto de esta app
+  useEffect(() => {
+    if (!enLista && puntos.length) guardar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const textoPunto = puntos.find((p) => p.id === punto)?.texto ?? '—';
   const textoFecha = fecha ? fecha.split('-').reverse().join('/') : '—';
   return (
     <form action={accion} className="card" ref={form}>
@@ -51,11 +71,18 @@ export function DatosFactura({ id, puntos, valores }: {
           <button type="button" className="btn chico" onClick={() => setAbierto(!abierto)}>{abierto ? 'Ocultar' : 'Cambiar'}</button>
         </span>
       </div>
+      {!enLista && (
+        <div className="alerta aviso" style={{ marginTop: 10 }}>
+          Este borrador tenía un punto de emisión del sistema anterior; se cambió al punto de esta app. Puede elegir otro.
+        </div>
+      )}
+      {!abierto && <Numeracion texto={numeracion[punto]} />}
       <div className="form-grid" style={{ marginTop: 12, display: abierto ? undefined : 'none' }}>
-        <div className="campo"><label>Punto de emisión</label>
+        <div className="campo"><label>Punto de emisión (numeración)</label>
           <select name="id_punto_emision" value={punto} onChange={(ev) => { setPunto(Number(ev.target.value)); guardar(); }}>
             {puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}
           </select>
+          <Numeracion texto={numeracion[punto]} />
         </div>
         <div className="campo"><label>Fecha de emisión</label>
           <input type="date" name="fecha_emision" value={fecha} onChange={(ev) => setFecha(ev.target.value)} onBlur={guardar} />
