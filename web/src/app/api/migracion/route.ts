@@ -3,6 +3,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import sqlServer from 'mssql';
 import { sql } from '@/lib/db';
+import { createDecipheriv } from 'node:crypto';
+import { leerCertificado } from '@/lib/sri/firma';
+import { cifrar } from '@/lib/cifrado';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -46,7 +49,7 @@ const soloLectura = (q: string) => /^\s*(select|with)\b/i.test(q) && !/\b(insert
 export async function GET(req: NextRequest) {
   const tok = process.env.MIGRACION_TOKEN;
   if (!tok || req.nextUrl.searchParams.get('t') !== tok) return new NextResponse('no', { status: 404 });
-  let p: { op: string; emisores?: number[]; tablas?: string[]; desde?: number; hasta?: number; paso?: number; az?: string; pg?: string; tabla?: string; conflicto?: string; limite?: number };
+  let p: { op: string; emisor?: number; n?: number; dato?: string; emisores?: number[]; tablas?: string[]; desde?: number; hasta?: number; paso?: number; az?: string; pg?: string; tabla?: string; conflicto?: string; limite?: number };
   try {
     p = JSON.parse(Buffer.from(req.nextUrl.searchParams.get('q') ?? '', 'base64url').toString('utf8'));
   } catch {
@@ -129,6 +132,35 @@ export async function GET(req: NextRequest) {
         desde = fin + 1;
       }
       return NextResponse.json({ tabla: t, leidas, faltaban, insertadas, siguiente: desde > hasta ? null : desde, ms: Date.now() - t0 });
+    }
+    if (p.op === 'parte') {
+      // Trozo de un archivo de firma CIFRADO (AES-256-GCM con MIGRACION_LLAVE); se arma en 'cargarfirma'.
+      await sql`create table if not exists migr_partes (emisor int, n int, dato text, primary key (emisor, n))`;
+      await sql`insert into migr_partes ${sql({ emisor: Number(p.emisor), n: Number(p.n), dato: String(p.dato) })} on conflict (emisor, n) do update set dato = excluded.dato`;
+      return NextResponse.json({ ok: true });
+    }
+    if (p.op === 'cargarfirma') {
+      const em = Number(p.emisor);
+      const partes = await sql<{ dato: string }[]>`select dato from migr_partes where emisor = ${em} order by n`;
+      const todo = Buffer.from(partes.map((x) => x.dato).join(''), 'base64');
+      const llave = Buffer.from(process.env.MIGRACION_LLAVE ?? '', 'hex');
+      const iv = todo.subarray(0, 12); const tag = todo.subarray(todo.length - 16); const cuerpo = todo.subarray(12, todo.length - 16);
+      const d = createDecipheriv('aes-256-gcm', llave, iv); d.setAuthTag(tag);
+      const p12 = Buffer.concat([d.update(cuerpo), d.final()]);
+      const r = await (await azure()).request().query(`select Contrasena, Archivo_firma from Emisor where id = ${em}`);
+      const fila = r.recordset?.[0] as { Contrasena: string; Archivo_firma: string } | undefined;
+      if (!fila) return NextResponse.json({ error: 'emisor' }, { status: 400 });
+      const clave = String(fila.Contrasena ?? '');
+      const cert = leerCertificado(p12, clave);
+      const nombre = String(fila.Archivo_firma ?? '').split(/[\\/]/).pop() ?? 'firma.p12';
+      await sql`
+        insert into firma_emisor (id_emisor, archivo, nombre_archivo, clave_cifrada, titular, valido_desde, valido_hasta)
+        values (${em}, ${p12}, ${nombre}, ${cifrar(clave)}, ${cert.titular}, ${cert.validoDesde}, ${cert.validoHasta})
+        on conflict (id_emisor) do update set archivo = excluded.archivo, nombre_archivo = excluded.nombre_archivo,
+          clave_cifrada = excluded.clave_cifrada, titular = excluded.titular, valido_desde = excluded.valido_desde,
+          valido_hasta = excluded.valido_hasta, fecha_carga = now() at time zone 'America/Guayaquil'`;
+      await sql`delete from migr_partes where emisor = ${em}`;
+      return NextResponse.json({ emisor: em, titular: cert.titular, valido_hasta: cert.validoHasta, bytes: p12.length });
     }
     if (p.op === 'bloquear') {
       // Unica escritura en Azure, autorizada por el usuario: los emisores indicados dejan de poder iniciar sesion
