@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { entero, decimal, texto } from '@/lib/params';
-import { enviarCorreo } from '@/lib/correo';
+import { enviarCorreoEmisor } from '@/lib/correo';
 import { PROFORMA, agregarLineaDoc, actualizarLineaDoc, eliminarLineaDoc, convertirAFactura } from './_comun/lineas';
 import { generarPdfProforma } from './_comun/datos';
 import type { EstadoForm } from './_comun/EditorLineas';
@@ -129,7 +129,7 @@ export async function enviarProforma(_p: EstadoForm, form: FormData): Promise<Es
     const correo = texto(form.get('correo'));
     if (!correo) return { mensaje: 'Ingrese el correo de destino' };
     const { pdf, numero, emisor, cliente, total } = await generarPdfProforma(id, s.emisorId);
-    const err = await enviarCorreo(correo, `${emisor} Proforma #${numero}`,
+    const err = await enviarCorreoEmisor(s.emisorId, correo, `${emisor} Proforma #${numero}`,
       `<p>Estimado(a) ${cliente}</p><p>Adjunto encontrará la proforma N.º ${numero} por un valor de $${Number(total).toFixed(2)}.</p><p>Atentamente,</p><p>${emisor}</p>`,
       [{ nombre: `Proforma-${numero}.pdf`, contenido: pdf, tipo: 'application/pdf' }]);
     return err ? { mensaje: err } : { ok: true, mensaje: 'Proforma enviada' };
