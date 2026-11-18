@@ -113,12 +113,18 @@ export async function cuentaDelEmisor(idEmisor: number): Promise<CuentaSmtp | nu
 /**
  * Envía un correo de una empresa (comprobantes, proformas, pedidos) desde SU servidor de correo.
  * El remitente que ve el cliente es el nombre comercial del emisor. Si la empresa no configuró
- * su correo, no se envía nada y se devuelve el motivo.
+ * su correo, se envía por la cuenta general del sistema (como la app anterior).
  */
 export async function enviarCorreoEmisor(idEmisor: number, destino: string, asunto: string, html: string, adjuntos: Adjunto[] = []): Promise<string | null> {
-  const c = await cuentaDelEmisor(idEmisor);
-  if (!c) return SIN_CORREO_EMISOR;
-  return enviarCon(c, destino, asunto, html, adjuntos);
+  let c: CuentaSmtp | null = null;
+  try {
+    c = await cuentaDelEmisor(idEmisor);
+  } catch {
+    c = null; // tabla o clave no disponibles: se usa la cuenta general
+  }
+  if (c) return enviarCon(c, destino, asunto, html, adjuntos);
+  // Sin correo propio: sale por la cuenta general del sistema, como en la app anterior.
+  return enviarCorreo(destino, asunto, html, adjuntos);
 }
 
 /** Correo del sistema (recuperar clave, avisos): primera cuenta de cuentas_correo, como la app anterior */

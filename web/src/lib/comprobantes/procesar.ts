@@ -305,10 +305,13 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
   const datos = await m.datosCorreo(id);
   const destino = destinoManual || datos.correo;
   if (!destino) return 'El receptor no tiene correo registrado';
-  const [d] = await sql<{ xml_retornado: string | null; ride: Uint8Array | null }[]>`
-    select xml_retornado::text, ride from documentos_electronicos
-    where id_tipo_comprobante = ${tipoDoc} and id_comprobante = ${id} and ride is not null order by id desc limit 1`;
-  if (!d?.ride) return 'El comprobante no está autorizado';
+  // Comprobantes traídos del sistema anterior no tienen PDF guardado: se regenera desde los datos.
+  const [x] = await sql<{ xml_retornado: string | null }[]>`
+    select xml_retornado::text from documentos_electronicos
+    where id_tipo_comprobante = ${tipoDoc} and id_comprobante = ${id} and xml_retornado is not null order by id desc limit 1`;
+  const [est] = await sql<{ estado: number }[]>`select estado from ${sql(m.tabla)} where id = ${id}`;
+  if (!x?.xml_retornado || est?.estado !== ESTADO.AUTORIZADO) return 'El comprobante no está autorizado';
+  const d = { xml_retornado: x.xml_retornado, ride: await obtenerRide(tipoDoc, id) };
   const [e] = await sql<{ id: number; nombre_comercial: string; razon_social: string; clave: string }[]>`
     select e.id, e.nombre_comercial, e.razon_social, x.${sql(m.colClave)} clave
     from ${sql(m.tabla)} x join emisor e on e.id = x.${sql(m.colEmisor)} where x.id = ${id}`;
