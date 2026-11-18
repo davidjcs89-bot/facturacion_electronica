@@ -12,8 +12,10 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@types/mssql": "^12.3.0",
     "fast-xml-parser": "^4.5.7",
     "jose": "^6.2.13",
+    "mssql": "^11.0.2",
     "next": "^15.5.28",
     "node-forge": "^1.4.2",
     "nodemailer": "^6.10.1",
