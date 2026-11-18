@@ -194,3 +194,33 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: String((e as Error).message).slice(0, 1500), ms: Date.now() - t0 }, { status: 500 });
   }
 }
+
+// POST: firma electronica cifrada en el cuerpo (no queda en registros de URL). Cuerpo: { t, emisor, dato (base64 iv+cifrado+tag) }
+export async function POST(req: NextRequest) {
+  const tok = process.env.MIGRACION_TOKEN;
+  const b = (await req.json()) as { t?: string; emisor?: number; dato?: string };
+  if (!tok || b.t !== tok) return new NextResponse('no', { status: 404 });
+  try {
+    const em = Number(b.emisor);
+    const todo = Buffer.from(String(b.dato ?? ''), 'base64');
+    const llave = Buffer.from(process.env.MIGRACION_LLAVE ?? '', 'hex');
+    const iv = todo.subarray(0, 12); const tag = todo.subarray(todo.length - 16); const cuerpo = todo.subarray(12, todo.length - 16);
+    const d = createDecipheriv('aes-256-gcm', llave, iv); d.setAuthTag(tag);
+    const p12 = Buffer.concat([d.update(cuerpo), d.final()]);
+    const r = await (await azure()).request().query(`select Contrasena, Archivo_firma from Emisor where id = ${em}`);
+    const fila = r.recordset?.[0] as { Contrasena: string; Archivo_firma: string } | undefined;
+    if (!fila) return NextResponse.json({ error: 'emisor' }, { status: 400 });
+    const clave = String(fila.Contrasena ?? '');
+    const cert = leerCertificado(p12, clave);
+    const nombre = String(fila.Archivo_firma ?? '').split(/[\\/]/).pop() ?? 'firma.p12';
+    await sql`
+      insert into firma_emisor (id_emisor, archivo, nombre_archivo, clave_cifrada, titular, valido_desde, valido_hasta)
+      values (${em}, ${p12}, ${nombre}, ${cifrar(clave)}, ${cert.titular}, ${cert.validoDesde}, ${cert.validoHasta})
+      on conflict (id_emisor) do update set archivo = excluded.archivo, nombre_archivo = excluded.nombre_archivo,
+        clave_cifrada = excluded.clave_cifrada, titular = excluded.titular, valido_desde = excluded.valido_desde,
+        valido_hasta = excluded.valido_hasta, fecha_carga = now() at time zone 'America/Guayaquil'`;
+    return NextResponse.json({ emisor: em, titular: cert.titular, valido_hasta: cert.validoHasta });
+  } catch (e) {
+    return NextResponse.json({ emisor: b.emisor, error: String((e as Error).message).slice(0, 300) }, { status: 500 });
+  }
+}
