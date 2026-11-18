@@ -66,6 +66,13 @@ export async function GET(req: NextRequest) {
       }
       return NextResponse.json({ leidas: filas.length, insertadas, ms: Date.now() - t0 });
     }
+    if (p.op === 'bloquear14') {
+      // Unica escritura en Azure, autorizada por el usuario: Divad Closet (emisor 14) deja de poder iniciar sesion
+      // en el sistema anterior. Antes: fecha_hasta = 2050-08-05. Para revertir, volver a poner esa fecha.
+      const r = await (await azure()).request().query(
+        "update Emisor_habilitacion set fecha_hasta = dateadd(day, -1, getdate()) where id_emisor = 14; select * from Emisor_habilitacion where id_emisor = 14");
+      return NextResponse.json({ filas: r.recordset, ms: Date.now() - t0 });
+    }
     if (p.op === 'diff') {
       // Compara filas de Azure con la tabla de la app por id: faltan / iguales / distintas (con columnas que difieren).
       if (!p.az || !soloLectura(p.az) || !p.tabla || !/^[a-z_]+$/.test(p.tabla)) return NextResponse.json({ error: 'parametros' }, { status: 400 });
