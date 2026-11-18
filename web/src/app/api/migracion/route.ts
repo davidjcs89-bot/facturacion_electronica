@@ -46,7 +46,7 @@ const soloLectura = (q: string) => /^\s*(select|with)\b/i.test(q) && !/\b(insert
 export async function GET(req: NextRequest) {
   const tok = process.env.MIGRACION_TOKEN;
   if (!tok || req.nextUrl.searchParams.get('t') !== tok) return new NextResponse('no', { status: 404 });
-  let p: { op: string; emisores?: number[]; tablas?: string[]; desde?: number; hasta?: number; az?: string; pg?: string; tabla?: string; conflicto?: string; limite?: number };
+  let p: { op: string; emisores?: number[]; tablas?: string[]; desde?: number; hasta?: number; paso?: number; az?: string; pg?: string; tabla?: string; conflicto?: string; limite?: number };
   try {
     p = JSON.parse(Buffer.from(req.nextUrl.searchParams.get('q') ?? '', 'base64url').toString('utf8'));
   } catch {
@@ -114,16 +114,21 @@ export async function GET(req: NextRequest) {
       const t = p.tabla ?? ''; const az = mapa.get(t);
       if (!az || !/^[a-z_]+$/.test(t)) return NextResponse.json({ error: 'tabla' }, { status: 400 });
       const cols = await columnasComunes(t, az, ['ride']);
-      const desde = p.desde ?? 0; const hasta = p.hasta ?? 2147483647;
-      const idsPg = new Set((await sql.unsafe(`select id from "${t}" where id between ${Number(desde)} and ${Number(hasta)}`) as { id: number }[]).map((x) => Number(x.id)));
-      const ra = await (await azure()).request().query(`select ${cols.map((c) => `[${c}]`).join(',')} from [${az}] where id between ${Number(desde)} and ${Number(hasta)} order by id`);
-      const filas = ((ra.recordset ?? []) as Record<string, unknown>[]).map(minus).filter((f) => !idsPg.has(Number(f.id)));
-      let insertadas = 0;
-      for (let i = 0; i < filas.length; i += 100) {
-        const res = await sql`insert into ${sql(t)} ${sql(filas.slice(i, i + 100) as never, cols as never)} on conflict (id) do nothing returning 1`;
-        insertadas += res.length;
+      const hasta = p.hasta ?? 2147483647; const paso = p.paso ?? 200;
+      let desde = p.desde ?? 0; let leidas = 0; let faltaban = 0; let insertadas = 0;
+      while (desde <= hasta && Date.now() - t0 < 40000) {
+        const fin = Math.min(desde + paso - 1, hasta);
+        const idsPg = new Set((await sql.unsafe(`select id from "${t}" where id between ${desde} and ${fin}`) as { id: number }[]).map((x) => Number(x.id)));
+        const ra = await (await azure()).request().query(`select ${cols.map((c) => `[${c}]`).join(',')} from [${az}] where id between ${desde} and ${fin} order by id`);
+        const filas = ((ra.recordset ?? []) as Record<string, unknown>[]).map(minus).filter((f) => !idsPg.has(Number(f.id)));
+        leidas += ra.recordset?.length ?? 0; faltaban += filas.length;
+        for (let i = 0; i < filas.length; i += 50) {
+          const res = await sql`insert into ${sql(t)} ${sql(filas.slice(i, i + 50) as never, cols as never)} on conflict (id) do nothing returning 1`;
+          insertadas += res.length;
+        }
+        desde = fin + 1;
       }
-      return NextResponse.json({ tabla: t, leidas: ra.recordset?.length ?? 0, faltaban: filas.length, insertadas, ms: Date.now() - t0 });
+      return NextResponse.json({ tabla: t, leidas, faltaban, insertadas, siguiente: desde > hasta ? null : desde, ms: Date.now() - t0 });
     }
     if (p.op === 'bloquear') {
       // Unica escritura en Azure, autorizada por el usuario: los emisores indicados dejan de poder iniciar sesion
