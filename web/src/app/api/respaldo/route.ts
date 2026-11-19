@@ -28,6 +28,18 @@ export async function GET(req: NextRequest) {
   if (!permitido()) return new NextResponse('no', { status: 404 });
   const p = req.nextUrl.searchParams;
   const lista = await tablas();
+  if (p.get('ambientes')) {
+    // Solo lectura: ambiente de cada empresa, firma, habilitacion y facturas recientes por ambiente
+    const r = await sql`
+      select e.id, e.razon_social, a.codigo_ambiente amb, (select count(*) from firma_emisor f where f.id_emisor = e.id) firma,
+        (select max(h.fecha_hasta) from emisor_habilitacion h where h.id_emisor = e.id) hasta,
+        (select count(*) from factura f where f.id_emisor = e.id and f.fecha_emision >= now() - interval '60 days' and substr(f.clave_de_acceso, 24, 1) = '2') prod60,
+        (select count(*) from factura f where f.id_emisor = e.id and f.fecha_emision >= now() - interval '60 days' and substr(f.clave_de_acceso, 24, 1) = '1') pru60,
+        (select max(f.fecha_emision) from factura f where f.id_emisor = e.id) ultima,
+        (select string_agg(pa.ambiente || ':' || pe.numero_establecimiento || '-' || pe.numero_emision, ' ') from punto_emision_app pa join puntos_emisior pe on pe.id = pa.id_punto where pe.id_emisor = e.id) puntos_app
+      from emisor e join tipo_ambientes a on a.id = e.tipo_ambiente order by e.id`;
+    return NextResponse.json(r);
+  }
   if (p.get('info')) {
     const [db] = await sql<{ s: string }[]>`select pg_size_pretty(pg_database_size(current_database())) s`;
     return NextResponse.json({ base: db.s, tablas: lista });
