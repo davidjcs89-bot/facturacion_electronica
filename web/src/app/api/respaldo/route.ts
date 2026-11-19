@@ -28,6 +28,17 @@ export async function GET(req: NextRequest) {
   if (!permitido()) return new NextResponse('no', { status: 404 });
   const p = req.nextUrl.searchParams;
   const lista = await tablas();
+  if (p.get('conteo')) {
+    const e = Number(p.get('conteo'));
+    const [r] = await sql`select
+      (select count(*) from producto where id_emisor = ${e}) productos,
+      (select count(*) from clientes where id_emisor = ${e}) clientes,
+      (select count(*) from factura where id_emisor = ${e} and fecha_emision >= now() - interval '30 days') facturas30,
+      (select round(avg(n), 1) from (select count(*) n from detalle_factura d join factura f on f.id = d.id_factura where f.id_emisor = ${e} and f.fecha_emision >= now() - interval '60 days' group by f.id) x) lineas_prom,
+      (select string_agg(descripcion, ' | ') from (select fp.descripcion_form_pago descripcion, count(*) c from detalle_pago_factura dp join factura f on f.id = dp.id_factura join formas_de_pago fp on fp.id = dp.id_form_pago where f.id_emisor = ${e} and f.fecha_emision >= now() - interval '60 days' group by 1 order by 2 desc limit 4) y) pagos,
+      (select count(*) from usuario where id_emisor = ${e}) usuarios`;
+    return NextResponse.json(r);
+  }
   if (p.get('ambientes')) {
     // Solo lectura: ambiente de cada empresa, firma, habilitacion y facturas recientes por ambiente
     const r = await sql`
