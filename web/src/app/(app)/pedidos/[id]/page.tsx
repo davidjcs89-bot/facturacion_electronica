@@ -11,6 +11,7 @@ import { PEDIDO, lineasDoc } from '../../proformas/_comun/lineas';
 import { EditorLineas, FormConvertir, FormCorreo } from '../../proformas/_comun/EditorLineas';
 import { FormPedido, Abonos } from '../Formularios';
 import { actualizarPedido, agregarLineaPedido, actualizarLineaPedido, eliminarLineaPedido, convertirPedido, enviarPedido, cambiarEstadoPedido, eliminarPedido } from '../actions';
+import { BotonImprimir } from '@/components/comprobante/Imprimir';
 
 export default async function VerPedido({ params }: { params: Promise<{ id: string }> }) {
   const s = await requerirEmisor();
@@ -31,6 +32,7 @@ export default async function VerPedido({ params }: { params: Promise<{ id: stri
   return (
     <>
       <Cabecera titulo={`Pedido N.º ${p.numero}`} sub={<>{p.nombre_cliente} · {fecha(p.fecha_creacion)} · <Estado id={p.estado} /></>}>
+        <BotonImprimir tipo="pedido" id={id} />
         <a className="btn" href={`/pedidos/${id}/pdf`} target="_blank" rel="noreferrer">Ver PDF</a>
         {pendiente && estadoBtn(ESTADO.FINALIZADO, 'Finalizar')}
         {p.estado === ESTADO.FINALIZADO && estadoBtn(ESTADO.PENDIENTE, 'Reabrir')}

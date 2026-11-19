@@ -199,7 +199,7 @@ export async function emitirNotaDebito(_p: Estado, form: FormData): Promise<Esta
     if (r.fecha_previa) return { mensaje: 'La fecha de la nota no puede ser anterior a la de la factura' };
     const res = await emitir(4, id, s.emisorId);
     revalidatePath('/notas-debito');
-    if (res.estado > 0) destino = `/notas-debito/${id}`;
+    if (res.estado > 0) destino = `/notas-debito/${id}${res.estado !== ESTADO.NO_AUTORIZADO ? '?imprimir=1' : ''}`;
     if (!destino) return { mensaje: res.mensaje };
   } catch (e) {
     return { mensaje: (e as Error).message };

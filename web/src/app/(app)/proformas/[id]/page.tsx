@@ -10,6 +10,7 @@ import { PROFORMA, lineasDoc } from '../_comun/lineas';
 import { EditorLineas, FormConvertir, FormCorreo } from '../_comun/EditorLineas';
 import { FormCabecera } from '../FormCabecera';
 import { actualizarProforma, agregarLineaProforma, actualizarLineaProforma, eliminarLineaProforma, eliminarProforma, convertirProforma, enviarProforma } from '../actions';
+import { BotonImprimir } from '@/components/comprobante/Imprimir';
 
 export default async function VerProforma({ params }: { params: Promise<{ id: string }> }) {
   const s = await requerirEmisor();
@@ -21,6 +22,7 @@ export default async function VerProforma({ params }: { params: Promise<{ id: st
   return (
     <>
       <Cabecera titulo={`Proforma N.º ${p.numero}`} sub={p.nombre_cliente}>
+        <BotonImprimir tipo="proforma" id={id} />
         <a className="btn" href={`/proformas/${id}/pdf`} target="_blank" rel="noreferrer">Ver PDF</a>
         <Link className="btn" href="/proformas">Volver</Link>
       </Cabecera>

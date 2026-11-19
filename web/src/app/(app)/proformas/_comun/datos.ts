@@ -2,6 +2,9 @@ import 'server-only';
 import { sql } from '@/lib/db';
 import { PROFORMA, PEDIDO, lineasDoc } from './lineas';
 import { pdfDocumento } from './pdf';
+import { datosEmisor, clienteXml, emisorRide } from '@/lib/comprobantes/comun';
+import { money, money3, fecha } from '@/lib/formato';
+import type { ModeloRide } from '@/lib/sri/ride';
 
 function totalesDe(d: Record<string, number>, colSub: string): [string, number][] {
   const filas: [string, number][] = [
@@ -41,4 +44,47 @@ export async function generarPdfPedido(id: number, emisorId: number) {
     titulo: 'PEDIDO', numero: String(p.numero), fecha: p.fecha_creacion, emisorId, idCliente: p.id_cliente, lineas, totales,
   });
   return { pdf, numero: String(p.numero), emisor: p.nombre_comercial as string, cliente: p.nombre_cliente as string, total: Number(p.total) };
+}
+
+/** Modelo (mismo formato del RIDE) para imprimir una proforma o un pedido en ticket */
+export async function modeloTicketDoc(tipo: 'proforma' | 'pedido', id: number, emisorId: number): Promise<ModeloRide> {
+  const c = tipo === 'proforma' ? PROFORMA : PEDIDO;
+  const [p] = await sql`select x.*, ${tipo === 'pedido' ? sql`(select coalesce(sum(valor), 0) from abonos_pedido where id_pedido = x.id)` : sql`0`} abonado
+    from ${sql(c.tabla)} x where x.id = ${id} and x.id_emisor = ${emisorId}`;
+  if (!p) throw new Error('Documento no encontrado');
+  const e = await datosEmisor(emisorId);
+  const cli = await clienteXml(p.id_cliente);
+  const lineas = await lineasDoc(c, id);
+  const totales = totalesDe(p, c.colSubtotal);
+  if (tipo === 'pedido') totales.push(['Abonado', Number(p.abonado)], ['Saldo', Number(p.total) - Number(p.abonado)]);
+  const obs = String(p.observaiones ?? '').trim();
+  return {
+    titulo: tipo === 'proforma' ? 'PROFORMA' : 'PEDIDO',
+    numero: String(p.numero),
+    claveAcceso: '',
+    ambiente: '',
+    emisor: emisorRide(e, null),
+    receptor: [
+      ['Cliente', cli.nombre_cliente],
+      ['Identificación', cli.identificacion],
+      ['Fecha', fecha(tipo === 'proforma' ? p.fecha_emision : p.fecha_creacion)],
+      ['Dirección', cli.direccion || ''],
+    ],
+    tablas: [
+      {
+        columnas: [
+          { titulo: 'Cod. Principal', ancho: 1 },
+          { titulo: 'Cant.', ancho: 1 },
+          { titulo: 'Descripción', ancho: 1 },
+          { titulo: 'Detalle Adicional', ancho: 1 },
+          { titulo: 'Precio Unitario', ancho: 1 },
+          { titulo: 'Descuento', ancho: 1 },
+          { titulo: 'Precio Total', ancho: 1 },
+        ],
+        filas: lineas.map((l) => [l.codigo, String(Number(l.cantidad)), l.nombre, l.adicional ?? '', money3(l.precio_unitario), money(l.descuento), money(l.sub_total)]),
+      },
+    ],
+    adicionales: tipo === 'proforma' && obs ? [['Observaciones', obs]] : [],
+    totales: totales.map(([k, v]) => [k.toUpperCase(), money(v)] as [string, string]),
+  };
 }

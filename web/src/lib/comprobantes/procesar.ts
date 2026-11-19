@@ -11,7 +11,7 @@ import { ESTADO } from '../constantes';
 import { money } from '../formato';
 
 /** Agrega al RIDE la configuracion de impresion del emisor (linea de firma y mensaje al pie) */
-async function conImpresion(tipoDoc: number, id: number, modelo: import('../sri/ride').ModeloRide) {
+export async function conImpresion(tipoDoc: number, id: number, modelo: import('../sri/ride').ModeloRide) {
   const m = manejador(tipoDoc);
   const [cfg] = await sql<{ firma: boolean; mensajes: string | null }[]>`
     select i.firma, i.mensajes from impresion_comprobantes i

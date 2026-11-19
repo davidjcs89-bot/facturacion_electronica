@@ -297,7 +297,7 @@ export async function emitirFactura(_p: Estado, form: FormData): Promise<Estado>
     }
     const r = await emitir(1, id, s.emisorId);
     revalidatePath('/facturas');
-    if (r.estado > 0) destino = `/facturas/${id}`;
+    if (r.estado > 0) destino = `/facturas/${id}${r.estado !== ESTADO.NO_AUTORIZADO ? '?imprimir=1' : ''}`;
     if (!destino) return { mensaje: r.mensaje };
   } catch (e) {
     return { mensaje: (e as Error).message };

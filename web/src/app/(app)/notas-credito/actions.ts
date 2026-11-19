@@ -184,7 +184,7 @@ export async function emitirNotaCredito(_p: Estado, form: FormData): Promise<Est
     }
     const res = await emitir(3, id, s.emisorId);
     revalidatePath('/notas-credito');
-    if (res.estado > 0) destino = `/notas-credito/${id}`;
+    if (res.estado > 0) destino = `/notas-credito/${id}${res.estado !== ESTADO.NO_AUTORIZADO ? '?imprimir=1' : ''}`;
     if (!destino) return { mensaje: res.mensaje };
   } catch (e) {
     return { mensaje: (e as Error).message };

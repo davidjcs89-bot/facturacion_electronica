@@ -224,7 +224,7 @@ export async function emitirGuia(_p: Estado, form: FormData): Promise<Estado> {
     if (r.sin_productos) return { mensaje: 'Cada destinatario debe tener al menos un producto' };
     const res = await emitir(5, id, s.emisorId);
     revalidatePath('/guias-remision');
-    if (res.estado > 0) destino = `/guias-remision/${id}`;
+    if (res.estado > 0) destino = `/guias-remision/${id}${res.estado !== ESTADO.NO_AUTORIZADO ? '?imprimir=1' : ''}`;
     if (!destino) return { mensaje: res.mensaje };
   } catch (e) {
     return { mensaje: (e as Error).message };

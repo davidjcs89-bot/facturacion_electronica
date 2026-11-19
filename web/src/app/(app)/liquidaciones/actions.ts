@@ -224,7 +224,7 @@ export async function emitirLiquidacion(_p: Estado, form: FormData): Promise<Est
     if (Math.abs(Number(f.suma_pagos) - Number(f.total)) > 0.009) return { mensaje: `La suma de los pagos ($${Number(f.suma_pagos).toFixed(2)}) no coincide con el total ($${Number(f.total).toFixed(2)})` };
     const r = await emitir(2, id, s.emisorId);
     revalidatePath('/liquidaciones');
-    if (r.estado > 0) destino = `/liquidaciones/${id}`;
+    if (r.estado > 0) destino = `/liquidaciones/${id}${r.estado !== ESTADO.NO_AUTORIZADO ? '?imprimir=1' : ''}`;
     if (!destino) return { mensaje: r.mensaje };
   } catch (e) {
     return { mensaje: (e as Error).message };

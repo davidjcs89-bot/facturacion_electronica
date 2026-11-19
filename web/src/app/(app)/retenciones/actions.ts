@@ -164,7 +164,7 @@ export async function emitirRetencion(_p: Estado, form: FormData): Promise<Estad
     if (!r.lineas) return { mensaje: 'Agregue al menos un impuesto retenido' };
     const res = await emitir(6, id, s.emisorId);
     revalidatePath('/retenciones');
-    if (res.estado > 0) destino = `/retenciones/${id}`;
+    if (res.estado > 0) destino = `/retenciones/${id}${res.estado !== ESTADO.NO_AUTORIZADO ? '?imprimir=1' : ''}`;
     if (!destino) return { mensaje: res.mensaje };
   } catch (e) {
     return { mensaje: (e as Error).message };

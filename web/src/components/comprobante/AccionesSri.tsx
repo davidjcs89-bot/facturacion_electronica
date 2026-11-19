@@ -2,6 +2,7 @@
 import { useActionState, useState } from 'react';
 import { accionEmitir, accionConsultar, accionReenviar, accionAnular, type EstadoAccion } from '@/app/(app)/comprobantes/actions';
 import { ESTADO } from '@/lib/constantes';
+import { BotonImprimir, PreguntarImprimir } from './Imprimir';
 
 type Props = {
   tipo: number; id: number; estado: number; tieneClave: boolean; correo?: string | null;
@@ -38,6 +39,7 @@ export function AccionesSri(p: Props) {
       <Mensaje e={eAnular} />
       {!p.emisionPermitida && !autorizado && p.puedeEmitir && <div className="alerta aviso">{p.motivoBloqueo}</div>}
       <div className="acciones">
+        {p.tieneClave && !anulado && <BotonImprimir tipo={p.tipo} id={p.id} />}
         <a className="btn" href={`${base}/ride.pdf`} target="_blank" rel="noreferrer">Ver RIDE (PDF)</a>
         {p.tieneXmlAutorizado && <a className="btn" href={`${base}/autorizado.xml`}>Descargar XML</a>}
         {!autorizado && !anulado && p.puedeEmitir && (
@@ -68,6 +70,7 @@ export function AccionesSri(p: Props) {
           </form>
         )}
       </div>
+      <PreguntarImprimir tipo={p.tipo} id={p.id} activar={!!eEmitir.ok && !anulado} />
       {verCorreo && (
         <form action={fCorreo} className="filtros" style={{ marginTop: 12 }}>
           {ocultos}
