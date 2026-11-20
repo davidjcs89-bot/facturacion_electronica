@@ -14,6 +14,14 @@ export async function GET(req: NextRequest) {
   const accion = req.nextUrl.searchParams.get('accion');
   const t0 = Date.now();
 
+  if (accion === 'claude') {
+    // comprueba la clave sin gastar: lista de modelos (no muestra la clave)
+    const k = process.env.ANTHROPIC_API_KEY ?? '';
+    if (!k) return NextResponse.json({ clave: 'no configurada' });
+    const r = await fetch('https://api.anthropic.com/v1/models?limit=5', { headers: { 'x-api-key': k, 'anthropic-version': '2023-06-01' } });
+    const j = (await r.json().catch(() => ({}))) as { data?: { id: string }[]; error?: { type: string; message: string } };
+    return NextResponse.json({ http: r.status, formato_ok: k.startsWith('sk-ant-'), largo: k.length, modelos: j.data?.map((m) => m.id), error: j.error });
+  }
   if (accion === 'correos') {
     const r = await sql`select id, servidor, puerto, split_part(direccion, '@', 2) dominio, left(direccion, 3) || '…' inicio from cuentas_correo order by id`;
     return NextResponse.json(r);
