@@ -270,10 +270,9 @@ export async function consultarAutorizacionYGuardar(tipoDoc: number, id: number,
   const ambiente = doc.clave.charAt(23) as Ambiente;
   const r = await consultarAutorizacion(ambiente, doc.clave);
   if (r.estado === 'AUTORIZADO') {
-    const ride = await generarRide(await conImpresion(tipoDoc, id, await m.modeloRide(id, { numeroAutorizacion: r.numeroAutorizacion, fechaAutorizacion: r.fechaAutorizacion })));
+    // El RIDE ya no se guarda (decidido el 20/11/2026): se genera al momento con los datos y la autorizacion
     await guardarDocumento(tipoDoc, id, {
       xml_retornado: r.xmlAutorizacion ?? null,
-      ride: Buffer.from(ride),
       valido: true,
       mensajes: null,
     });
@@ -382,12 +381,20 @@ export async function procesarCola(limite = 25) {
   return resultados;
 }
 
-/** RIDE en PDF: el guardado si esta autorizado; si no, uno generado al vuelo (sin autorizacion) */
+/**
+ * RIDE en PDF, generado al momento. Si el comprobante esta autorizado lleva el numero y la fecha de autorizacion.
+ * (Los RIDE guardados de antes se siguen usando mientras existan.)
+ */
 export async function obtenerRide(tipoDoc: number, id: number): Promise<Uint8Array> {
   const [d] = await sql<{ ride: Uint8Array | null }[]>`
     select ride from documentos_electronicos where id_tipo_comprobante = ${tipoDoc} and id_comprobante = ${id} and ride is not null
     order by id desc limit 1`;
   if (d?.ride) return d.ride;
   const m = manejador(tipoDoc);
-  return generarRide(await conImpresion(tipoDoc, id, await m.modeloRide(id, {})));
+  const [c] = await sql<{ estado: number; fecha_autorizacion: Date | null; clave: string | null }[]>`
+    select estado, fecha_autorizacion, ${sql(m.colClave)} clave from ${sql(m.tabla)} where id = ${id}`;
+  const aut = c && c.estado === ESTADO.AUTORIZADO && c.clave
+    ? { numeroAutorizacion: c.clave, fechaAutorizacion: c.fecha_autorizacion ? new Date(c.fecha_autorizacion).toISOString().slice(0, 19) : null }
+    : {};
+  return generarRide(await conImpresion(tipoDoc, id, await m.modeloRide(id, aut)));
 }
