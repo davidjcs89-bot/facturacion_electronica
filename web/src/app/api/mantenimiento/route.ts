@@ -23,6 +23,30 @@ export async function GET(req: NextRequest) {
     const [em] = await sql`select e.id, e.razon_social, e.nombre_comercial, t.codigo_ambiente amb from emisor e join tipo_ambientes t on t.id = e.tipo_ambiente where e.id = ${e}`;
     return NextResponse.json({ em, puntos: r });
   }
+  if (accion === 'crear_pruebas') {
+    // Victoria Jervis (52): su punto real 001-001 queda en PRODUCCION y se agrega 001-099 en PRUEBAS (aprobado por David)
+    const e = Number(req.nextUrl.searchParams.get('emisor'));
+    if (e !== 52) return NextResponse.json({ error: 'solo emisor 52' }, { status: 400 });
+    const out = await sql.begin(async (tx) => {
+      const [real] = await tx<{ id: number; id_bodega: number; direccion: string; estab: string }[]>`
+        select id, id_bodega, direccion, numero_establecimiento estab from puntos_emisior where id_emisor = ${e} and numero_emision = '001' order by id limit 1`;
+      if (!real) throw new Error('sin punto 001');
+      await tx`insert into punto_emision_app (id_punto, ambiente) values (${real.id}, '2') on conflict (id_punto) do update set ambiente = '2'`;
+      let [pr] = await tx<{ id: number }[]>`select id from puntos_emisior where id_emisor = ${e} and numero_establecimiento = ${real.estab} and numero_emision = '099'`;
+      if (!pr) {
+        [pr] = await tx<{ id: number }[]>`insert into puntos_emisior (id_emisor, numero_establecimiento, numero_emision, direccion, id_bodega)
+          values (${e}, ${real.estab}, '099', ${real.direccion}, ${real.id_bodega}) returning id`;
+      }
+      for (const t of [1, 2, 3, 4, 5, 6]) {
+        const r = await tx`select 1 from secuencias where id_punto_emision = ${pr.id} and id_documentos = ${t}`;
+        if (!r.length) await tx`insert into secuencias (id_punto_emision, id_documentos, secuencial) values (${pr.id}, ${t}, 1)`;
+      }
+      await tx`insert into punto_emision_app (id_punto, ambiente) values (${pr.id}, '1') on conflict (id_punto) do update set ambiente = '1'`;
+      await tx`update emisor set id_punto_defecto = ${real.id} where id = ${e}`;
+      return { real: real.id, pruebas: pr.id };
+    });
+    return NextResponse.json(out);
+  }
   if (accion === 'claude') {
     // comprueba la clave sin gastar: lista de modelos (no muestra la clave)
     const k = process.env.ANTHROPIC_API_KEY ?? '';
