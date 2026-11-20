@@ -164,6 +164,7 @@ en un borrador de factura usando SOLO los clientes, productos y formas de pago d
   si no dio la identificación, pregunta por ella.
 - Para cada producto dictado busca el más parecido (el vendedor habla rápido y el reconocimiento de voz se equivoca en letras).
   Si hay varios igual de probables (colores, tallas, variantes), producto_id = null y pon hasta 6 ids en "opciones".
+  Si solo un producto encaja con lo dicho, elígelo directamente (no preguntes por él). Un cliente nuevo con su identificación no necesita confirmación.
 - "dos blusas" = cantidad 2. Si dicta un precio ("a diez dólares") va en precio_con_iva. Un descuento ("10 por ciento") en descuento_pct.
 - Forma de pago: elige la más parecida ("tarjeta" de débito o crédito según lo dicho; "efectivo" = SIN UTILIZACION DEL SISTEMA FINANCIERO;
   "transferencia" = OTROS CON UTILIZACION DEL SISTEMA FINANCIERO). Si no la dijo, null.
@@ -223,6 +224,7 @@ Responde siempre con la herramienta "borrador".`;
         descuento_pct: Math.min(100, Math.max(0, Number(l.descuento_pct) || 0)),
         opciones: (l.opciones ?? []).map((id) => prod.get(id)).filter(Boolean).slice(0, 6) as OpcionProducto[],
       }))
+      .map((l) => (!l.producto_id && l.opciones.length === 1 ? { ...l, producto_id: l.opciones[0].id } : l))
       .map((l) => ({ ...l, opciones: l.producto_id ? [prod.get(l.producto_id)!, ...l.opciones.filter((o) => o.id !== l.producto_id)].slice(0, 6) : l.opciones })),
     forma_pago_id: s.forma_pago_id && formas.some((f) => f.id === s.forma_pago_id) ? s.forma_pago_id : null,
     pregunta: s.pregunta || null,
