@@ -5,7 +5,7 @@ import { sql } from '@/lib/db';
 import { entero, texto } from '@/lib/params';
 import { emailValido } from '@/lib/validaciones';
 import { cifrar } from '@/lib/cifrado';
-import { cuentaDelEmisor, enviarCorreoEmisor, servidorPermitido, verificarCuenta, registrarLog } from '@/lib/correo';
+import { cuentaDelEmisor, enviarCon, servidorPermitido, verificarCuenta, registrarLog } from '@/lib/correo';
 
 export type Estado = { ok?: boolean; mensaje?: string };
 
@@ -58,8 +58,11 @@ export async function probarCorreoEmisor(_p: Estado, form: FormData): Promise<Es
   const s = await requerirEmisor();
   const destino = texto(form.get('destino')).toLowerCase();
   if (!emailValido(destino)) return { mensaje: 'Correo de destino no válido' };
-  const err = await enviarCorreoEmisor(s.emisorId, destino, 'Correo de prueba - Facturación Electrónica',
-    '<p>Este es un correo de prueba. Si lo recibió, su empresa ya puede enviar comprobantes desde esta cuenta.</p>');
+  // con la cuenta de la empresa directamente (sin el respaldo del sistema), para saber si la suya funciona
+  const cuenta = await cuentaDelEmisor(s.emisorId);
+  if (!cuenta) return { mensaje: 'Primero guarde los datos de su correo' };
+  const err = await enviarCon(cuenta, destino, 'Correo de prueba - Facturación Electrónica',
+    '<p>Este es un correo de prueba. Si lo recibió, su empresa ya puede enviar comprobantes desde esta cuenta.</p>', []);
   if (err) return { mensaje: `No se pudo enviar: ${err}` };
   await sql`update emisor_correo set verificado_en = now() at time zone 'America/Guayaquil' where id_emisor = ${s.emisorId}`;
   revalidatePath('/configuracion/correo');

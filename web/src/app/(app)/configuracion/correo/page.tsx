@@ -16,8 +16,8 @@ export default async function ConfigCorreo() {
       <Cabecera titulo="Correo de envío" sub="Cuenta de su empresa desde la que se envían comprobantes, proformas y pedidos a sus clientes">
         {s.rol === ROL_ADMIN_SISTEMA && <Link className="btn" href="/admin/correos">Correo del sistema</Link>}
       </Cabecera>
-      {!c && <Alerta tipo="aviso">Su empresa aún no tiene correo propio: los comprobantes se envían a los clientes desde el correo general del sistema. Configure el suyo para que salgan con su nombre y dirección.</Alerta>}
-      {c && !c.verificado_en && <Alerta tipo="aviso">La conexión funciona, pero falta enviar un correo de prueba para confirmar que llega.</Alerta>}
+      {!c && <Alerta tipo="aviso">Su empresa aún no tiene correo propio: los comprobantes se envían a los clientes desde el correo general del sistema. Configure el suyo para que salgan desde su propia dirección. Si algún día su correo falla, el envío sale igual desde el correo del sistema para que el cliente no se quede sin su comprobante.</Alerta>}
+      {c && !c.verificado_en && <Alerta tipo="aviso">La conexión funciona, pero falta enviar un correo de prueba para confirmar que llega. Mientras tanto, los comprobantes se siguen enviando desde el correo general del sistema.</Alerta>}
       {c && (
         <div className="card">
           <dl className="datos">

@@ -15,6 +15,7 @@ export type CuentaSmtp = {
   usuario: string;
   clave: string;
   copia_a?: string | null; // copia oculta
+  responder_a?: string | null; // a donde llegan las respuestas del cliente
 };
 
 export const SIN_CORREO_EMISOR =
@@ -62,7 +63,7 @@ export function motivoError(e: unknown): string {
   return m.slice(0, 300);
 }
 
-async function enviarCon(c: CuentaSmtp, destino: string, asunto: string, html: string, adjuntos: Adjunto[]): Promise<string | null> {
+export async function enviarCon(c: CuentaSmtp, destino: string, asunto: string, html: string, adjuntos: Adjunto[]): Promise<string | null> {
   const destinos = destinosDe(destino);
   if (!destinos.length) return 'Sin destinatario';
   try {
@@ -70,6 +71,7 @@ async function enviarCon(c: CuentaSmtp, destino: string, asunto: string, html: s
       from: { name: c.nombre, address: c.direccion },
       to: destinos,
       ...(c.copia_a ? { bcc: c.copia_a } : {}),
+      ...(c.responder_a ? { replyTo: c.responder_a } : {}),
       subject: asunto,
       html,
       attachments: adjuntos.map((a) => ({
@@ -95,46 +97,63 @@ export async function verificarCuenta(c: CuentaSmtp): Promise<string | null> {
 }
 
 /** Cuenta de correo propia del emisor (con la clave descifrada), o null si no la configuró */
-export async function cuentaDelEmisor(idEmisor: number): Promise<CuentaSmtp | null> {
+export async function cuentaDelEmisor(idEmisor: number): Promise<(CuentaSmtp & { verificado: boolean }) | null> {
   const [c] = await sql<{
     direccion: string; servidor: string; puerto: number; seguridad: 'SSL' | 'STARTTLS';
-    usuario: string; clave_cifrada: string; copia_a: string | null; nombre_comercial: string;
+    usuario: string; clave_cifrada: string; copia_a: string | null; nombre_comercial: string; verificado_en: Date | null;
   }[]>`
-    select c.direccion, c.servidor, c.puerto, c.seguridad, c.usuario, c.clave_cifrada, c.copia_a, e.nombre_comercial
+    select c.direccion, c.servidor, c.puerto, c.seguridad, c.usuario, c.clave_cifrada, c.copia_a, e.nombre_comercial, c.verificado_en
     from emisor_correo c join emisor e on e.id = c.id_emisor
     where c.id_emisor = ${idEmisor}`;
   if (!c) return null;
   return {
     direccion: c.direccion, nombre: c.nombre_comercial, servidor: c.servidor, puerto: c.puerto,
     seguridad: c.seguridad, usuario: c.usuario, clave: descifrar(c.clave_cifrada), copia_a: c.copia_a,
+    verificado: !!c.verificado_en,
   };
 }
 
 /**
- * Envía un correo de una empresa (comprobantes, proformas, pedidos) desde SU servidor de correo.
- * El remitente que ve el cliente es el nombre comercial del emisor. Si la empresa no configuró
- * su correo, se envía por la cuenta general del sistema (como la app anterior).
+ * Envía un correo de una empresa (comprobantes, proformas, pedidos).
+ * Regla (decidida por David el 20/11/2026):
+ * - Si la empresa configuró su correo y lo verificó con el correo de prueba, sale SOLO desde el de la empresa.
+ * - Si no lo configuró, aún no lo verificó, o el envío por su correo falla, sale desde el correo general
+ *   del sistema (respaldo), mostrando el nombre comercial de la empresa y con «responder a» su correo.
  */
 export async function enviarCorreoEmisor(idEmisor: number, destino: string, asunto: string, html: string, adjuntos: Adjunto[] = []): Promise<string | null> {
-  let c: CuentaSmtp | null = null;
+  let c: (CuentaSmtp & { verificado: boolean }) | null = null;
   try {
     c = await cuentaDelEmisor(idEmisor);
   } catch {
     c = null; // tabla o clave no disponibles: se usa la cuenta general
   }
-  if (c) return enviarCon(c, destino, asunto, html, adjuntos);
-  // Sin correo propio: sale por la cuenta general del sistema, como en la app anterior.
-  return enviarCorreo(destino, asunto, html, adjuntos);
+  if (c?.verificado) {
+    const error = await enviarCon(c, destino, asunto, html, adjuntos);
+    if (!error) return null;
+    await registrarLog(`Correo de la empresa ${idEmisor} falló (${error}); se envió por el correo del sistema a ${destino}`);
+  }
+  let nombre: string | null = c?.nombre ?? null;
+  if (!nombre) {
+    try {
+      const [e] = await sql<{ n: string }[]>`select coalesce(nullif(nombre_comercial, ''), razon_social) n from emisor where id = ${idEmisor}`;
+      nombre = e?.n ?? null;
+    } catch { nombre = null; }
+  }
+  return enviarCorreo(destino, asunto, html, adjuntos, { nombre, responder_a: c?.direccion ?? null, copia_a: c?.copia_a ?? null });
 }
 
 /** Correo del sistema (recuperar clave, avisos): primera cuenta de cuentas_correo, como la app anterior */
-export async function enviarCorreo(destino: string, asunto: string, html: string, adjuntos: Adjunto[] = []): Promise<string | null> {
+export async function enviarCorreo(
+  destino: string, asunto: string, html: string, adjuntos: Adjunto[] = [],
+  como?: { nombre?: string | null; responder_a?: string | null; copia_a?: string | null },
+): Promise<string | null> {
   const [cuenta] = await sql<{ direccion: string; nombre_mostrar: string; servidor: string; puerto: number; ssl: boolean; clave: string }[]>`
     select direccion, nombre_mostrar, servidor, puerto, ssl, clave from cuentas_correo order by id limit 1`;
   if (!cuenta) return 'No hay cuenta de correo del sistema configurada';
   return enviarCon({
-    direccion: cuenta.direccion, nombre: cuenta.nombre_mostrar, servidor: cuenta.servidor, puerto: cuenta.puerto,
+    direccion: cuenta.direccion, nombre: como?.nombre || cuenta.nombre_mostrar, servidor: cuenta.servidor, puerto: cuenta.puerto,
     seguridad: cuenta.puerto === 465 ? 'SSL' : cuenta.ssl ? 'STARTTLS' : 'OPCIONAL', usuario: cuenta.direccion, clave: cuenta.clave,
+    responder_a: como?.responder_a ?? null, copia_a: como?.copia_a ?? null,
   }, destino, asunto, html, adjuntos);
 }
 
