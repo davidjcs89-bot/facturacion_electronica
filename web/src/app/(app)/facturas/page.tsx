@@ -3,6 +3,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { leerParams, paginaDe, type SP } from '@/lib/params';
 import { Cabecera, Estado, Paginacion, Vacio } from '@/components/ui';
+import { vozHabilitada } from '@/lib/voz/habilitada';
 import { money, fecha } from '@/lib/formato';
 import { NOMBRE_ESTADO } from '@/lib/constantes';
 
@@ -31,6 +32,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
   return (
     <>
       <Cabecera titulo="Facturas" sub={`Total autorizado en la selección: $${money(tot.total)}`}>
+        {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn">Factura por voz</Link>}
         <Link href="/facturas/nueva" className="btn primario">+ Nueva factura</Link>
       </Cabecera>
       <form className="filtros">
