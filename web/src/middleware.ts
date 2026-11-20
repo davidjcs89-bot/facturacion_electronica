@@ -1,8 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-// '/api/respaldo' es TEMPORAL: solo responde en vista previa (protegida por Vercel) con RESPALDO_HABILITADO
-const PUBLICAS = ['/login', '/recuperar', '/api/salud', '/api/respaldo'];
+const PUBLICAS = ['/login', '/recuperar', '/api/salud'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
