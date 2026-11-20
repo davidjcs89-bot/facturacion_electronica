@@ -14,6 +14,12 @@ export async function GET(req: NextRequest) {
   const accion = req.nextUrl.searchParams.get('accion');
   const t0 = Date.now();
 
+  if (accion === 'columnas') {
+    const r = await sql`select table_schema, column_name, data_type from information_schema.columns
+      where table_name = 'documentos_electronicos' order by table_schema, ordinal_position`;
+    const [u] = await sql`select current_database() db, current_user u, current_setting('search_path') sp`;
+    return NextResponse.json({ u, r });
+  }
   if (accion === 'estado') {
     const [r] = await sql`select
       count(*) filter (where xml_generado is not null and (xml_retornado is not null or xml_retornado_gz is not null))::int generado_por_vaciar,
