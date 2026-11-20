@@ -27,7 +27,8 @@ export async function GET(req: NextRequest) {
       count(*) filter (where xml_retornado is not null and fecha_modificacion < (now() at time zone 'America/Guayaquil') - interval '2 years')::int por_comprimir,
       count(*) filter (where xml_retornado_gz is not null)::int comprimidos,
       pg_size_pretty(pg_total_relation_size('documentos_electronicos')) tabla,
-      pg_size_pretty(pg_database_size(current_database())) base`;
+      pg_size_pretty(pg_database_size(current_database())) base
+      from documentos_electronicos`;
     return NextResponse.json(r);
   }
 
