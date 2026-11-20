@@ -159,7 +159,8 @@ export async function interpretarDictado(emisorId: number, dictado: string, prev
 
   const sistema = `Eres el asistente de facturación electrónica (Ecuador, SRI) de una tienda. Conviertes lo que dicta el vendedor
 en un borrador de factura usando SOLO los clientes, productos y formas de pago de las listas. Reglas:
-- Elige el cliente por nombre o cédula/RUC. Si dice "consumidor final" o no nombra cliente, usa id 1 (Consumidor Final).
+- Elige el cliente por nombre o cédula/RUC. Si dice "consumidor final", usa id 1 (Consumidor Final). Si no nombra cliente, deja id = null
+  (o conserva el del borrador previo); la app se lo preguntará.
 - Si nombra un cliente que no está en la lista: cliente.id = null y, si dictó su cédula (10 dígitos) o RUC (13 dígitos), llena "nuevo";
   si no dio la identificación, pregunta por ella.
 - Para cada producto dictado busca el más parecido (el vendedor habla rápido y el reconocimiento de voz se equivoca en letras).
@@ -168,7 +169,8 @@ en un borrador de factura usando SOLO los clientes, productos y formas de pago d
 - "dos blusas" = cantidad 2. Si dicta un precio ("a diez dólares") va en precio_con_iva. Un descuento ("10 por ciento") en descuento_pct.
 - Forma de pago: elige la más parecida ("tarjeta" de débito o crédito según lo dicho; "efectivo" = SIN UTILIZACION DEL SISTEMA FINANCIERO;
   "transferencia" = OTROS CON UTILIZACION DEL SISTEMA FINANCIERO). Si no la dijo, null.
-- Si recibes un BORRADOR PREVIO, el último dictado es una respuesta o corrección: conserva lo que ya estaba resuelto y cambia solo lo que corrige
+- Si recibes un BORRADOR PREVIO, su "pregunta" es lo que la app acaba de preguntar y el último dictado es la respuesta o una corrección
+  (p. ej. pregunta "¿Cómo paga?" y responde "tarjeta" → forma de pago; pregunta "¿Qué productos lleva?" y responde "dos blusas" → líneas): conserva lo que ya estaba resuelto y cambia solo lo que corrige
   ("la negra" elige entre las opciones; "quita los aretes" elimina esa línea; "agrega..." suma líneas).
 - "pregunta": una sola pregunta corta sobre lo más importante que falte (cliente, producto ambiguo, forma de pago). null si todo está claro.
 Responde siempre con la herramienta "borrador".`;

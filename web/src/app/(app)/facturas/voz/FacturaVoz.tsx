@@ -5,7 +5,46 @@ import { interpretar, recalcular, crearDesdeVoz, type Resumen } from './actions'
 import type { BorradorVoz, OpcionProducto } from '@/lib/voz/interpretar';
 
 type Op = { id: number; texto: string };
-type Paso = 'inicio' | 'escuchando' | 'pensando' | 'borrador';
+type Paso = 'inicio' | 'guiado' | 'escuchando' | 'pensando' | 'borrador';
+type Pregunta = { tipo: 'cliente' | 'producto' | 'pago' | 'mas'; texto: string; linea?: number };
+type EstadoMic = 'desconocido' | 'pedir' | 'ok' | 'denegado';
+
+const VACIO: BorradorVoz = { cliente: { dicho: '', id: null, nuevo: null, opciones: [] }, lineas: [], forma_pago_id: null, pregunta: null, dictados: [] };
+const NEGATIVO = /^(no|nada|listo|ya|ninguno|ninguna|eso es todo|es todo|terminar|revisar|así está bien|asi esta bien)\b/i;
+
+/** Siguiente cosa que falta preguntar; null = todo listo para revisar */
+function siguiente(b: BorradorVoz | null): Pregunta {
+  if (!b) return { tipo: 'cliente', texto: '¿Para quién es la factura? Diga el nombre, la cédula o «consumidor final». También puede dictar todo el pedido de una vez.' };
+  const cliente = b.cliente.id != null || !!b.cliente.nuevo;
+  if (!cliente) {
+    if (b.cliente.opciones.length) return { tipo: 'cliente', texto: 'Encontré varios clientes parecidos. ¿Cuál es?' };
+    if (b.cliente.dicho) return { tipo: 'cliente', texto: `No encontré a «${b.cliente.dicho}». Si es un cliente nuevo, dígame su cédula o RUC.` };
+    return { tipo: 'cliente', texto: '¿Para quién es la factura? Diga el nombre, la cédula o «consumidor final».' };
+  }
+  if (!b.lineas.length) return { tipo: 'producto', texto: '¿Qué productos lleva? Diga la cantidad y el producto, por ejemplo «dos blusas».' };
+  const i = b.lineas.findIndex((l) => !l.producto_id);
+  if (i >= 0) {
+    const l = b.lineas[i];
+    return l.opciones.length
+      ? { tipo: 'producto', linea: i, texto: `¿Cuál «${l.dicho}»? Toque una opción o dígala.` }
+      : { tipo: 'producto', linea: i, texto: `No encontré «${l.dicho}» en sus productos. Diga otro nombre o «quitar».` };
+  }
+  if (!b.forma_pago_id) return { tipo: 'pago', texto: '¿Cómo paga? Efectivo, tarjeta o transferencia.' };
+  return { tipo: 'mas', texto: '¿Algo más? Diga otro producto, o «no» para revisar la factura.' };
+}
+
+/** Nombre corto de las formas de pago del SRI para los botones */
+function pagoCorto(t: string): string | null {
+  const x = t.toUpperCase();
+  if (x.includes('SIN UTILIZACION')) return 'Efectivo';
+  if (x.includes('DEBITO')) return 'Tarjeta de débito';
+  if (x.includes('CREDITO')) return 'Tarjeta de crédito';
+  if (x.includes('OTROS CON UTILIZACION')) return 'Transferencia';
+  return null;
+}
+
+const esIOS = () => typeof navigator !== 'undefined' && /iPhone|iPad|iPod/.test(navigator.userAgent);
+
 
 // Reconocimiento de voz del navegador (Chrome/Android, Safari): gratis, sin enviar audio a nuestro servidor
 type Reconocedor = {
@@ -14,13 +53,13 @@ type Reconocedor = {
   onresult: ((e: { resultIndex: number; results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }> }) => void) | null;
   onend: (() => void) | null; onerror: ((e: { error: string }) => void) | null;
 };
-function crearReconocedor(): Reconocedor | null {
+function crearReconocedor(continuo = true): Reconocedor | null {
   const w = window as unknown as { SpeechRecognition?: new () => Reconocedor; webkitSpeechRecognition?: new () => Reconocedor };
   const C = w.SpeechRecognition ?? w.webkitSpeechRecognition;
   if (!C) return null;
   const r = new C();
   r.lang = 'es-EC';
-  r.continuous = true;
+  r.continuous = continuo;
   r.interimResults = true;
   return r;
 }
@@ -33,6 +72,28 @@ function Mic({ grande = false }: { grande?: boolean }) {
     <svg width={t} height={t} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
       <rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 10a7 7 0 0 0 14 0" /><line x1="12" y1="17" x2="12" y2="22" />
     </svg>
+  );
+}
+
+function AyudaMic({ reintentar }: { reintentar: () => void }) {
+  const ios = esIOS();
+  return (
+    <div role="alert" style={{ background: 'var(--danger-soft)', border: '1px solid #f3c4bd', borderRadius: 12, padding: '12px 14px', fontSize: 14, display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <strong>El micrófono está bloqueado para esta página.</strong>
+      {ios ? (
+        <ol style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <li>En Safari toque el ícono <strong>«aA»</strong> o el de la izquierda de la dirección.</li>
+          <li>Toque <strong>Configuración del sitio web › Micrófono › Permitir</strong>.</li>
+          <li>Si no aparece: <strong>Ajustes del iPhone › Apps › Safari › Micrófono › Permitir</strong>, y en <strong>Ajustes › General › Teclado</strong> active <strong>«Activar dictado»</strong>.</li>
+        </ol>
+      ) : (
+        <ol style={{ margin: 0, paddingLeft: 18, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <li>Toque el <strong>candado</strong> (o el ícono de ajustes) junto a la dirección.</li>
+          <li>Entre en <strong>Permisos › Micrófono › Permitir</strong>.</li>
+        </ol>
+      )}
+      <button type="button" className="btn" onClick={reintentar} style={{ alignSelf: 'flex-start' }}>Ya lo activé, intentar de nuevo</button>
+    </div>
   );
 }
 
@@ -52,6 +113,193 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   const [pend, startTransition] = useTransition();
   const rec = useRef<Reconocedor | null>(null);
   const finalRef = useRef('');
+
+  // ---- modo guiado (la app pregunta cada parte) ----
+  const [preg, setPreg] = useState<Pregunta | null>(null);
+  const [oyendo, setOyendo] = useState(false);
+  const [pensando, setPensando] = useState(false);
+  const [tocar, setTocar] = useState(false); // el navegador no dejó escuchar solo: tocar el micrófono
+  const [conVoz, setConVoz] = useState(true);
+  const [mic, setMic] = useState<EstadoMic>('desconocido');
+  const [chat, setChat] = useState<{ de: 'app' | 'yo'; texto: string }[]>([]);
+  const [respuesta, setRespuesta] = useState('');
+  const pregRef = useRef<Pregunta | null>(null);
+  const borradorRef = useRef<BorradorVoz | null>(null);
+  const ignorar = useRef(false);
+  const porToque = useRef(false);
+  const conVozRef = useRef(true);
+  const vivo = useRef(true);
+
+  useEffect(() => { borradorRef.current = borrador; }, [borrador]);
+  useEffect(() => {
+    vivo.current = true;
+    try { const g = localStorage.getItem('voz.punto'); if (g && puntos.some((p) => p.id === Number(g))) setPunto(Number(g)); } catch { /* sin almacenamiento */ }
+    try { if (localStorage.getItem('voz.sonido') === 'no') { setConVoz(false); conVozRef.current = false; } } catch { /* */ }
+    const perm = (navigator as Navigator & { permissions?: { query(d: { name: string }): Promise<{ state: string }> } }).permissions;
+    perm?.query({ name: 'microphone' })
+      .then((r) => setMic(r.state === 'granted' ? 'ok' : r.state === 'denied' ? 'denegado' : 'pedir'))
+      .catch(() => setMic('pedir'));
+    return () => { vivo.current = false; try { window.speechSynthesis?.cancel(); } catch { /* */ } };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function elegirPunto(id: number) {
+    setPunto(id);
+    try { localStorage.setItem('voz.punto', String(id)); } catch { /* */ }
+  }
+  function alternarVoz() {
+    const v = !conVoz;
+    setConVoz(v);
+    conVozRef.current = v;
+    try { localStorage.setItem('voz.sonido', v ? 'si' : 'no'); } catch { /* */ }
+    if (!v) try { window.speechSynthesis?.cancel(); } catch { /* */ }
+  }
+
+  /** Pide el permiso del micrófono con el aviso del propio navegador */
+  async function pedirMicrofono(): Promise<boolean> {
+    if (!navigator.mediaDevices?.getUserMedia) { setMic('ok'); return true; }
+    try {
+      const st = await navigator.mediaDevices.getUserMedia({ audio: true });
+      st.getTracks().forEach((x) => x.stop());
+      setMic('ok');
+      return true;
+    } catch {
+      setMic('denegado');
+      return false;
+    }
+  }
+
+  function hablar(texto: string, luego: () => void) {
+    const ss = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
+    if (!conVozRef.current || !ss) { luego(); return; }
+    let hecho = false;
+    const fin = () => { if (hecho) return; hecho = true; setTimeout(() => { if (vivo.current) luego(); }, 300); };
+    try {
+      ss.cancel();
+      const u = new SpeechSynthesisUtterance(texto);
+      u.lang = 'es-ES';
+      const v = ss.getVoices().find((x) => x.lang.startsWith('es-') && /MX|US|419|EC|CO/.test(x.lang)) ?? ss.getVoices().find((x) => x.lang.startsWith('es'));
+      if (v) u.voice = v;
+      u.rate = 1.05;
+      u.onend = fin; u.onerror = fin;
+      ss.speak(u);
+      setTimeout(fin, Math.max(3000, texto.length * 90)); // por si el navegador no avisa que terminó
+    } catch { fin(); }
+  }
+
+  function escucharRespuesta() {
+    const r = crearReconocedor(false);
+    if (!r) { setSinVoz(true); setTocar(false); return; }
+    rec.current?.abort();
+    rec.current = r;
+    ignorar.current = false;
+    finalRef.current = '';
+    setParcial('');
+    r.onresult = (e) => {
+      let fin = '', int = '';
+      for (let i = 0; i < e.results.length; i++) {
+        const x = e.results[i];
+        if (x.isFinal) fin += x[0].transcript + ' '; else int += x[0].transcript;
+      }
+      finalRef.current = fin;
+      setParcial((fin + int).trim());
+    };
+    r.onerror = (e) => {
+      if (e.error === 'not-allowed') { if (porToque.current) setMic('denegado'); setTocar(true); }
+      else if (e.error === 'service-not-allowed') { setError(esIOS() ? 'El iPhone no deja reconocer voz: active Ajustes › General › Teclado › «Activar dictado».' : 'El reconocimiento de voz está desactivado en este navegador.'); setTocar(true); }
+      else if (e.error !== 'aborted' && e.error !== 'no-speech') { setError(`El micrófono falló (${e.error}). Puede escribir la respuesta.`); setTocar(true); }
+    };
+    r.onend = () => {
+      if (rec.current === r) rec.current = null;
+      setOyendo(false);
+      if (ignorar.current) return;
+      const d = (finalRef.current || '').trim();
+      if (d) responder(d); else setTocar(true);
+    };
+    try { r.start(); setOyendo(true); setTocar(false); } catch { setOyendo(false); setTocar(true); }
+  }
+
+  function preguntar(b: BorradorVoz | null) {
+    const q = siguiente(b);
+    pregRef.current = q;
+    setPreg(q);
+    setParcial('');
+    setChat((c) => [...c, { de: 'app', texto: q.texto }]);
+    porToque.current = false;
+    hablar(q.texto, escucharRespuesta);
+  }
+
+  function irAlBorrador(b: BorradorVoz) {
+    ignorar.current = true;
+    rec.current?.abort();
+    try { window.speechSynthesis?.cancel(); } catch { /* */ }
+    setOyendo(false);
+    setBorrador(b);
+    startTransition(async () => {
+      const r = await recalcular(b);
+      if (r.ok) setResumen(r.resumen); else setError(r.mensaje);
+      setPaso('borrador');
+    });
+  }
+
+  function responder(d: string) {
+    const q = pregRef.current;
+    const b = borradorRef.current;
+    setChat((c) => [...c, { de: 'yo', texto: d }]);
+    setRespuesta('');
+    if (q?.tipo === 'mas' && b && NEGATIVO.test(d.trim())) { irAlBorrador(b); return; }
+    setPensando(true);
+    setError(null);
+    startTransition(async () => {
+      const r = await interpretar(d, { ...(b ?? VACIO), pregunta: q?.texto ?? null });
+      setPensando(false);
+      if (!vivo.current) return;
+      if (r.ok) { setBorrador(r.borrador); borradorRef.current = r.borrador; setResumen(r.resumen); preguntar(r.borrador); }
+      else { setError(r.mensaje); setTocar(true); }
+    });
+  }
+
+  /** Respuesta tocando un botón (cliente, producto o forma de pago) */
+  function elegirGuiado(b: BorradorVoz, texto: string) {
+    ignorar.current = true;
+    rec.current?.abort();
+    try { window.speechSynthesis?.cancel(); } catch { /* */ }
+    setOyendo(false);
+    setChat((c) => [...c, { de: 'yo', texto }]);
+    setBorrador(b);
+    borradorRef.current = b;
+    startTransition(async () => {
+      const r = await recalcular(b);
+      if (r.ok) setResumen(r.resumen);
+    });
+    preguntar(b);
+  }
+
+  function tocarMic() {
+    if (oyendo) { const r = rec.current; if (r) r.stop(); return; }
+    try { window.speechSynthesis?.cancel(); } catch { /* */ }
+    porToque.current = true;
+    escucharRespuesta();
+  }
+
+  async function empezar() {
+    // desbloquea la voz del teléfono dentro del toque (iPhone lo exige)
+    try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis?.speak(u); } catch { /* */ }
+    if (!crearReconocedor()) { setSinVoz(true); setEscribiendo(true); return; }
+    if (mic !== 'ok' && !(await pedirMicrofono())) return;
+    setError(null);
+    setChat([]);
+    setPaso('guiado');
+    preguntar(borrador);
+  }
+
+  function salirGuiado() {
+    ignorar.current = true;
+    rec.current?.abort();
+    try { window.speechSynthesis?.cancel(); } catch { /* */ }
+    setOyendo(false);
+    if (borrador) irAlBorrador(borrador); else setPaso('inicio');
+  }
 
   useEffect(() => {
     setSinVoz(!crearReconocedor());
@@ -154,6 +402,113 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
     return borrador.cliente.opciones.find((o) => o.id === borrador.cliente.id)?.nombre ?? '';
   })();
 
+  // ---------- Guiado: la app pregunta cada parte ----------
+  if (paso === 'guiado') {
+    const b = borrador;
+    const listoCli = !!b && (b.cliente.id != null || !!b.cliente.nuevo);
+    const listoProd = !!b && b.lineas.length > 0 && b.lineas.every((l) => l.producto_id);
+    const listoPago = !!b?.forma_pago_id;
+    const linea = preg?.linea != null && b ? b.lineas[preg.linea] : null;
+    const pill = (ok: boolean, txt: string, actual: boolean) => (
+      <span style={{ flex: 1, textAlign: 'center', fontSize: 12, fontWeight: 600, padding: '6px 4px', borderRadius: 999,
+        background: ok ? 'var(--ok-soft, #e3f4ea)' : actual ? 'var(--primary-soft)' : 'var(--surface)',
+        color: ok ? 'var(--ok)' : actual ? 'var(--primary)' : 'var(--muted)', border: '1px solid var(--border)' }}>{ok ? '✓ ' : ''}{txt}</span>
+    );
+    return (
+      <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12, paddingBottom: 110 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+          <button type="button" className="btn" onClick={salirGuiado}>{b ? 'Ver factura' : 'Salir'}</button>
+          <strong style={{ fontSize: 16 }}>Factura por voz{esPruebas ? ' · PRUEBAS' : ''}</strong>
+          <button type="button" className="btn" onClick={alternarVoz} aria-label={conVoz ? 'Silenciar las preguntas' : 'Leer las preguntas en voz alta'} style={{ width: 44, padding: 0 }}>{conVoz ? '🔊' : '🔇'}</button>
+        </div>
+        <div style={{ display: 'flex', gap: 6 }}>
+          {pill(listoCli, 'Cliente', preg?.tipo === 'cliente')}
+          {pill(listoProd, 'Productos', preg?.tipo === 'producto')}
+          {pill(listoPago, 'Pago', preg?.tipo === 'pago')}
+        </div>
+
+        {chat.length > 1 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 180, overflowY: 'auto' }}>
+            {chat.slice(0, -1).slice(-6).map((m, i) => (
+              <span key={i} style={{ alignSelf: m.de === 'yo' ? 'flex-end' : 'flex-start', maxWidth: '85%', fontSize: 13, padding: '6px 10px', borderRadius: 10,
+                background: m.de === 'yo' ? 'var(--primary)' : 'var(--surface)', color: m.de === 'yo' ? '#fff' : 'var(--muted)', border: m.de === 'yo' ? 0 : '1px solid var(--border)' }}>{m.texto}</span>
+            ))}
+          </div>
+        )}
+
+        {mic === 'denegado' && <AyudaMic reintentar={async () => { if (await pedirMicrofono()) { porToque.current = true; escucharRespuesta(); } }} />}
+        {error && <div role="alert" style={{ ...caja, background: 'var(--danger-soft)', borderColor: '#f3c4bd', fontSize: 14 }}>{error}</div>}
+
+        <div style={{ ...caja, background: 'var(--primary-soft)', borderColor: '#c8d9f5' }}>
+          <p style={{ margin: 0, fontSize: 19, lineHeight: 1.4, fontWeight: 600 }}>{pensando ? 'Un momento…' : preg?.texto}</p>
+        </div>
+
+        {/* opciones para tocar */}
+        {!pensando && preg?.tipo === 'cliente' && b && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {b.cliente.opciones.map((o) => (
+              <button key={o.id} type="button" className="btn" style={{ textAlign: 'left', minHeight: 44 }}
+                onClick={() => elegirGuiado({ ...b, cliente: { ...b.cliente, id: o.id, nuevo: null } }, o.nombre)}>
+                {o.nombre} <span style={{ color: 'var(--muted)', fontSize: 12 }}>{o.identificacion}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {!pensando && preg?.tipo === 'cliente' && (
+          <button type="button" className="btn" style={{ minHeight: 44 }}
+            onClick={() => elegirGuiado({ ...(b ?? VACIO), cliente: { dicho: 'consumidor final', id: 1, nuevo: null, opciones: [] } }, 'Consumidor final')}>Consumidor final (hasta $50)</button>
+        )}
+        {!pensando && preg?.tipo === 'producto' && b && linea && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {linea.opciones.map((o) => (
+              <button key={o.id} type="button" className="btn" style={{ display: 'flex', justifyContent: 'space-between', minHeight: 44, textAlign: 'left' }}
+                onClick={() => elegirGuiado({ ...b, lineas: b.lineas.map((l, j) => (j === preg.linea ? { ...l, producto_id: o.id } : l)) }, o.nombre)}>
+                <span>{o.nombre} <span style={{ color: 'var(--muted)', fontSize: 12 }}>{o.codigo}{o.stock != null ? ` · stock ${o.stock}` : ''}</span></span>
+                <strong>{dinero(o.pvp)}</strong>
+              </button>
+            ))}
+            <button type="button" className="btn" onClick={() => elegirGuiado({ ...b, lineas: b.lineas.filter((_, j) => j !== preg.linea) }, `Quitar «${linea.dicho}»`)}>Quitar «{linea.dicho}»</button>
+          </div>
+        )}
+        {!pensando && preg?.tipo === 'pago' && b && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+            {formas.filter((f) => pagoCorto(f.texto)).map((f) => (
+              <button key={f.id} type="button" className="btn" style={{ minHeight: 48 }} onClick={() => elegirGuiado({ ...b, forma_pago_id: f.id }, pagoCorto(f.texto)!)}>{pagoCorto(f.texto)}</button>
+            ))}
+          </div>
+        )}
+        {!pensando && preg?.tipo === 'mas' && b && (
+          <button type="button" className="btn primario" style={{ minHeight: 48 }} onClick={() => { setChat((c) => [...c, { de: 'yo', texto: 'No, revisar' }]); irAlBorrador(b); }}>No, revisar la factura</button>
+        )}
+
+        {(oyendo || parcial) && (
+          <div style={{ ...caja }}>
+            <span style={etiqueta}>{oyendo ? 'Escuchando…' : 'Lo que entendí'}</span>
+            <p style={{ margin: '6px 0 0', fontSize: 17 }}>{parcial || 'Hable ahora…'}</p>
+          </div>
+        )}
+
+        {escribiendo && (
+          <form onSubmit={(e) => { e.preventDefault(); if (respuesta.trim()) { ignorar.current = true; rec.current?.abort(); responder(respuesta.trim()); } }} style={{ display: 'flex', gap: 8 }}>
+            <input aria-label="Respuesta escrita" value={respuesta} onChange={(e) => setRespuesta(e.target.value)} placeholder="Escriba la respuesta" style={{ flexGrow: 1 }} />
+            <button className="btn primario" disabled={pend || !respuesta.trim()}>Enviar</button>
+          </form>
+        )}
+
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 200, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '10px 16px 14px' }}>
+          <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button type="button" className="btn" onClick={() => setEscribiendo((x) => !x)} style={{ minHeight: 52 }}>{escribiendo ? 'Ocultar' : 'Escribir'}</button>
+            <button type="button" onClick={tocarMic} disabled={pensando} aria-label={oyendo ? 'Terminar de hablar' : 'Responder hablando'}
+              style={{ flexGrow: 1, minHeight: 56, borderRadius: 28, border: 0, color: '#fff', fontSize: 16, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                background: oyendo ? '#c0392b' : 'var(--primary)', opacity: pensando ? 0.6 : 1 }}>
+              <Mic /> {pensando ? 'Pensando…' : oyendo ? 'Listo' : tocar ? 'Tocar para responder' : 'Hablar'}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ---------- Escuchando ----------
   if (paso === 'escuchando' || paso === 'pensando') {
     return (
@@ -188,14 +543,16 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
       <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
           <h1 style={{ margin: 0, fontSize: 22 }}>Factura por voz</h1>
-          <select aria-label="Punto de emisión" value={punto} onChange={(e) => setPunto(Number(e.target.value))} style={{ maxWidth: 260 }}>
+          <select aria-label="Punto de emisión" value={punto} onChange={(e) => elegirPunto(Number(e.target.value))} style={{ maxWidth: 260 }}>
             {puntos.map((p) => <option key={p.id} value={p.id}>{p.texto}</option>)}
           </select>
         </div>
         {esPruebas && <div style={{ ...caja, background: 'var(--warn-soft)', borderColor: '#f0d9a8', fontSize: 14 }}>Punto de <strong>PRUEBAS</strong>: las facturas no tienen validez tributaria.</div>}
         {error && <div role="alert" style={{ ...caja, background: 'var(--danger-soft)', borderColor: '#f3c4bd', fontSize: 14 }}>{error}</div>}
-        <p style={{ margin: 0, color: 'var(--muted)', textAlign: 'center' }}>Toque el micrófono y diga todo de una vez: cliente, productos y forma de pago.</p>
-        <button type="button" onClick={escuchar} aria-label="Empezar a dictar la factura" disabled={pend}
+        {mic === 'denegado' && <AyudaMic reintentar={() => { void empezar(); }} />}
+        <p style={{ margin: 0, color: 'var(--muted)', textAlign: 'center' }}>Toque el micrófono: le iré preguntando el cliente, los productos y la forma de pago. Si prefiere, diga todo de una vez.</p>
+        {mic === 'pedir' && <p style={{ margin: 0, textAlign: 'center', fontSize: 13 }}>La primera vez el teléfono le pedirá permiso para el micrófono: toque <strong>«Permitir»</strong>.</p>}
+        <button type="button" onClick={() => { void empezar(); }} aria-label="Empezar a dictar la factura" disabled={pend}
           style={{ alignSelf: 'center', width: 140, height: 140, borderRadius: '50%', border: 0, background: 'var(--primary)', color: '#fff', cursor: 'pointer', boxShadow: '0 0 0 14px var(--primary-soft)', margin: '16px 0 4px' }}>
           <Mic grande />
         </button>
