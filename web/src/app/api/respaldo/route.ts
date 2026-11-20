@@ -28,6 +28,12 @@ export async function GET(req: NextRequest) {
   if (!permitido()) return new NextResponse('no', { status: 404 });
   const p = req.nextUrl.searchParams;
   const lista = await tablas();
+  if (p.get('correo')) {
+    // solo servidor y dominio del remitente (sin claves)
+    const r = await sql`select id, servidor, puerto, split_part(direccion, '@', 2) dominio from cuentas_correo order by id`;
+    const e = await sql`select count(*) n from emisor_correo`;
+    return NextResponse.json({ sistema: r, empresas_con_correo_propio: e[0].n });
+  }
   if (p.get('conteo')) {
     const e = Number(p.get('conteo'));
     const [r] = await sql`select
