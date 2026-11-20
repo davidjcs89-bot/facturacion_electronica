@@ -29,16 +29,17 @@ export async function GET(req: NextRequest) {
   const p = req.nextUrl.searchParams;
   const lista = await tablas();
   if (p.get('xmlstats')) {
-    // solo tamaños, sin contenido: por año, columnas de texto de documentos_electronicos
-    const cols = await sql<{ column_name: string }[]>`select column_name from information_schema.columns
-      where table_schema = 'public' and table_name = 'documentos_electronicos' and data_type in ('text', 'character varying', 'xml', 'bytea')`;
-    const nombres = cols.map((c) => c.column_name);
-    const crudo = nombres.map((c) => `coalesce(octet_length(${'"' + c + '"'}), 0)`).join(' + ');
-    const guardado = nombres.map((c) => `coalesce(pg_column_size(${'"' + c + '"'}), 0)`).join(' + ');
-    const r = await sql.unsafe(`select extract(year from fecha_creacion)::int anio, count(*)::int docs,
-      round(sum(${crudo}) / 1048576.0, 1) mb_texto, round(sum(${guardado}) / 1048576.0, 1) mb_guardado
-      from documentos_electronicos group by 1 order by 1`);
-    return NextResponse.json({ columnas: nombres, por_anio: r });
+    // solo tamaños, sin contenido: por año y por columna (MB guardados en disco)
+    const r = await sql`select extract(year from fecha_modificacion)::int anio, count(*)::int docs,
+      round(sum(coalesce(pg_column_size(xml_generado), 0)) / 1048576.0, 1) generado,
+      round(sum(coalesce(pg_column_size(xml_firmado), 0)) / 1048576.0, 1) firmado,
+      round(sum(coalesce(pg_column_size(xml_retornado), 0)) / 1048576.0, 1) retornado,
+      round(sum(coalesce(octet_length(xml_retornado), 0)) / 1048576.0, 1) retornado_sin_comprimir,
+      round(sum(coalesce(pg_column_size(ride), 0)) / 1048576.0, 1) ride,
+      round(sum(coalesce(pg_column_size(mensajes), 0)) / 1048576.0, 1) mensajes,
+      count(*) filter (where xml_retornado is not null and xml_retornado <> '')::int con_retornado
+      from documentos_electronicos group by 1 order by 1`;
+    return NextResponse.json(r);
   }
   if (p.get('correo')) {
     // solo servidor y dominio del remitente (sin claves)
