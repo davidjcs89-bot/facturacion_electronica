@@ -3,6 +3,7 @@ import { requerirSesion } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { Cabecera, Estado } from '@/components/ui';
 import { money, fecha } from '@/lib/formato';
+import { vozHabilitada } from '@/lib/voz/habilitada';
 
 export default async function Inicio() {
   const s = await requerirSesion();
@@ -46,6 +47,7 @@ export default async function Inicio() {
   return (
     <>
       <Cabecera titulo="Inicio" sub={`Bienvenido, ${s.nombre || s.usuario}`}>
+        {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn">🎤 Factura por voz</Link>}
         <Link href="/facturas/nueva" className="btn primario">+ Nueva factura</Link>
       </Cabecera>
       <div className="grid c4">
