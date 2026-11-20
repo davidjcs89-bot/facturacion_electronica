@@ -28,6 +28,10 @@ export async function GET(req: NextRequest) {
   if (!permitido()) return new NextResponse('no', { status: 404 });
   const p = req.nextUrl.searchParams;
   const lista = await tablas();
+  if (p.get('ids')) {
+    const [r] = await sql`select min(id) min, max(id) max, count(*) n, percentile_disc(0.5) within group (order by id) mitad from documentos_electronicos`;
+    return NextResponse.json(r);
+  }
   if (p.get('xmlstats')) {
     // solo tamaños, sin contenido: por año y por columna (MB guardados en disco)
     const r = await sql`select extract(year from fecha_modificacion)::int anio, count(*)::int docs,
@@ -90,7 +94,9 @@ export async function GET(req: NextRequest) {
         where table_schema = 'public' and table_name = ${t} order by ordinal_position`;
       yield JSON.stringify({ tabla: t, columnas: cols }) + '\n';
       let n = 0;
-      for await (const filas of sql`select * from ${sql(t)}`.cursor(200)) {
+      const rango = p.get('desde') != null || p.get('hasta') != null
+        ? sql`where id between ${Number(p.get('desde') ?? 0)} and ${Number(p.get('hasta') ?? 2147483647)} order by id` : sql``;
+      for await (const filas of sql`select * from ${sql(t)} ${rango}`.cursor(200)) {
         let trozo = '';
         for (const f of filas) {
           const o: Record<string, unknown> = {};
