@@ -3,6 +3,7 @@ import { sesionActual } from '@/lib/session';
 import { sql } from '@/lib/db';
 import { manejador } from '@/lib/comprobantes/registro';
 import { obtenerRide } from '@/lib/comprobantes/procesar';
+import { xmlAutorizado } from '@/lib/comprobantes/xmlGuardado';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,10 +32,10 @@ export async function GET(_req: Request, ctx: { params: Promise<{ tipo: string; 
     });
   }
   if (archivo === 'autorizado.xml' || archivo === 'firmado.xml') {
-    const [d] = await sql<{ xml_retornado: string | null; xml_firmado: string | null }[]>`
-      select xml_retornado::text, xml_firmado from documentos_electronicos
+    const [d] = await sql<{ xml_retornado: string | null; xml_retornado_gz: Uint8Array | null; xml_firmado: string | null }[]>`
+      select xml_retornado::text, xml_retornado_gz, xml_firmado from documentos_electronicos
       where id_tipo_comprobante = ${t} and id_comprobante = ${n} order by id desc limit 1`;
-    const xml = archivo === 'autorizado.xml' ? d?.xml_retornado : d?.xml_firmado;
+    const xml = archivo === 'autorizado.xml' ? xmlAutorizado(d?.xml_retornado, d?.xml_retornado_gz) : d?.xml_firmado;
     if (!xml) return NextResponse.json({ error: 'XML no disponible' }, { status: 404 });
     return new NextResponse(xml, {
       headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Content-Disposition': `attachment; filename="${nombre}.xml"` },

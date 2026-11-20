@@ -7,6 +7,7 @@ import { enviarComprobante, consultarAutorizacion, textoMensajes, type Ambiente 
 import { generarRide } from '../sri/ride';
 import { descifrar } from '../cifrado';
 import { enviarCorreoEmisor, registrarLog } from '../correo';
+import { xmlAutorizado } from './xmlGuardado';
 import { ESTADO } from '../constantes';
 import { money } from '../formato';
 
@@ -305,9 +306,11 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
   const destino = destinoManual || datos.correo;
   if (!destino) return 'El receptor no tiene correo registrado';
   // Comprobantes traídos del sistema anterior no tienen PDF guardado: se regenera desde los datos.
-  const [x] = await sql<{ xml_retornado: string | null }[]>`
-    select xml_retornado::text from documentos_electronicos
-    where id_tipo_comprobante = ${tipoDoc} and id_comprobante = ${id} and xml_retornado is not null order by id desc limit 1`;
+  const [x0] = await sql<{ xml_retornado: string | null; xml_retornado_gz: Uint8Array | null }[]>`
+    select xml_retornado::text, xml_retornado_gz from documentos_electronicos
+    where id_tipo_comprobante = ${tipoDoc} and id_comprobante = ${id} and (xml_retornado is not null or xml_retornado_gz is not null)
+    order by id desc limit 1`;
+  const x = x0 ? { xml_retornado: xmlAutorizado(x0.xml_retornado, x0.xml_retornado_gz) } : undefined;
   const [est] = await sql<{ estado: number }[]>`select estado from ${sql(m.tabla)} where id = ${id}`;
   if (!x?.xml_retornado || est?.estado !== ESTADO.AUTORIZADO) return 'El comprobante no está autorizado';
   const d = { xml_retornado: x.xml_retornado, ride: await obtenerRide(tipoDoc, id) };
