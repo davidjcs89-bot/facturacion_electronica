@@ -80,3 +80,21 @@ export async function eliminarPunto(form: FormData) {
   revalidatePath('/configuracion/puntos-emision');
   redirect('/configuracion/puntos-emision');
 }
+
+/** Punto de emision que se preselecciona al crear comprobantes (vacio = el primero de la lista) */
+export async function guardarPuntoDefecto(_p: EstadoForm, form: FormData): Promise<EstadoForm> {
+  const s = await requerirEmisor();
+  const id = entero(form.get('id_punto_defecto'));
+  if (id) {
+    const [ok] = await sql`select 1 from puntos_emisior where id = ${id} and id_emisor = ${s.emisorId}`;
+    if (!ok) return { mensaje: 'Punto de emisión no válido' };
+  }
+  try {
+    await sql`update emisor set id_punto_defecto = ${id ?? null}, fecha_modificacion = now() at time zone 'America/Guayaquil'
+      where id = ${s.emisorId}`;
+  } catch {
+    return { mensaje: 'No se pudo guardar: falta activar esta opción en la base de datos. Avise al administrador.' };
+  }
+  revalidatePath('/configuracion/puntos-emision');
+  return { ok: true, mensaje: 'Punto por defecto guardado' };
+}

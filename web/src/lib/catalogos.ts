@@ -27,7 +27,22 @@ export async function puntosEmision(emisorId: number) {
     where p.id_emisor = ${emisorId}
     order by (a.ambiente = '1') nulls last, p.numero_establecimiento, p.numero_emision`;
   const propios = todos.filter((p) => p.ambiente);
-  return propios.length ? propios : todos;
+  const lista = propios.length ? propios : todos;
+  // el punto por defecto de la empresa va primero: los formularios nuevos preseleccionan el primero
+  const def = await puntoDefecto(emisorId);
+  const i = lista.findIndex((p) => p.id === def);
+  return i > 0 ? [lista[i], ...lista.slice(0, i), ...lista.slice(i + 1)] : lista;
+}
+
+/** Punto de emision por defecto de la empresa (Configuracion -> Puntos de emision), o null */
+export async function puntoDefecto(emisorId: number): Promise<number | null> {
+  try {
+    // to_jsonb: no falla si la columna aun no existe (0015_punto_defecto.sql)
+    const [r] = await sql<{ v: string | null }[]>`select to_jsonb(e) ->> 'id_punto_defecto' v from emisor e where e.id = ${emisorId}`;
+    return r?.v ? Number(r.v) : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Texto del punto para las listas: «001-010 · PRODUCCIÓN» o «001-001 · direccion» */

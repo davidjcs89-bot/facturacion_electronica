@@ -3,6 +3,8 @@ import { Fragment } from 'react';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { Cabecera, Vacio } from '@/components/ui';
+import { puntosEmision, puntoDefecto, textoPunto } from '@/lib/catalogos';
+import { FormDefecto } from './FormDefecto';
 
 export default async function PuntosEmision() {
   const s = await requerirEmisor();
@@ -14,12 +16,14 @@ export default async function PuntosEmision() {
     select s.id_punto_emision, s.id_documentos, s.secuencial from secuencias s
     join puntos_emisior p on p.id = s.id_punto_emision where p.id_emisor = ${s.emisorId}`;
   const tipos = await sql<{ id: number; descripcion_doc: string; codigo_doc: string }[]>`select id, descripcion_doc, codigo_doc from tipo_documento order by id`;
+  const [usables, def] = await Promise.all([puntosEmision(s.emisorId), puntoDefecto(s.emisorId)]);
   const sec = (p: number, t: number) => secs.find((x) => x.id_punto_emision === p && x.id_documentos === t)?.secuencial;
   return (
     <>
       <Cabecera titulo="Puntos de emisión" sub="Establecimientos, puntos de emisión y el próximo secuencial de cada comprobante">
         <Link href="/configuracion/puntos-emision/nuevo" className="btn primario">+ Nuevo punto</Link>
       </Cabecera>
+      {usables.length > 1 && <FormDefecto puntos={usables.map((p) => ({ id: p.id, texto: textoPunto(p) }))} actual={def} />}
       <div className="card sin-padding">
         {puntos.length === 0 ? <Vacio>Aún no hay puntos de emisión. Cree el primero para poder emitir.</Vacio> : (
           <div className="tabla-wrap">
@@ -31,7 +35,7 @@ export default async function PuntosEmision() {
                 {puntos.map((p) => (
                   <Fragment key={p.id}>
                     <tr>
-                      <td className="nowrap"><Link href={`/configuracion/puntos-emision/${p.id}`}>{p.numero_establecimiento}-{p.numero_emision}</Link></td>
+                      <td className="nowrap"><Link href={`/configuracion/puntos-emision/${p.id}`}>{p.numero_establecimiento}-{p.numero_emision}</Link>{p.id === def && <span className="muted" style={{ fontSize: '0.8rem' }}> · por defecto</span>}</td>
                       <td>{p.direccion}</td>
                       <td>{p.bodega}</td>
                       {tipos.map((t) => <td key={t.id} className="num">{sec(p.id, t.id) ?? '—'}</td>)}
