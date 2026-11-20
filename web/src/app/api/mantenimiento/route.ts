@@ -14,6 +14,15 @@ export async function GET(req: NextRequest) {
   const accion = req.nextUrl.searchParams.get('accion');
   const t0 = Date.now();
 
+  if (accion === 'puntos') {
+    const e = Number(req.nextUrl.searchParams.get('emisor'));
+    const r = await sql`select p.id, p.numero_establecimiento estab, p.numero_emision pto, p.id_bodega, a.ambiente app,
+        (select count(*) from factura f where f.id_punto_emision = p.id and f.fecha_emision >= now() - interval '90 days')::int fact90,
+        (select json_agg(json_build_object('t', s.id_documentos, 's', s.secuencial)) from secuencias s where s.id_punto_emision = p.id) sec
+      from puntos_emisior p left join punto_emision_app a on a.id_punto = p.id where p.id_emisor = ${e} order by p.id`;
+    const [em] = await sql`select e.id, e.razon_social, e.nombre_comercial, t.codigo_ambiente amb from emisor e join tipo_ambientes t on t.id = e.tipo_ambiente where e.id = ${e}`;
+    return NextResponse.json({ em, puntos: r });
+  }
   if (accion === 'claude') {
     // comprueba la clave sin gastar: lista de modelos (no muestra la clave)
     const k = process.env.ANTHROPIC_API_KEY ?? '';
