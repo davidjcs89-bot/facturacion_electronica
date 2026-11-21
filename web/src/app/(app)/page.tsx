@@ -4,6 +4,7 @@ import { sql } from '@/lib/db';
 import { Cabecera, Estado } from '@/components/ui';
 import { money, fecha } from '@/lib/formato';
 import { vozHabilitada } from '@/lib/voz/habilitada';
+import { contarRevision } from '@/lib/revision';
 
 export default async function Inicio() {
   const s = await requerirSesion();
@@ -27,13 +28,16 @@ export default async function Inicio() {
   }
 
   const e = s.emisorId;
+  const rev = await contarRevision(e);
   const [kpi] = await sql<{ mes_total: number; mes_n: number; autorizadas: number; no_aut: number; pendientes: number }[]>`
     select
       coalesce(sum(total) filter (where estado = 6), 0) mes_total,
       count(*) filter (where estado = 6) mes_n,
       (select count(*) from factura where id_emisor = ${e} and estado = 6) autorizadas,
-      (select count(*) from factura where id_emisor = ${e} and estado in (5, 7)) no_aut,
-      (select count(*) from factura where id_emisor = ${e} and estado in (1, 3, 4)) pendientes
+      (select count(*) from factura where id_emisor = ${e} and estado in (5, 7)
+         and fecha_emision::date = (now() at time zone 'America/Guayaquil')::date) no_aut,
+      (select count(*) from factura where id_emisor = ${e} and estado in (1, 3, 4)
+         and fecha_emision::date = (now() at time zone 'America/Guayaquil')::date) pendientes
     from factura
     where id_emisor = ${e}
       and fecha_emision >= date_trunc('month', now() at time zone 'America/Guayaquil')`;
@@ -53,8 +57,8 @@ export default async function Inicio() {
       <div className="grid c4 kpis">
         <div className="card kpi"><div className="valor">${money(kpi.mes_total)}</div><div className="etiqueta">Facturado este mes ({kpi.mes_n} autorizadas)</div></div>
         <div className="card kpi"><div className="valor">{kpi.autorizadas.toLocaleString('es-EC')}</div><div className="etiqueta">Facturas autorizadas (total)</div></div>
-        <div className="card kpi"><div className="valor">{kpi.pendientes}</div><div className="etiqueta">Facturas en proceso</div></div>
-        <div className="card kpi"><div className="valor" style={{ color: kpi.no_aut ? 'var(--danger)' : undefined }}>{kpi.no_aut}</div><div className="etiqueta"><Link href="/no-autorizados">No recibidas / no autorizadas</Link></div></div>
+        <div className="card kpi"><div className="valor" style={{ color: Number(kpi.no_aut) ? 'var(--danger)' : undefined }}>{Number(kpi.pendientes) + Number(kpi.no_aut)}</div><div className="etiqueta">En proceso hoy{Number(kpi.no_aut) ? ` (${kpi.no_aut} con error)` : ''}</div></div>
+        <div className="card kpi"><div className="valor" style={{ color: rev.comprobantes ? 'var(--warn, #b7791f)' : undefined }}>{rev.comprobantes}</div><div className="etiqueta"><Link href="/revision">En revisión (días anteriores)</Link></div></div>
       </div>
       <div className="card sin-padding">
         <div style={{ padding: '14px 16px 0' }}><h2>Últimas facturas</h2></div>

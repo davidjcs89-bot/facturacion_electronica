@@ -6,6 +6,7 @@ import { Cabecera, Estado, Paginacion, Vacio } from '@/components/ui';
 import { vozHabilitada } from '@/lib/voz/habilitada';
 import { money, fecha } from '@/lib/formato';
 import { NOMBRE_ESTADO } from '@/lib/constantes';
+import { contarRevision } from '@/lib/revision';
 
 const POR_PAGINA = 50;
 
@@ -13,9 +14,11 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
   const s = await requerirEmisor();
   const p = await leerParams(searchParams);
   const pagina = paginaDe(p);
+  const rev = await contarRevision(s.emisorId);
   const q = (p.q ?? '').trim();
   const filtro = sql`
     where f.id_emisor = ${s.emisorId}
+    and not (f.estado in (1, 2, 3, 4, 5, 7) and f.fecha_emision::date < (now() at time zone 'America/Guayaquil')::date)
     ${q ? sql`and (f.numero like ${'%' + q + '%'} or c.nombre_cliente ilike ${'%' + q + '%'} or c.identificacion like ${q + '%'} or f.clave_de_acceso = ${q})` : sql``}
     ${p.estado ? sql`and f.estado = ${Number(p.estado)}` : sql``}
     ${p.desde ? sql`and f.fecha_emision >= ${p.desde}::date` : sql``}
@@ -35,7 +38,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
     limit ${POR_PAGINA} offset ${(pagina - 1) * POR_PAGINA}`;
   return (
     <>
-      <Cabecera titulo="Facturas" sub={`Total autorizado en la selección: $${money(tot.total)}`}>
+      <Cabecera titulo="Facturas" sub={<>Total autorizado en la selección: ${money(tot.total)}{rev.comprobantes > 0 && <> · <Link href="/revision">{rev.comprobantes} de días anteriores en Revisión</Link></>}</>}>
         {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn solo-escritorio">Factura por voz</Link>}
         <Link href="/facturas/nueva" className="btn primario solo-escritorio">+ Nueva factura</Link>
       </Cabecera>
