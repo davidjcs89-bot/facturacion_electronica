@@ -9,6 +9,7 @@ import { opcionesImpuestos } from '../datos';
 import { FormProducto } from '../FormProducto';
 import { eliminarProducto } from '../actions';
 import { BotonBorrar } from '../../admin/_comun/BotonBorrar';
+import { IVA_ANTIGUOS, IVA_VIGENTE } from '@/lib/revision';
 
 export default async function EditarProducto({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: SP }) {
   const s = await requerirEmisor();
@@ -29,10 +30,11 @@ export default async function EditarProducto({ params, searchParams }: { params:
         <Link className="btn" href="/productos">Volver</Link>
       </Cabecera>
       {p.guardado && <Alerta tipo="ok">Producto guardado.</Alerta>}
+      {IVA_ANTIGUOS.includes(prod.codigo_iva) && <Alerta tipo="aviso">Este producto tenía IVA 12 % / 14 %, que ya no rige: se propone 15 %. Revise y guarde para corregirlo.</Alerta>}
       {p.error === 'uso' && <Alerta tipo="error">No se puede eliminar: el producto está usado en comprobantes o movimientos de inventario.</Alerta>}
       <FormProducto
-        p={{ ...prod, fecha_elavoracionproducto: fechaInput(prod.fecha_elavoracionproducto), fecha_caducidadproducto: fechaInput(prod.fecha_caducidadproducto) }}
-        {...op} atributos={atributos} ivaPorDefecto={prod.codigo_iva} />
+        p={{ ...prod, codigo_iva: IVA_ANTIGUOS.includes(prod.codigo_iva) ? IVA_VIGENTE : prod.codigo_iva, fecha_elavoracionproducto: fechaInput(prod.fecha_elavoracionproducto), fecha_caducidadproducto: fechaInput(prod.fecha_caducidadproducto) }}
+        {...op} atributos={atributos} ivaPorDefecto={IVA_ANTIGUOS.includes(prod.codigo_iva) ? IVA_VIGENTE : prod.codigo_iva} />
       <div className="grid c2">
         <div className="card">
           <h2>Existencias por bodega</h2>

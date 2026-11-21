@@ -5,6 +5,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { decimal, entero, texto } from '@/lib/params';
 import type { EstadoForm } from '../admin/_comun/Msg';
+import { IVA_ANTIGUOS } from '@/lib/revision';
 
 const NO_APLICA_ICE = 99;
 const NO_APLICA_IRBPNR = 100;
@@ -40,6 +41,7 @@ export async function guardarProducto(_prev: EstadoForm, form: FormData): Promis
     select id, id_impuesto from porcentaje_impuesto_producto where id in ${sql([datos.codigo_iva, datos.codigo_ice, datos.codigo_irbpnr])}`;
   const tipoDe = (x: number) => imp.find((i) => i.id === x)?.id_impuesto;
   if (![1, 4].includes(tipoDe(datos.codigo_iva) ?? 0)) return { mensaje: 'IVA no válido' };
+  if (IVA_ANTIGUOS.includes(datos.codigo_iva)) return { mensaje: 'El IVA 12 % / 14 % ya no rige desde abril de 2024: elija 15 % (u otra tarifa vigente).' };
   if (tipoDe(datos.codigo_ice) !== 2) return { mensaje: 'ICE no válido' };
   if (tipoDe(datos.codigo_irbpnr) !== 3) return { mensaje: 'IRBPNR no válido' };
 

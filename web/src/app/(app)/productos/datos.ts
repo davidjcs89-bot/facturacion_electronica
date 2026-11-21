@@ -1,5 +1,6 @@
 import 'server-only';
 import { sql } from '@/lib/db';
+import { IVA_ANTIGUOS } from '@/lib/revision';
 
 export type Opcion = { id: number; descripcion: string; porcentaje: number };
 
@@ -9,7 +10,8 @@ export async function opcionesImpuestos() {
   const filas: Fila[] = await sql<Fila[]>`
     select id, id_impuesto, replace(descripcion, E'\r', '') descripcion, codigo, porcentaje
     from porcentaje_impuesto_producto order by id_impuesto, porcentaje, descripcion`;
-  const iva = filas.filter((f) => f.id_impuesto === 1 || f.id_impuesto === 4).sort((a, b) => b.porcentaje - a.porcentaje || a.id - b.id);
+  // El 12 % y el 14 % ya no rigen (desde el 1-abr-2024 el IVA general es 15 %): no se ofrecen
+  const iva = filas.filter((f) => (f.id_impuesto === 1 || f.id_impuesto === 4) && !IVA_ANTIGUOS.includes(f.id)).sort((a, b) => b.porcentaje - a.porcentaje || a.id - b.id);
   const ice = filas.filter((f) => f.id_impuesto === 2).sort((a, b) => (a.id === 99 ? -1 : b.id === 99 ? 1 : a.descripcion.localeCompare(b.descripcion)));
   const irbpnr = filas.filter((f) => f.id_impuesto === 3).sort((a, b) => (a.id === 100 ? -1 : b.id === 100 ? 1 : 0));
   const tipos = await sql<{ id: number; descripcion: string }[]>`select id, descripcion from tipo_producto order by id`;
