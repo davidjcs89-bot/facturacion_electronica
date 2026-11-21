@@ -6,6 +6,7 @@ export const MENU: GrupoMenu[] = [
     titulo: 'Comprobantes',
     requiereEmisor: true,
     items: [
+      { href: '/revision', texto: 'Revisión' },
       { href: '/facturas', texto: 'Facturas' },
       { href: '/notas-credito', texto: 'Notas de crédito' },
       { href: '/notas-debito', texto: 'Notas de débito' },

@@ -7,7 +7,7 @@ import { FormEmisor, FormFirma, FormLogo } from './Formularios';
 export default async function ConfigEmisor() {
   const s = await requerirSesion();
   const ivas = await sql<{ id: number; descripcion: string }[]>`
-    select id, descripcion from porcentaje_impuesto_producto where id_impuesto in (1, 4) and porcentaje > 0 order by porcentaje desc`;
+    select id, descripcion from porcentaje_impuesto_producto where id_impuesto in (1, 4) and porcentaje > 0 and id not in (2, 3) order by porcentaje desc`;
   if (!s.emisorId) {
     return (
       <>

@@ -308,3 +308,15 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .filtros.plegable:not(:has(.ver-filtros:checked)) .boton-filtros { grid-column: 1 / 2; grid-row: 2; }
   .filtros.plegable:not(:has(.ver-filtros:checked)) > .btn:last-child { grid-column: 2 / 3; grid-row: 2; }
 }
+
+/* ---------- Revisión ---------- */
+.pestanas { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 14px; overflow-x: auto; }
+.pestanas a { padding: 10px 14px; min-height: 44px; display: flex; align-items: center; gap: 6px; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; }
+.pestanas a.on { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.pestanas a:hover { text-decoration: none; color: var(--text); }
+.contador { background: var(--danger-soft); color: var(--danger); border-radius: 999px; font-size: 12px; font-weight: 700; padding: 1px 7px; }
+.fila-revision { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+.fila-revision:last-child { border-bottom: 0; }
+.fila-revision .fila { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.fila-revision .acciones { margin-top: 6px; flex-wrap: wrap; }
+.motivos { margin: 2px 0 0; padding-left: 18px; color: var(--danger); font-size: 13px; }
