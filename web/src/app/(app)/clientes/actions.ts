@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { entero, texto } from '@/lib/params';
-import { validarIdentificacion, emailValido } from '@/lib/validaciones';
+import { ajustarTipoIdentificacion, validarIdentificacion, emailValido } from '@/lib/validaciones';
 
 export type EstadoForm = { error?: string; ok?: string };
 
@@ -24,6 +24,7 @@ async function guardarDatosCliente(form: FormData): Promise<{ error: string } | 
     codigo: texto(form.get('codigo')) || null,
   };
   if (!datos.nombre_cliente) return { error: 'Ingrese el nombre o razón social' };
+  datos.tipo_identificacion = ajustarTipoIdentificacion(datos.tipo_identificacion, datos.identificacion);
   const errId = validarIdentificacion(datos.tipo_identificacion, datos.identificacion);
   if (errId) return { error: errId };
   if (datos.correo) {
