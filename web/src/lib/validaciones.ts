@@ -21,6 +21,14 @@ export function rucValido(r: string) {
   return /^\d{13}$/.test(r) && parseInt(r.slice(10), 10) >= 1;
 }
 
+/** Corrige el tipo según la cantidad de dígitos: 13 (terminado en 001…) es RUC, 10 es cédula */
+export function ajustarTipoIdentificacion(tipo: number, ident: string): number {
+  const x = (ident || '').trim();
+  if (tipo === TIPO_IDENTIFICACION.CEDULA && rucValido(x)) return TIPO_IDENTIFICACION.RUC;
+  if (tipo === TIPO_IDENTIFICACION.RUC && /^\d{10}$/.test(x)) return TIPO_IDENTIFICACION.CEDULA;
+  return tipo;
+}
+
 export function validarIdentificacion(tipo: number, ident: string): string | null {
   if (!ident) return 'Ingrese la identificación';
   if (tipo === TIPO_IDENTIFICACION.CEDULA && !cedulaValida(ident)) return 'La cédula no es válida';
