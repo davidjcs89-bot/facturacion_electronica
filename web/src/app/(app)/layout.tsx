@@ -37,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span>Más</span>
           </Link>
           <div className="usuario">
-            <span>{s.nombre || s.usuario}</span>
+            <Link href="/mi-cuenta" title="Mi cuenta">{s.nombre || s.usuario}</Link>
             <form action={cerrarSesion}>
               <button className="btn chico">Cerrar sesión</button>
             </form>

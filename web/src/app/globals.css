@@ -373,3 +373,4 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .tab-tres strong { font-size: 1.1rem; }
   .tab-tops .card { margin-bottom: 0; }
 }
+.cuenta-mas { display: flex; align-items: center; gap: 12px; color: var(--text); text-decoration: none; }

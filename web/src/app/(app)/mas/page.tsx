@@ -19,13 +19,15 @@ export default async function MasPage() {
   const iniciales = String(nombre).split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
   return (
     <div className="menu-mas">
-      <section className="card" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <Link href="/mi-cuenta" className="card cuenta-mas">
         <span className="avatar">{iniciales}</span>
-        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flexGrow: 1 }}>
           <strong>{nombre}</strong>
           {emisor && <span className="muted" style={{ fontSize: 13 }}>{emisor.razon_social} · RUC {emisor.ruc}</span>}
+          <span style={{ fontSize: 13, color: 'var(--primary)' }}>Mi cuenta: datos y clave</span>
         </div>
-      </section>
+        <span aria-hidden="true" className="muted" style={{ fontSize: 20 }}>›</span>
+      </Link>
       <GruposMas grupos={grupos.map((g) => ({
         titulo: g.titulo,
         items: g.items.map((i) => ({ ...i, aviso: i.href === '/revision' ? rev.comprobantes + rev.productos : undefined })),

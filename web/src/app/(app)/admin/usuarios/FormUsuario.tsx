@@ -2,6 +2,7 @@
 import { useActionState } from 'react';
 import { guardarUsuario } from './actions';
 import { Msg, type EstadoForm } from '../_comun/Msg';
+import { CamposUbicacion } from '@/components/CamposUbicacion';
 import { CampoClave } from '@/components/CampoClave';
 
 type U = Record<string, string | number | boolean | null | undefined>;
@@ -22,8 +23,7 @@ export function FormUsuario({ u, emisores, roles, categorias }: { u: U; emisores
         <div className="campo"><label>Correo *</label><input name="correo" type="email" defaultValue={String(v('correo')).toLowerCase()} maxLength={50} required /></div>
         <div className="campo"><label>Teléfono *</label><input name="numero_telefono" defaultValue={v('numero_telefono')} maxLength={15} required /></div>
         <div className="campo"><label>Dirección *</label><input name="direccion_dom_cuenta" defaultValue={v('direccion_dom_cuenta')} maxLength={70} required /></div>
-        <div className="campo"><label>Ciudad *</label><input name="ciudad" defaultValue={v('ciudad')} maxLength={15} required /></div>
-        <div className="campo"><label>Provincia *</label><input name="provincia" defaultValue={v('provincia')} maxLength={15} required /></div>
+        <CamposUbicacion provincia={String(v('provincia') || '')} ciudad={String(v('ciudad') || '')} />
         <div className="campo"><label>Rol</label><select name="id_rol" defaultValue={v('id_rol') || 2}>{roles.map((r) => <option key={r.id} value={r.id}>{r.texto}</option>)}</select></div>
         <div className="campo"><label>Categoría</label><select name="id_categoria" defaultValue={v('id_categoria') || 4}>{categorias.map((r) => <option key={r.id} value={r.id}>{r.texto}</option>)}</select></div>
         <div className="campo"><label>Estado</label>

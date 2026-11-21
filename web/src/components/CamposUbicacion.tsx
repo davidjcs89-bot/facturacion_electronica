@@ -8,8 +8,9 @@ import { provinciaDeIdentificacion } from '@/lib/validaciones';
  * la provincia se elige sola si estaba vacía; el usuario la puede cambiar.
  */
 export function CamposUbicacion({ provincia, ciudad }: { provincia?: string | null; ciudad?: string | null }) {
-  const [prov, setProv] = useState(provincia ?? '');
-  const [ciu, setCiu] = useState(ciudad ?? '');
+  const [prov, setProv] = useState((provincia ?? '').toUpperCase());
+  const [ciu, setCiu] = useState((ciudad ?? '').toUpperCase());
+  const provInicial = useRef((provincia ?? '').toUpperCase()).current;
   const ref = useRef<HTMLSelectElement>(null);
   const provRef = useRef(prov);
   const automatica = useRef(false);
@@ -40,11 +41,12 @@ export function CamposUbicacion({ provincia, ciudad }: { provincia?: string | nu
       <div className="campo"><label>Provincia</label>
         <select ref={ref} name="provincia" value={prov} onChange={(e) => { automatica.current = false; elegirProvincia(e.target.value); }}>
           <option value="">Sin provincia</option>
+          {provInicial && !PROVINCIAS.some((p) => p.nombre === provInicial) && <option value={provInicial}>{provInicial}</option>}
           {PROVINCIAS.map((p) => <option key={p.cod} value={p.nombre}>{p.nombre}</option>)}
         </select>
       </div>
       <div className="campo"><label>Ciudad (cantón)</label>
-        <select name="ciudad" value={ciu} onChange={(e) => setCiu(e.target.value)} disabled={!prov}>
+        <select name="ciudad" value={ciu} onChange={(e) => setCiu(e.target.value)} disabled={!prov || !cantones.length && !otraCiudad}>
           <option value="">{prov ? 'Sin ciudad' : 'Elija primero la provincia'}</option>
           {otraCiudad && <option value={ciu}>{ciu}</option>}
           {cantones.map((c) => <option key={c} value={c}>{c}</option>)}

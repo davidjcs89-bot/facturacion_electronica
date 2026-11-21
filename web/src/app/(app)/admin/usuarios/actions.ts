@@ -31,7 +31,7 @@ export async function guardarUsuario(_p: EstadoForm, form: FormData): Promise<Es
   if (!emailValido(d.correo)) return { mensaje: 'Correo no válido' };
   const largos: [string, string, number][] = [
     ['Nombre', d.nombre, 50], ['Apellido', d.apellido, 50], ['Correo', d.correo, 50], ['Teléfono', d.numero_telefono, 15],
-    ['Dirección', d.direccion_dom_cuenta, 70], ['Ciudad', d.ciudad, 15], ['Provincia', d.provincia, 15],
+    ['Dirección', d.direccion_dom_cuenta, 70], ['Ciudad', d.ciudad, 40], ['Provincia', d.provincia, 40],
   ];
   for (const [n, v, m] of largos) if (v.length > m) return { mensaje: `${n}: máximo ${m} caracteres` };
   if (!d.numero_telefono || !d.direccion_dom_cuenta || !d.ciudad || !d.provincia) return { mensaje: 'Complete teléfono, dirección, ciudad y provincia' };
