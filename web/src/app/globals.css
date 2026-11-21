@@ -214,7 +214,7 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .tabla.tarjetas td[data-r="ocultar"] { display: none; }
   .tabla.tarjetas td[data-r="titulo"] { order: 1; flex: 1 1 calc(100% - 120px); min-width: 0; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tabla.tarjetas td[data-r="titulo"] a { color: var(--text); }
-  .tabla.tarjetas td[data-r="monto"] { order: 2; margin-left: auto; font-weight: 700; font-size: 16px; text-align: right; }
+  .tabla.tarjetas td[data-r="monto"] { order: 2; margin-left: auto; min-width: 104px; font-weight: 700; font-size: 16px; text-align: right; }
   .tabla.tarjetas td[data-r="monto"]::before { content: '$'; }
   .tabla.tarjetas td[data-r="sub"] { order: 3; font-size: 13px; color: var(--muted); }
   .tabla.tarjetas td[data-r="sub"] a { color: var(--muted); }
