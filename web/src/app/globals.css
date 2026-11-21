@@ -257,3 +257,26 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .grid.kpis .card:not(:first-child) .etiqueta { font-size: 11.5px; line-height: 1.3; }
   .cabecera { margin-bottom: 12px; }
 }
+
+/* ---------- celular: acciones del comprobante fijas abajo ---------- */
+.barra-acciones-movil { display: none; }
+@media (max-width: 860px) {
+  .acciones-sri > .acciones, .acciones-sri > h2 { display: none; }
+  .acciones-sri:not(:has(.alerta, form.filtros)) { display: contents; }
+  .barra-acciones-movil {
+    display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
+    background: var(--surface); border-top: 1px solid var(--border); padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+  }
+  .barra-acciones-movil .btn { min-height: 48px; justify-content: center; font-size: 15px; width: 100%; }
+  .barra-acciones-movil > .btn:last-child { width: auto; padding: 0 18px; }
+  body:has(.barra-acciones-movil) .nav-movil { display: none; }
+  .hoja .opcion-lista {
+    display: flex; align-items: center; min-height: 52px; padding: 0 4px; border: 0; border-top: 1px solid var(--border);
+    background: none; font: inherit; font-size: 16px; color: var(--text); text-align: left; width: 100%; cursor: pointer; text-decoration: none;
+  }
+  .hoja .opcion-lista.peligro { color: var(--danger); }
+  .hoja form { margin: 0; }
+  .tabla.tarjetas td[data-r="sub2"][data-x]::before { content: attr(data-x); }
+  .tabla.tarjetas td[data-r="sub2"][data-x] { margin-left: -4px; }
+  .cabecera .acciones:not(:has(> :not(.solo-escritorio))) { display: none; }
+}

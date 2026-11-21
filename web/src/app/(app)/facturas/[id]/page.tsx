@@ -25,8 +25,8 @@ export default async function VerFactura({ params }: { params: Promise<{ id: str
     <>
       <Cabecera titulo={`Factura ${f.numero || `borrador #${f.id}`}`} sub={<>Emitida el {fecha(f.fecha_emision)} · <Estado id={f.estado} /></>}>
         {borrador && <Link className="btn primario" href={`/facturas/${id}/editar`}>Editar</Link>}
-        <Link className="btn" href={`/notas-credito/nueva?factura=${id}`}>Nota de crédito</Link>
-        <Link className="btn" href="/facturas">Volver</Link>
+        <Link className="btn solo-escritorio" href={`/notas-credito/nueva?factura=${id}`}>Nota de crédito</Link>
+        <Link className="btn solo-escritorio" href="/facturas">Volver</Link>
       </Cabecera>
       {el.mensajes && f.estado !== ESTADO.AUTORIZADO && <Alerta tipo="error"><strong>Mensaje del SRI:</strong><div style={{ whiteSpace: 'pre-wrap' }}>{el.mensajes}</div></Alerta>}
       <div className="grid c2">
@@ -40,7 +40,7 @@ export default async function VerFactura({ params }: { params: Promise<{ id: str
             <dt>Celular</dt><dd>{c.telefono_movil}</dd>
           </dl>
         </div>
-        <div className="card">
+        <div className="card plegable-movil">
           <h2>Datos del comprobante</h2>
           <dl className="datos">
             <dt>Número</dt><dd>{f.numero || '—'}</dd>
@@ -53,23 +53,24 @@ export default async function VerFactura({ params }: { params: Promise<{ id: str
       </div>
       {!borrador && (
         <AccionesSri tipo={1} id={id} estado={f.estado} tieneClave={f.clave_de_acceso?.length === 49} correo={c.correo}
-          emisionPermitida={el.emisionPermitida} motivoBloqueo={el.motivoBloqueo} puedeEmitir tieneXmlAutorizado={el.tieneXmlAutorizado} />
+          emisionPermitida={el.emisionPermitida} motivoBloqueo={el.motivoBloqueo} puedeEmitir tieneXmlAutorizado={el.tieneXmlAutorizado}
+          nombre={`Factura ${f.numero || f.id}`} extras={[{ href: `/notas-credito/nueva?factura=${id}`, texto: 'Nota de crédito' }]} />
       )}
       <div className="card sin-padding">
         <div className="tabla-wrap">
-          <table className="tabla">
+          <table className="tabla tarjetas">
             <thead><tr><th>Código</th><th>Descripción</th><th className="num">Cant.</th><th className="num">P. unitario</th><th className="num">Desc.</th><th className="num">Subtotal</th><th className="num">IVA</th><th className="num">Total</th></tr></thead>
             <tbody>
               {detalles.map((d) => (
                 <tr key={d.id}>
-                  <td className="nowrap">{d.codigo}</td>
-                  <td>{d.nombre}{d.adicional && d.adicional !== d.nombre ? <div className="muted">{d.adicional}</div> : null}</td>
-                  <td className="num">{Number(d.cantidad)}</td>
-                  <td className="num">{money3(d.precio_unitario)}</td>
-                  <td className="num">{money(d.descuento)}</td>
-                  <td className="num">{money(d.sub_total)}</td>
-                  <td className="num">{money(d.valor_iva)}</td>
-                  <td className="num">{money(d.total)}</td>
+                  <td className="nowrap" data-r="ocultar">{d.codigo}</td>
+                  <td data-r="titulo">{d.nombre}{d.adicional && d.adicional !== d.nombre ? <div className="muted">{d.adicional}</div> : null}</td>
+                  <td className="num" data-r="sub">{Number(d.cantidad)}</td>
+                  <td className="num" data-r="sub2" data-x=" × $">{money3(d.precio_unitario)}</td>
+                  <td className="num" data-r={Number(d.descuento) ? 'sub2' : 'ocultar'} data-x=" · desc. $">{money(d.descuento)}</td>
+                  <td className="num" data-r="ocultar">{money(d.sub_total)}</td>
+                  <td className="num" data-r="ocultar">{money(d.valor_iva)}</td>
+                  <td className="num" data-r="monto">{money(d.total)}</td>
                 </tr>
               ))}
             </tbody>
