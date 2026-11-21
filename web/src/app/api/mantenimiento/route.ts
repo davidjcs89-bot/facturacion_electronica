@@ -60,14 +60,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(r);
   }
   if (accion === 'columnas') {
-    const r = await sql`select table_schema, column_name, data_type from information_schema.columns
+    const r = await sql`select table_schema, column_name, data_type, is_nullable from information_schema.columns
       where table_name = 'documentos_electronicos' order by table_schema, ordinal_position`;
     const [u] = await sql`select current_database() db, current_user u, current_setting('search_path') sp`;
     return NextResponse.json({ u, r });
   }
   if (accion === 'estado') {
     const [r] = await sql`select
-      count(*) filter (where xml_generado is not null and (xml_retornado is not null or xml_retornado_gz is not null))::int generado_por_vaciar,
+      count(*) filter (where xml_generado is not null and xml_generado::text <> '' and (xml_retornado is not null or xml_retornado_gz is not null))::int generado_por_vaciar,
       count(*) filter (where ride is not null)::int rides_guardados,
       count(*) filter (where xml_retornado is not null and fecha_modificacion < (now() at time zone 'America/Guayaquil') - interval '2 years')::int por_comprimir,
       count(*) filter (where xml_retornado_gz is not null)::int comprimidos,
@@ -79,8 +79,9 @@ export async function GET(req: NextRequest) {
 
   // 1. XML sin firmar de comprobantes ya autorizados: no se usa nunca
   if (accion === 'vaciar_generado') {
-    const r = await sql`update documentos_electronicos set xml_generado = null
-      where xml_generado is not null and (xml_retornado is not null or xml_retornado_gz is not null)`;
+    // la columna no admite null: se deja vacía (mismo ahorro de espacio)
+    const r = await sql`update documentos_electronicos set xml_generado = ''::xml
+      where xml_generado is not null and xml_generado::text <> '' and (xml_retornado is not null or xml_retornado_gz is not null)`;
     return NextResponse.json({ vaciados: r.count });
   }
 
