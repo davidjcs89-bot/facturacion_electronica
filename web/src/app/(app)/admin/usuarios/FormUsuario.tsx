@@ -2,6 +2,7 @@
 import { useActionState } from 'react';
 import { guardarUsuario } from './actions';
 import { Msg, type EstadoForm } from '../_comun/Msg';
+import { CampoClave } from '@/components/CampoClave';
 
 type U = Record<string, string | number | boolean | null | undefined>;
 type Op = { id: number; texto: string };
@@ -15,7 +16,7 @@ export function FormUsuario({ u, emisores, roles, categorias }: { u: U; emisores
       {u.id && <input type="hidden" name="id" value={String(u.id)} />}
       <div className="form-grid">
         <div className="campo"><label>Usuario *</label><input name="nombre_usuario" defaultValue={v('nombre_usuario')} maxLength={15} required autoComplete="off" /></div>
-        <div className="campo"><label>{u.id ? 'Nueva clave (dejar vacío para no cambiar)' : 'Clave *'}</label><input name="clave" type="password" autoComplete="new-password" required={!u.id} /></div>
+        <div className="campo"><label>{u.id ? 'Nueva clave (dejar vacío para no cambiar)' : 'Clave *'}</label><CampoClave name="clave" autoComplete="new-password" required={!u.id} /></div>
         <div className="campo"><label>Nombre *</label><input name="nombre" defaultValue={v('nombre')} maxLength={50} required /></div>
         <div className="campo"><label>Apellido *</label><input name="apellido" defaultValue={v('apellido')} maxLength={50} required /></div>
         <div className="campo"><label>Correo *</label><input name="correo" type="email" defaultValue={String(v('correo')).toLowerCase()} maxLength={50} required /></div>

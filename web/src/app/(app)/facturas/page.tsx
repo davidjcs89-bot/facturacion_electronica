@@ -32,8 +32,8 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
   return (
     <>
       <Cabecera titulo="Facturas" sub={`Total autorizado en la selección: $${money(tot.total)}`}>
-        {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn">Factura por voz</Link>}
-        <Link href="/facturas/nueva" className="btn primario">+ Nueva factura</Link>
+        {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn solo-escritorio">Factura por voz</Link>}
+        <Link href="/facturas/nueva" className="btn primario solo-escritorio">+ Nueva factura</Link>
       </Cabecera>
       <form className="filtros">
         <div className="campo busqueda"><label>Buscar</label><input name="q" defaultValue={q} placeholder="Número, cliente, identificación o clave de acceso" /></div>

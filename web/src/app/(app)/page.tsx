@@ -47,10 +47,10 @@ export default async function Inicio() {
   return (
     <>
       <Cabecera titulo="Inicio" sub={`Bienvenido, ${s.nombre || s.usuario}`}>
-        {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn">🎤 Factura por voz</Link>}
-        <Link href="/facturas/nueva" className="btn primario">+ Nueva factura</Link>
+        {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn solo-escritorio">🎤 Factura por voz</Link>}
+        <Link href="/facturas/nueva" className="btn primario solo-escritorio">+ Nueva factura</Link>
       </Cabecera>
-      <div className="grid c4">
+      <div className="grid c4 kpis">
         <div className="card kpi"><div className="valor">${money(kpi.mes_total)}</div><div className="etiqueta">Facturado este mes ({kpi.mes_n} autorizadas)</div></div>
         <div className="card kpi"><div className="valor">{kpi.autorizadas.toLocaleString('es-EC')}</div><div className="etiqueta">Facturas autorizadas (total)</div></div>
         <div className="card kpi"><div className="valor">{kpi.pendientes}</div><div className="etiqueta">Facturas en proceso</div></div>
@@ -59,16 +59,16 @@ export default async function Inicio() {
       <div className="card sin-padding">
         <div style={{ padding: '14px 16px 0' }}><h2>Últimas facturas</h2></div>
         <div className="tabla-wrap">
-          <table className="tabla">
+          <table className="tabla tarjetas">
             <thead><tr><th>Número</th><th>Fecha</th><th>Cliente</th><th className="num">Total</th><th>Estado</th></tr></thead>
             <tbody>
               {ultimas.map((f) => (
                 <tr key={f.id}>
-                  <td className="nowrap"><Link href={`/facturas/${f.id}`}>{f.numero}</Link></td>
-                  <td className="nowrap">{fecha(f.fecha_emision)}</td>
-                  <td>{f.cliente}</td>
-                  <td className="num">{money(f.total)}</td>
-                  <td><Estado id={f.estado} /></td>
+                  <td className="nowrap" data-r="sub"><Link className="abrir" href={`/facturas/${f.id}`}>{f.numero}</Link></td>
+                  <td className="nowrap" data-r="sub2">{fecha(f.fecha_emision)}</td>
+                  <td data-r="titulo">{f.cliente}</td>
+                  <td className="num" data-r="monto">{money(f.total)}</td>
+                  <td data-r="estado"><Estado id={f.estado} /></td>
                 </tr>
               ))}
             </tbody>
