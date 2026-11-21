@@ -14,6 +14,8 @@ export type PuntoEmision = {
   id: number; numero_establecimiento: string; numero_emision: string; direccion: string; id_bodega: number;
   /** '1' PRUEBAS / '2' PRODUCCION si el punto es exclusivo de esta app; null si es un punto del sistema anterior */
   ambiente: string | null;
+  /** ambiente con el que emite: el del punto de la app o, si no tiene, el de la empresa */
+  amb_real?: string | null;
 };
 
 /**
@@ -22,8 +24,11 @@ export type PuntoEmision = {
  */
 export async function puntosEmision(emisorId: number) {
   const todos = await sql<PuntoEmision[]>`
-    select p.id, p.numero_establecimiento, p.numero_emision, p.direccion, p.id_bodega, a.ambiente
+    select p.id, p.numero_establecimiento, p.numero_emision, p.direccion, p.id_bodega, a.ambiente,
+      coalesce(a.ambiente, ta.codigo_ambiente) amb_real
     from puntos_emisior p left join punto_emision_app a on a.id_punto = p.id
+    join emisor e on e.id = p.id_emisor
+    left join tipo_ambientes ta on ta.id = e.tipo_ambiente
     where p.id_emisor = ${emisorId}
     order by (a.ambiente = '1') nulls last, p.numero_establecimiento, p.numero_emision`;
   const propios = todos.filter((p) => p.ambiente);
@@ -46,11 +51,11 @@ export async function puntoDefecto(emisorId: number): Promise<number | null> {
 }
 
 /** Texto del punto para las listas: «001-010 · PRODUCCIÓN» o «001-001 · direccion» */
-export function textoPunto(p: Pick<PuntoEmision, 'numero_establecimiento' | 'numero_emision' | 'direccion' | 'ambiente'>) {
+export function textoPunto(p: Pick<PuntoEmision, 'numero_establecimiento' | 'numero_emision' | 'direccion' | 'ambiente' | 'amb_real'>) {
   const serie = `${p.numero_establecimiento}-${p.numero_emision}`;
-  if (p.ambiente === '1') return `${serie} · PRUEBAS`;
-  if (p.ambiente === '2') return `${serie} · PRODUCCIÓN`;
-  return `${serie} · ${p.direccion}`;
+  const amb = (p.ambiente ?? p.amb_real) === '1' ? 'PRUEBAS' : (p.ambiente ?? p.amb_real) === '2' ? 'PRODUCCIÓN' : null;
+  if (p.ambiente) return `${serie} · ${amb}`;
+  return amb ? `${serie} · ${amb} · ${p.direccion}` : `${serie} · ${p.direccion}`;
 }
 
 /**

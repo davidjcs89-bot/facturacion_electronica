@@ -21,9 +21,15 @@ export default async function VerFactura({ params }: { params: Promise<{ id: str
     select nombre_cliente, identificacion, direccion, correo, telefono_movil from clientes where id = ${f.id_cliente}`;
   const el = await estadoElectronico(1, id, s.emisorId);
   const borrador = f.estado === ESTADO.PENDIENTE || f.estado === ESTADO.PAGADO;
+  const [amb] = await sql<{ a: string | null }[]>`
+    select coalesce(case when length(${f.clave_de_acceso ?? ''}::text) = 49 then substr(${f.clave_de_acceso ?? ''}::text, 24, 1) end, pa.ambiente, ta.codigo_ambiente) a
+    from emisor em left join tipo_ambientes ta on ta.id = em.tipo_ambiente
+    left join punto_emision_app pa on pa.id_punto = ${f.id_punto_emison}::int
+    where em.id = ${s.emisorId}`;
+  const ambiente = amb?.a === '1' ? 'Pruebas' : amb?.a === '2' ? 'Producción' : null;
   return (
     <>
-      <Cabecera titulo={`Factura ${f.numero || `borrador #${f.id}`}`} sub={<>Emitida el {fecha(f.fecha_emision)} · <Estado id={f.estado} /></>}>
+      <Cabecera titulo={`Factura ${f.numero || `borrador #${f.id}`}`} sub={<>Emitida el {fecha(f.fecha_emision)} · <Estado id={f.estado} />{ambiente && <> · <span className={`badge ${ambiente === 'Pruebas' ? 'pruebas' : 'produccion'}`}>{ambiente}</span></>}</>}>
         {borrador && <Link className="btn primario" href={`/facturas/${id}/editar`}>Editar</Link>}
         <Link className="btn solo-escritorio" href={`/notas-credito/nueva?factura=${id}`}>Nota de crédito</Link>
         <Link className="btn solo-escritorio" href="/facturas">Volver</Link>
@@ -44,6 +50,7 @@ export default async function VerFactura({ params }: { params: Promise<{ id: str
           <h2>Datos del comprobante</h2>
           <dl className="datos">
             <dt>Número</dt><dd>{f.numero || '—'}</dd>
+            <dt>Ambiente</dt><dd>{ambiente ?? '—'}{ambiente === 'Pruebas' ? ' (sin validez tributaria)' : ''}</dd>
             <dt>Clave de acceso</dt><dd style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{f.clave_de_acceso || '—'}</dd>
             <dt>Establecimiento</dt><dd>{f.dir_establecimiento}</dd>
             {f.guia_de_remision && <><dt>Guía de remisión</dt><dd>{f.guia_de_remision}</dd></>}

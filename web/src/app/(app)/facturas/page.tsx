@@ -23,9 +23,13 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
   const [tot] = await sql<{ n: number; total: number }[]>`
     select count(*) n, coalesce(sum(f.total) filter (where f.estado = 6), 0) total
     from factura f join clientes c on c.id = f.id_cliente ${filtro}`;
-  const filas = await sql<{ id: number; numero: string; fecha_emision: Date; cliente: string; identificacion: string; total: number; estado: number }[]>`
-    select f.id, f.numero, f.fecha_emision, c.nombre_cliente cliente, c.identificacion, f.total, f.estado
+  const filas = await sql<{ id: number; numero: string; fecha_emision: Date; cliente: string; identificacion: string; total: number; estado: number; ambiente: string | null }[]>`
+    select f.id, f.numero, f.fecha_emision, c.nombre_cliente cliente, c.identificacion, f.total, f.estado,
+      coalesce(case when length(f.clave_de_acceso) = 49 then substr(f.clave_de_acceso, 24, 1) end, pa.ambiente, ta.codigo_ambiente) ambiente
     from factura f join clientes c on c.id = f.id_cliente
+    left join punto_emision_app pa on pa.id_punto = f.id_punto_emison
+    left join emisor em on em.id = f.id_emisor
+    left join tipo_ambientes ta on ta.id = em.tipo_ambiente
     ${filtro}
     order by f.fecha_emision desc, f.id desc
     limit ${POR_PAGINA} offset ${(pagina - 1) * POR_PAGINA}`;
@@ -60,7 +64,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
                     <td data-r="titulo">{f.cliente}</td>
                     <td className="nowrap" data-r="ocultar">{f.identificacion}</td>
                     <td className="num" data-r="monto">{money(f.total)}</td>
-                    <td data-r="estado"><Estado id={f.estado} /></td>
+                    <td data-r="estado">{f.ambiente === '1' && <span className="badge pruebas">PRUEBAS</span>} <Estado id={f.estado} /></td>
                   </tr>
                 ))}
               </tbody>
