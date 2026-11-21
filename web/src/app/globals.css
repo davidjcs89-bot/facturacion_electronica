@@ -396,3 +396,19 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   html, body { overflow-x: clip; }
   .tabla.tarjetas td[data-r="titulo"], .tab-alerta strong, .card { overflow-wrap: anywhere; }
 }
+/* Filtros en iPhone: las fechas de Safari tienen un ancho propio y se montaban sobre el campo de al lado */
+@media (max-width: 860px) {
+  .filtros input[type="date"] {
+    -webkit-appearance: none; appearance: none; display: block;
+    width: 100%; min-width: 0; max-width: 100%; min-height: 44px; text-align: left; box-sizing: border-box;
+  }
+  .filtros input[type="date"]::-webkit-date-and-time-value { text-align: left; }
+  /* Filtros abiertos: 2 columnas; el estado (lista) ocupa toda la fila; Desde | Hasta; abajo Filtros | Filtrar */
+  .filtros.plegable:has(.ver-filtros:checked) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filtros.plegable:has(.ver-filtros:checked) .campo:has(select) { grid-column: 1 / -1; }
+  .filtros.plegable:has(.ver-filtros:checked) .boton-filtros { grid-row: auto; grid-column: 1 / 2; order: 10; }
+  .filtros.plegable:has(.ver-filtros:checked) > .btn:last-child { grid-row: auto; grid-column: 2 / 3; order: 11; }
+}
+@media (max-width: 480px) {
+  .filtros:not(.plegable):has(input[type="date"]) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

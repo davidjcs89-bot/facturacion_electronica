@@ -41,7 +41,7 @@ export default async function Clientes({ searchParams }: { searchParams: SP }) {
             {tipos.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}
           </select>
         </div>
-        <button className="btn">Buscar</button>
+        <button className="btn primario">Aplicar filtro</button>
       </form>
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay contactos con ese criterio.</Vacio> : (
