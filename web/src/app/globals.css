@@ -379,3 +379,10 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .tabla.tarjetas td[data-r="campo"]::before { content: attr(data-p); }
   .tabla.tarjetas td[data-r="campo"] input { width: 100% !important; font-size: 16px; }
 }
+/* Búsqueda fija arriba al hacer scroll (Facturas, Contactos, Compras) */
+@media (max-width: 860px) {
+  .filtros.fija {
+    position: sticky; top: calc(52px + env(safe-area-inset-top)); z-index: 15;
+    background: var(--bg); padding: 8px 0; margin-top: -8px; box-shadow: 0 6px 6px -6px rgba(16, 24, 40, 0.15);
+  }
+}

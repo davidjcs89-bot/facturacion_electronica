@@ -28,7 +28,7 @@ export default async function Compras({ searchParams }: { searchParams: SP }) {
         <Link className="btn primario" href="/compras/importar">Importar XML</Link>
         <Link className="btn" href="/compras/nueva">+ Manual</Link>
       </Cabecera>
-      <form className="filtros plegable">
+      <form className="filtros plegable fija">
         <div className="campo busqueda"><label>Buscar</label><input name="q" type="search" defaultValue={q} placeholder="Número, proveedor o RUC" /></div>
         <input type="checkbox" id="ver-filtros" className="ver-filtros" defaultChecked={!!(p.desde || p.hasta)} />
         <label htmlFor="ver-filtros" className="btn boton-filtros">Filtros{p.desde || p.hasta ? ' •' : ''}</label>

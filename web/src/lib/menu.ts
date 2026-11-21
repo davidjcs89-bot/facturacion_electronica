@@ -29,7 +29,7 @@ export const MENU: GrupoMenu[] = [
     titulo: 'Catálogos',
     requiereEmisor: true,
     items: [
-      { href: '/clientes', texto: 'Clientes' },
+      { href: '/clientes', texto: 'Contactos' },
       { href: '/productos', texto: 'Artículos y servicios' },
       { href: '/transportistas', texto: 'Transportistas' },
       { href: '/atributos-fichas', texto: 'Atributos de fichas' },

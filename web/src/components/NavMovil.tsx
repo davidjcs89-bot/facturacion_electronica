@@ -45,7 +45,7 @@ export function NavMovil({ voz, tieneEmisor }: { voz: boolean; tieneEmisor: bool
             <span className="circ"><Icono n="plus" s={26} /></span><span>Nueva</span>
           </button>
         ) : <span style={{ minWidth: 60 }} />}
-        <Link href="/clientes" className={activo('/clientes') ? 'on' : ''}><Icono n="clientes" /><span>Clientes</span></Link>
+        <Link href="/clientes" className={activo('/clientes') ? 'on' : ''}><Icono n="clientes" /><span>Contactos</span></Link>
         <Link href="/compras" className={activo('/compras') ? 'on' : ''}><Icono n="compras" /><span>Compras</span></Link>
       </nav>
       {hoja && (

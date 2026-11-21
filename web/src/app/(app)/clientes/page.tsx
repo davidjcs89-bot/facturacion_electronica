@@ -28,11 +28,13 @@ export default async function Clientes({ searchParams }: { searchParams: SP }) {
   const tipos = await tiposCliente();
   return (
     <>
-      <Cabecera titulo="Clientes" sub="Clientes, proveedores, sujetos de retención y destinatarios">
-        <Link href="/clientes/nuevo" className="btn primario">+ Nuevo cliente</Link>
+      <Cabecera titulo="Contactos" sub="Clientes, proveedores, sujetos de retención y destinatarios">
+        <Link href="/clientes/nuevo" className="btn primario">+ Nuevo</Link>
       </Cabecera>
-      <form className="filtros">
-        <div className="campo busqueda"><label>Buscar</label><input name="q" defaultValue={q} placeholder="Nombre, identificación, código o celular" /></div>
+      <form className="filtros plegable fija">
+        <div className="campo busqueda"><label>Buscar</label><input name="q" type="search" defaultValue={q} placeholder="Nombre, identificación, código o celular" /></div>
+        <input type="checkbox" id="ver-filtros" className="ver-filtros" defaultChecked={!!p.tipo} />
+        <label htmlFor="ver-filtros" className="btn boton-filtros">Filtros{p.tipo ? ' •' : ''}</label>
         <div className="campo"><label>Tipo</label>
           <select name="tipo" defaultValue={p.tipo ?? ''}>
             <option value="">Todos</option>
@@ -42,7 +44,7 @@ export default async function Clientes({ searchParams }: { searchParams: SP }) {
         <button className="btn">Buscar</button>
       </form>
       <div className="card sin-padding">
-        {filas.length === 0 ? <Vacio>No hay clientes con ese criterio.</Vacio> : (
+        {filas.length === 0 ? <Vacio>No hay contactos con ese criterio.</Vacio> : (
           <div className="tabla-wrap">
             <table className="tabla tarjetas">
               <thead><tr><th>Nombre / razón social</th><th>Identificación</th><th>Tipo</th><th>Correo</th><th>Celular</th><th>Código</th></tr></thead>

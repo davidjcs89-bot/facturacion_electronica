@@ -96,7 +96,7 @@ export function CompraManual({ bodegas, hoy }: { bodegas: Bodega[]; hoy: string 
             <thead><tr><th>Código</th><th>Producto</th><th className="num">Cantidad</th><th className="num">Costo unit. (sin IVA)</th><th className="num">Subtotal</th><th></th></tr></thead>
             <tbody>{lineas.map((l, i) => (
               <tr key={i}>
-                <td data-r="sub">{l.codigo}</td><td data-r="titulo">{l.nombre}</td>
+                <td data-r="ocultar">{l.codigo}</td><td data-r="titulo">{l.nombre}<div className="muted" style={{ fontWeight: 400, fontSize: 12 }}>{l.codigo}</div></td>
                 <td className="num" data-r="campo" data-p="Cantidad"><input type="number" inputMode="numeric" min={1} step={1} value={l.cantidad} style={{ width: 80 }} onChange={(ev) => upd(i, { cantidad: Math.max(1, parseInt(ev.target.value || '1', 10)) })} /></td>
                 <td className="num" data-r="campo" data-p="Costo unit. (sin IVA)"><input type="number" inputMode="decimal" min={0} step="0.0001" value={l.costo} style={{ width: 110 }} onChange={(ev) => upd(i, { costo: Number(ev.target.value) || 0 })} /></td>
                 <td className="num" data-r="monto">{money(l.cantidad * l.costo)}</td>
