@@ -95,7 +95,7 @@ export default async function Inicio() {
       <div className="tab-kpis">
         <Kpi href="/pedidos?estado=1" t="Por cobrar" v={`$${money(o.por_cobrar)}`} sub={`${o.pedidos_saldo} ${o.pedidos_saldo === 1 ? 'pedido' : 'pedidos'} con saldo`} />
         <Kpi href="/compras" t="Compras del mes" v={`$${money(o.compras_total)}`} sub={`${o.compras_n} ${o.compras_n === 1 ? 'compra' : 'compras'}`} />
-        <Kpi href="/clientes" t="Clientes" v={o.clientes.toLocaleString('es-EC')} sub="registrados" />
+        <Kpi href="/clientes" t="Contactos" v={o.clientes.toLocaleString('es-EC')} sub="registrados" />
         <Kpi href="/productos?tipo=1" t="Artículos" v={o.articulos.toLocaleString('es-EC')} sub={o.agotados ? `${o.agotados} agotados` : 'en el catálogo'} />
         <Kpi href="/productos?tipo=2" t="Servicios" v={o.servicios.toLocaleString('es-EC')} sub="en el catálogo" />
         <Kpi href="/facturas?estado=6" t="Autorizadas" v={o.autorizadas.toLocaleString('es-EC')} sub="total histórico" />

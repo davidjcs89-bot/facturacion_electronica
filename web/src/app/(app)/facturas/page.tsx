@@ -52,7 +52,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
         {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn solo-escritorio">Factura por voz</Link>}
         <Link href="/facturas/nueva" className="btn primario solo-escritorio">+ Nueva factura</Link>
       </Cabecera>
-      <form className="filtros plegable">
+      <form className="filtros plegable fija">
         <div className="campo busqueda"><label>Buscar</label><input name="q" type="search" defaultValue={q} placeholder="Número, cliente, identificación o clave de acceso" /></div>
         {/* Celular: estado y fechas se abren con «Filtros» */}
         <input type="checkbox" id="ver-filtros" className="ver-filtros" defaultChecked={!!(p.estado || p.desde || p.hasta)} />

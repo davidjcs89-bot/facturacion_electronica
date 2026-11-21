@@ -39,16 +39,18 @@ export function ImportarXml({ bodegas }: { bodegas: Bodega[] }) {
           </div>
           <div className="card sin-padding">
             <div className="tabla-wrap">
-              <table className="tabla">
+              <table className="tabla tarjetas">
                 <thead><tr><th>Código</th><th>Descripción</th><th className="num">Cant.</th><th className="num">Costo unit.</th><th className="num">Subtotal</th><th>Producto</th><th className="num">Precio venta (sin IVA)</th></tr></thead>
                 <tbody>{f.detalles.map((d, k) => {
                   const ex = e1.existentes?.[d.codigo];
                   return (
                     <tr key={k}>
-                      <td className="nowrap">{d.codigo}</td><td>{d.descripcion}</td><td className="num">{d.cantidad}</td>
-                      <td className="num">{money(d.precioUnitario)}</td><td className="num">{money(d.precioTotalSinImpuesto)}</td>
-                      <td>{ex ? <span className="badge e4">Existe</span> : <span className="badge e6">Nuevo</span>}</td>
-                      <td className="num"><input name={`pv_${k}`} type="number" step="0.0001" min="0" defaultValue={ex ? ex.precio : d.precioUnitario} style={{ width: 110 }} /></td>
+                      <td className="nowrap" data-r="sub">{d.codigo}</td><td data-r="titulo">{d.descripcion}</td>
+                      <td className="num" data-r="sub2" data-p="Cant. ">{d.cantidad}</td>
+                      <td className="num" data-r="sub2" data-x=" × $">{money(d.precioUnitario)}</td>
+                      <td className="num" data-r="monto">{money(d.precioTotalSinImpuesto)}</td>
+                      <td data-r="estado">{ex ? <span className="badge e4">Existe</span> : <span className="badge e6">Nuevo</span>}</td>
+                      <td className="num" data-r="campo" data-p="Precio de venta (sin IVA)"><input name={`pv_${k}`} type="number" inputMode="decimal" step="0.0001" min="0" defaultValue={ex ? ex.precio : d.precioUnitario} style={{ width: 110 }} /></td>
                     </tr>
                   );
                 })}</tbody>
@@ -89,19 +91,25 @@ export function CompraManual({ bodegas, hoy }: { bodegas: Bodega[]; hoy: string 
           <BuscadorProducto onElegir={(p) => setLineas([...lineas, { id_producto: p.id, codigo: p.codigo, nombre: p.nombre, cantidad: 1, costo: 0, iva: Number(p.iva_pct) }])} />
         </div></div>
         {lineas.length > 0 && (
-          <table className="tabla">
+          <>
+          <table className="tabla tarjetas">
             <thead><tr><th>Código</th><th>Producto</th><th className="num">Cantidad</th><th className="num">Costo unit. (sin IVA)</th><th className="num">Subtotal</th><th></th></tr></thead>
             <tbody>{lineas.map((l, i) => (
               <tr key={i}>
-                <td>{l.codigo}</td><td>{l.nombre}</td>
-                <td className="num"><input type="number" min={1} step={1} value={l.cantidad} style={{ width: 80 }} onChange={(ev) => upd(i, { cantidad: Math.max(1, parseInt(ev.target.value || '1', 10)) })} /></td>
-                <td className="num"><input type="number" min={0} step="0.0001" value={l.costo} style={{ width: 110 }} onChange={(ev) => upd(i, { costo: Number(ev.target.value) || 0 })} /></td>
-                <td className="num">{money(l.cantidad * l.costo)}</td>
-                <td><button type="button" className="btn chico peligro" onClick={() => setLineas(lineas.filter((_, k) => k !== i))}>Quitar</button></td>
+                <td data-r="ocultar">{l.codigo}</td><td data-r="titulo">{l.nombre}<div className="muted" style={{ fontWeight: 400, fontSize: 12 }}>{l.codigo}</div></td>
+                <td className="num" data-r="campo" data-p="Cantidad"><input type="number" inputMode="numeric" min={1} step={1} value={l.cantidad} style={{ width: 80 }} onChange={(ev) => upd(i, { cantidad: Math.max(1, parseInt(ev.target.value || '1', 10)) })} /></td>
+                <td className="num" data-r="campo" data-p="Costo unit. (sin IVA)"><input type="number" inputMode="decimal" min={0} step="0.0001" value={l.costo} style={{ width: 110 }} onChange={(ev) => upd(i, { costo: Number(ev.target.value) || 0 })} /></td>
+                <td className="num" data-r="monto">{money(l.cantidad * l.costo)}</td>
+                <td data-r="acciones"><button type="button" className="btn chico peligro" onClick={() => setLineas(lineas.filter((_, k) => k !== i))}>Quitar</button></td>
               </tr>))}
             </tbody>
-            <tfoot><tr><td colSpan={4} className="derecha">Subtotal / IVA / Total</td><td className="num">{money(sub)} / {money(iva)} / {money(sub + iva)}</td><td></td></tr></tfoot>
           </table>
+          <table className="totales" style={{ width: '100%', marginTop: 12 }}><tbody>
+            <tr><td>Subtotal</td><td className="derecha">{money(sub)}</td></tr>
+            <tr><td>IVA</td><td className="derecha">{money(iva)}</td></tr>
+            <tr className="total"><td>Total</td><td className="derecha">${money(sub + iva)}</td></tr>
+          </tbody></table>
+          </>
         )}
       </div>
       <button className="btn primario" disabled={pend || !lineas.length}>{pend ? 'Guardando…' : 'Guardar compra'}</button>

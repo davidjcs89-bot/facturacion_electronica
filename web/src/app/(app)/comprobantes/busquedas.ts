@@ -60,7 +60,7 @@ export async function datosCliente(id: number): Promise<ClienteBusqueda | null> 
 
 export type ClienteEdicion = {
   id: number; nombre_cliente: string; tipo_identificacion: number; tipo_cliente: number; identificacion: string;
-  telefono_fijo: string | null; telefono_movil: string | null; direccion: string | null; correo: string | null; codigo: string | null;
+  telefono_fijo: string | null; telefono_movil: string | null; direccion: string | null; provincia: string | null; ciudad: string | null; correo: string | null; codigo: string | null;
 };
 export type OpcionCatalogo = { id: number; descripcion: string };
 
@@ -72,7 +72,7 @@ export async function formularioCliente(id?: number): Promise<{ tiposId: OpcionC
     sql<OpcionCatalogo[]>`select id, descripcion from tipo_cliente order by id`,
     id && id !== ID_CONSUMIDOR_FINAL
       ? sql<ClienteEdicion[]>`
-          select id, nombre_cliente, tipo_identificacion, tipo_cliente, identificacion, telefono_fijo, telefono_movil, direccion, correo, codigo
+          select id, nombre_cliente, tipo_identificacion, tipo_cliente, identificacion, telefono_fijo, telefono_movil, direccion, provincia, ciudad, correo, codigo
           from clientes where id = ${id} and id_emisor = ${s.emisorId}`
       : Promise.resolve([] as ClienteEdicion[]),
   ]);

@@ -21,7 +21,7 @@ export default async function VerCompra({ params }: { params: Promise<{ id: stri
   return (
     <>
       <Cabecera titulo={`Compra ${c.numero}`} sub={<>{c.proveedor} · {fecha(c.fecha)} · bodega {c.bodega}{c.estado === 8 && <> · <span className="badge e8">Anulada</span></>}</>}>
-        <Link className="btn" href="/compras">Volver</Link>
+        <Link className="btn solo-escritorio" href="/compras">Volver</Link>
       </Cabecera>
       <div className="grid c2">
         <div className="card">
@@ -41,11 +41,17 @@ export default async function VerCompra({ params }: { params: Promise<{ id: stri
         </div>
       </div>
       <div className="card sin-padding">
-        <table className="tabla">
+        <div style={{ padding: '14px 16px 0' }}><h2>Detalle ({det.length})</h2></div>
+        <table className="tabla tarjetas">
           <thead><tr><th>Código</th><th>Descripción</th><th className="num">Cant.</th><th className="num">Costo unit.</th><th className="num">Desc.</th><th className="num">Subtotal</th><th className="num">IVA</th></tr></thead>
           <tbody>{det.map((d) => (
-            <tr key={d.id}><td>{d.codigo}</td><td>{d.descripcion}</td><td className="num">{d.cantidad}</td><td className="num">{money(d.precio)}</td>
-              <td className="num">{money(d.descuento)}</td><td className="num">{money(d.precio_sin_impuestos)}</td><td className="num">{money(d.iva)}</td></tr>))}
+            <tr key={d.id}>
+              <td data-r="sub">{d.codigo}</td><td data-r="titulo">{d.descripcion}</td>
+              <td className="num" data-r="sub2" data-p="Cant. ">{Number(d.cantidad)}</td>
+              <td className="num" data-r="sub2" data-x=" × $">{money(d.precio)}</td>
+              <td className="num" data-r={Number(d.descuento) ? 'extra' : 'ocultar'} data-p="Descuento $">{money(d.descuento)}</td>
+              <td className="num" data-r="monto">{money(d.precio_sin_impuestos)}</td>
+              <td className="num" data-r="extra" data-p="IVA $">{money(d.iva)}</td></tr>))}
           </tbody>
         </table>
       </div>

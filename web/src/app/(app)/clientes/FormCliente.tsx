@@ -1,11 +1,11 @@
 'use client';
 import { useActionState } from 'react';
 import { guardarCliente, type EstadoForm } from './actions';
-import { autoProvincia } from '@/lib/validaciones';
+import { CamposUbicacion } from '@/components/CamposUbicacion';
 
 type Cliente = {
   id?: number; nombre_cliente?: string; tipo_identificacion?: number; tipo_cliente?: number; identificacion?: string;
-  telefono_fijo?: string | null; telefono_movil?: string | null; direccion?: string | null; correo?: string | null; codigo?: string | null;
+  telefono_fijo?: string | null; telefono_movil?: string | null; direccion?: string | null; provincia?: string | null; ciudad?: string | null; correo?: string | null; codigo?: string | null;
 };
 type Opcion = { id: number; descripcion: string };
 
@@ -23,7 +23,7 @@ export function FormCliente({ cliente, tiposId, tiposCli, volver }: { cliente: C
             {tiposId.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}
           </select>
         </div>
-        <div className="campo"><label>Identificación *</label><input name="identificacion" defaultValue={cliente.identificacion} required maxLength={13} inputMode="numeric" onChange={(e) => autoProvincia(e.currentTarget)} /></div>
+        <div className="campo"><label>Identificación *</label><input name="identificacion" defaultValue={cliente.identificacion} required maxLength={13} inputMode="numeric" /></div>
         <div className="campo"><label>Tipo de cliente *</label>
           <select name="tipo_cliente" defaultValue={cliente.tipo_cliente ?? 1}>
             {tiposCli.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}
@@ -33,7 +33,8 @@ export function FormCliente({ cliente, tiposId, tiposCli, volver }: { cliente: C
         <div className="campo"><label>Correo(s)</label><input name="correo" defaultValue={cliente.correo?.toLowerCase() ?? ''} maxLength={100} placeholder="separe varios con ;" /></div>
         <div className="campo"><label>Celular</label><input name="telefono_movil" defaultValue={cliente.telefono_movil ?? ''} maxLength={15} /></div>
         <div className="campo"><label>Teléfono fijo</label><input name="telefono_fijo" defaultValue={cliente.telefono_fijo ?? ''} maxLength={15} /></div>
-        <div className="campo ancho"><label>Dirección</label><input name="direccion" defaultValue={cliente.direccion ?? ''} maxLength={200} placeholder="Si la deja vacía se usa la provincia de la cédula" /></div>
+        <CamposUbicacion provincia={cliente.provincia} ciudad={cliente.ciudad} />
+        <div className="campo ancho"><label>Dirección</label><input name="direccion" defaultValue={cliente.direccion ?? ''} maxLength={200} placeholder="Calle y número (opcional)" /></div>
       </div>
       <div className="acciones" style={{ marginTop: 16 }}>
         <button className="btn primario" disabled={pendiente}>{pendiente ? 'Guardando…' : 'Guardar'}</button>

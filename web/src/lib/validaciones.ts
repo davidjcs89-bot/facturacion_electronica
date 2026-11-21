@@ -1,4 +1,5 @@
 import { TIPO_IDENTIFICACION } from './constantes';
+import { PROVINCIAS } from './ubicacion';
 
 /** Valida cedula ecuatoriana (modulo 10) */
 export function cedulaValida(c: string) {
@@ -43,26 +44,8 @@ export function emailValido(e: string) {
 }
 
 /** Provincia según los 2 primeros dígitos de la cédula o RUC (donde se inscribió, no siempre donde vive) */
-const PROVINCIAS: Record<string, string> = {
-  '01': 'AZUAY', '02': 'BOLÍVAR', '03': 'CAÑAR', '04': 'CARCHI', '05': 'COTOPAXI', '06': 'CHIMBORAZO',
-  '07': 'EL ORO', '08': 'ESMERALDAS', '09': 'GUAYAS', '10': 'IMBABURA', '11': 'LOJA', '12': 'LOS RÍOS',
-  '13': 'MANABÍ', '14': 'MORONA SANTIAGO', '15': 'NAPO', '16': 'PASTAZA', '17': 'PICHINCHA', '18': 'TUNGURAHUA',
-  '19': 'ZAMORA CHINCHIPE', '20': 'GALÁPAGOS', '21': 'SUCUMBÍOS', '22': 'ORELLANA',
-  '23': 'SANTO DOMINGO DE LOS TSÁCHILAS', '24': 'SANTA ELENA',
-};
 export function provinciaDeIdentificacion(ident: string | null | undefined): string | null {
   const v = (ident ?? '').trim();
   if (!/^\d{10}(\d{3})?$/.test(v) || v === '9999999999999') return null;
-  return PROVINCIAS[v.slice(0, 2)] ?? null;
-}
-
-/** En el navegador: al escribir la cédula/RUC, llena «Dirección» con la provincia si está vacía (se puede cambiar) */
-export function autoProvincia(input: HTMLInputElement) {
-  const d = input.form?.elements.namedItem('direccion') as HTMLInputElement | null;
-  if (!d) return;
-  if (d.value === '' || d.value === d.dataset.auto) {
-    const p = provinciaDeIdentificacion(input.value) ?? '';
-    d.value = p;
-    d.dataset.auto = p;
-  }
+  return PROVINCIAS.find((p) => p.cod === v.slice(0, 2))?.nombre ?? null;
 }

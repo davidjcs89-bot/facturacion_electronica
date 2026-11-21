@@ -10,7 +10,7 @@ export default async function NuevoCliente({ searchParams }: { searchParams: SP 
   const [tiposId, tiposCli] = await Promise.all([tiposIdentificacion(), tiposCliente()]);
   return (
     <>
-      <Cabecera titulo="Nuevo cliente" />
+      <Cabecera titulo="Nuevo contacto" />
       <FormCliente cliente={{ tipo_cliente: p.tipo ? Number(p.tipo) : 1, identificacion: p.identificacion }} tiposId={tiposId} tiposCli={tiposCli} volver={p.volver} />
     </>
   );

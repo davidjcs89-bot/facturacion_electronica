@@ -114,7 +114,7 @@ export function SelectorCliente({ nombre = 'id_cliente', inicial, tipo, permitir
             {permitirConsumidorFinal && (
               <button type="button" className="btn" onClick={() => elegir(CONSUMIDOR_FINAL, null)}>Consumidor final</button>
             )}
-            <button type="button" className="btn" onClick={() => setVentana('nuevo')}>+ Nuevo cliente</button>
+            <button type="button" className="btn" onClick={() => setVentana('nuevo')}>+ Nuevo {etiqueta.toLowerCase()}</button>
           </div>
           {q.trim().length >= 2 && (
             <div className="card" style={{ position: 'absolute', zIndex: 30, left: 0, right: 0, top: '100%', marginTop: 4, padding: 0, maxHeight: 340, overflowY: 'auto' }}>
@@ -122,7 +122,7 @@ export function SelectorCliente({ nombre = 'id_cliente', inicial, tipo, permitir
                 <div className="muted" style={{ padding: 12 }}>Buscando…</div>
               ) : res.length === 0 ? (
                 <div className="muted" style={{ padding: 12 }}>
-                  No se encontró «{q.trim()}». Revise lo escrito o cree el cliente con «+ Nuevo cliente».
+                  No se encontró «{q.trim()}». Revise lo escrito o créelo con «+ Nuevo {etiqueta.toLowerCase()}».
                 </div>
               ) : (
                 res.map((c) => (

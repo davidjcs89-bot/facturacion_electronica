@@ -5,6 +5,7 @@ import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { entero, texto } from '@/lib/params';
 import { ajustarTipoIdentificacion, validarIdentificacion, emailValido, provinciaDeIdentificacion } from '@/lib/validaciones';
+import { PROVINCIAS, cantonesDe, direccionDeUbicacion } from '@/lib/ubicacion';
 
 export type EstadoForm = { error?: string; ok?: string };
 
@@ -20,6 +21,8 @@ async function guardarDatosCliente(form: FormData): Promise<{ error: string } | 
     telefono_fijo: texto(form.get('telefono_fijo')) || null,
     telefono_movil: texto(form.get('telefono_movil')) || null,
     direccion: texto(form.get('direccion')).toUpperCase() || null,
+    provincia: texto(form.get('provincia')).toUpperCase() || null,
+    ciudad: texto(form.get('ciudad')).toUpperCase() || null,
     correo: texto(form.get('correo')).toUpperCase() || null,
     codigo: texto(form.get('codigo')) || null,
   };
@@ -27,8 +30,12 @@ async function guardarDatosCliente(form: FormData): Promise<{ error: string } | 
   datos.tipo_identificacion = ajustarTipoIdentificacion(datos.tipo_identificacion, datos.identificacion);
   const errId = validarIdentificacion(datos.tipo_identificacion, datos.identificacion);
   if (errId) return { error: errId };
-  // Si no dio dirección, se usa la provincia de su cédula/RUC (la dirección no es obligatoria para el SRI)
-  if (!datos.direccion) datos.direccion = provinciaDeIdentificacion(datos.identificacion);
+  // Provincia: la elegida, o la de su cédula/RUC. La dirección no es obligatoria para el SRI:
+  // si no la dio, se usa «CIUDAD, PROVINCIA».
+  if (datos.provincia && !PROVINCIAS.some((p) => p.nombre === datos.provincia)) datos.provincia = null;
+  if (!datos.provincia) datos.provincia = provinciaDeIdentificacion(datos.identificacion);
+  if (datos.ciudad && !cantonesDe(datos.provincia).includes(datos.ciudad)) datos.ciudad = null;
+  if (!datos.direccion) datos.direccion = direccionDeUbicacion(datos.ciudad, datos.provincia);
   if (datos.correo) {
     const malos = datos.correo.split(/[;,]/).map((x) => x.trim()).filter((x) => x && !emailValido(x));
     if (malos.length) return { error: `Correo no válido: ${malos.join(', ')}` };

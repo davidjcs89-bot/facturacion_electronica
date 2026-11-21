@@ -20,7 +20,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="emisor">
             {emisor ? (
               <>
-                <span className="nombre-emisor">{emisor.razon_social}</span>
+                <span className="nombre-emisor" title={emisor.razon_social}>{emisor.nombre_comercial?.trim() || emisor.razon_social}</span>
                 <span className={`punto-amb ${emisor.tipo_ambiente === 2 ? 'prod' : 'prueba'}`}>{emisor.tipo_ambiente === 2 ? "Producción" : "Pruebas"}</span>
                 <small>
                   RUC {emisor.ruc} · Ambiente:{' '}
@@ -37,7 +37,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span>Más</span>
           </Link>
           <div className="usuario">
-            <span>{s.nombre || s.usuario}</span>
+            <Link href="/mi-cuenta" title="Mi cuenta">{s.nombre || s.usuario}</Link>
             <form action={cerrarSesion}>
               <button className="btn chico">Cerrar sesión</button>
             </form>
