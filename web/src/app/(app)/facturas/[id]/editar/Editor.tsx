@@ -313,7 +313,7 @@ export function BotonesFactura({ id, permitido, requisitos, total }: { id: numbe
           <input type="hidden" name="id" value={id} />
           <button className="btn peligro" onClick={(ev) => { if (!confirm('¿Eliminar este borrador?')) ev.preventDefault(); }}>Eliminar borrador</button>
         </form>
-        <form action={accion}>
+        <form action={accion} className="solo-escritorio">
           <input type="hidden" name="id" value={id} />
           <button className="btn primario" disabled={pend || !permitido || !listo} title={!listo ? 'Complete lo marcado con ✗' : undefined}
             onClick={(ev) => { if (!confirm('Se asignará el número, se firmará y se enviará al SRI. ¿Continuar?')) ev.preventDefault(); }}>
@@ -321,7 +321,7 @@ export function BotonesFactura({ id, permitido, requisitos, total }: { id: numbe
           </button>
         </form>
       </div>
-      {!listo && <p className="muted" style={{ marginBottom: 0, fontSize: '0.85rem' }}>El botón se habilita cuando todo esté en ✓.</p>}
+      {!listo && <p className="muted solo-escritorio" style={{ marginBottom: 0, fontSize: '0.85rem' }}>El botón se habilita cuando todo esté en ✓.</p>}
       {/* Celular: total y «Emitir» siempre a mano */}
       <form action={accion} className="barra-acciones-movil barra-emitir">
         <input type="hidden" name="id" value={id} />
