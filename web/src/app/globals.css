@@ -386,3 +386,13 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
     background: var(--bg); padding: 8px 0; margin-top: -8px; box-shadow: 0 6px 6px -6px rgba(16, 24, 40, 0.15);
   }
 }
+/* Nombres largos sin espacios (p. ej. BLUSA/E038A/BLACK/S/...) no deben ensanchar la pantalla */
+.cabecera > div:first-child { min-width: 0; }
+.cabecera h1, .cabecera .sub { overflow-wrap: anywhere; }
+.fila-revision .fila { gap: 10px; }
+.fila-revision .fila strong { min-width: 0; overflow-wrap: anywhere; }
+.fila-revision .fila > span { flex-shrink: 0; white-space: nowrap; }
+@media (max-width: 860px) {
+  html, body { overflow-x: clip; }
+  .tabla.tarjetas td[data-r="titulo"], .tab-alerta strong, .card { overflow-wrap: anywhere; }
+}
