@@ -14,8 +14,11 @@ async function vocabulario(emisorId: number) {
     select p.nombre from producto p where p.id_emisor = ${emisorId} order by p.id desc limit 120`;
   const palabras = new Set<string>();
   for (const f of filas) for (const w of f.nombre.split(/[\s/,.-]+/)) if (w.length > 2) palabras.add(w.toLowerCase());
-  const lista = [...palabras].slice(0, 150).join(', ');
-  return `Factura de venta en Ecuador. Consumidor final, cédula, RUC, efectivo, tarjeta de débito, tarjeta de crédito, transferencia, descuento. Productos: ${lista}.`;
+  const base = 'Factura en Ecuador. Consumidor final, cédula, RUC, efectivo, tarjeta, transferencia, descuento. Productos: ';
+  // Groq acepta como máximo 896 caracteres de pista
+  let lista = '';
+  for (const w of palabras) { const s = lista ? `${lista}, ${w}` : w; if (base.length + s.length + 1 > 880) break; lista = s; }
+  return `${base}${lista}.`;
 }
 
 /** Recibe la grabación del celular y devuelve el texto (Groq Whisper, gratis) */
