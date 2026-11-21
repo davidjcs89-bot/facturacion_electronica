@@ -37,7 +37,7 @@ export function GruposMas({ grupos }: { grupos: Grupo[] }) {
                     <span>{i.texto}</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       {i.aviso ? <span className="contador">{i.aviso}</span> : null}
-                      <span aria-hidden="true">›</span>
+                      <span aria-hidden="true" style={{ color: 'var(--muted)' }}>›</span>
                     </span>
                   </Link>
                 ))}
