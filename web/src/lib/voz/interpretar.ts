@@ -1,3 +1,4 @@
+import { registrarUsoVoz } from '../usoVoz';
 import 'server-only';
 import { sql } from '../db';
 import { ID_CONSUMIDOR_FINAL } from '../constantes';
@@ -201,7 +202,8 @@ Responde siempre con la herramienta "borrador".`;
     }),
     signal: AbortSignal.timeout(45_000),
   });
-  const j = (await r.json().catch(() => ({}))) as { content?: { type: string; input?: Salida }[]; error?: { message: string } };
+  const j = (await r.json().catch(() => ({}))) as { content?: { type: string; input?: Salida }[]; error?: { message: string }; usage?: { input_tokens?: number; output_tokens?: number } };
+  if (r.ok) await registrarUsoVoz({ emisor: emisorId, tipo: 'claude', entrada: j.usage?.input_tokens, salida: j.usage?.output_tokens });
   if (!r.ok) throw new Error(`No se pudo interpretar el dictado (${j.error?.message ?? r.status})`);
   const s = j.content?.find((c) => c.type === 'tool_use')?.input;
   if (!s) throw new Error('No se pudo interpretar el dictado');

@@ -1,4 +1,5 @@
 'use server';
+import { registrarUsoVoz } from '@/lib/usoVoz';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
@@ -141,6 +142,7 @@ export async function crearDesdeVoz(b: BorradorVoz, idPunto: number, modo: 'emit
       return f.id;
     });
     await recalcularFactura(id);
+    await registrarUsoVoz({ emisor: s.emisorId, tipo: 'factura' });
     if (b.forma_pago_id) {
       const [t] = await sql<{ total: number }[]>`select total::float total from factura where id = ${id}`;
       await sql`insert into detalle_pago_factura (id_factura, id_form_pago, valor, plazo, timpo) values (${id}, ${b.forma_pago_id}, ${t.total}, ${null}, 'NINGUNO')`;

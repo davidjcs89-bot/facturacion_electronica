@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { requerirSesion } from '@/lib/auth';
+import { requerirSesion, ROL_ADMIN_SISTEMA } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { Cabecera } from '@/components/ui';
 import { money, fecha } from '@/lib/formato';
 import { vozHabilitada } from '@/lib/voz/habilitada';
 import { datosTablero } from '@/lib/tablero';
+import { alertasSalud } from '@/lib/salud';
 
 export default async function Inicio() {
   const s = await requerirSesion();
@@ -21,6 +22,7 @@ export default async function Inicio() {
           <div className="card kpi"><div className="valor">{r.emisores}</div><div className="etiqueta">Emisores</div></div>
           <div className="card kpi"><div className="valor">{r.usuarios}</div><div className="etiqueta">Usuarios activos</div></div>
         </div>
+        <AlertaSalud />
         <p><Link href="/admin/emisores">Elija un emisor</Link> para trabajar con sus comprobantes.</p>
         <Avisos avisos={avisos} />
       </>
@@ -28,7 +30,7 @@ export default async function Inicio() {
   }
 
   const e = s.emisorId;
-  const t = await datosTablero(e);
+  const [t, salud] = await Promise.all([datosTablero(e), s.rol === ROL_ADMIN_SISTEMA ? alertasSalud() : Promise.resolve([])]);
   const v = t.ventas, o = t.otros;
   const hoyTxt = new Intl.DateTimeFormat('es-EC', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'America/Guayaquil' }).format(new Date());
   const mesAnt = new Intl.DateTimeFormat('es-EC', { month: 'short', timeZone: 'America/Guayaquil' })
@@ -38,6 +40,7 @@ export default async function Inicio() {
   const nombre = n0.charAt(0).toUpperCase() + n0.slice(1).toLowerCase();
 
   const alertas: { href: string; n: number | string; t: string; sub: string; tono: 'rojo' | 'ambar' | 'gris' }[] = [];
+  if (salud.length) alertas.push({ href: '/admin/salud', n: salud.length, t: 'Salud del sistema', sub: salud.map((a) => a.texto).join(' · '), tono: 'rojo' });
   if (v.no_aut) alertas.push({ href: '/facturas?estado=7', n: v.no_aut, t: 'No autorizados hoy', sub: `El SRI rechazó ${v.no_aut} ${v.no_aut === 1 ? 'factura' : 'facturas'} de hoy`, tono: 'rojo' });
   if (t.correosFallidos) alertas.push({ href: '/correos-fallidos', n: t.correosFallidos, t: 'Correos que fallaron', sub: 'Comprobantes que no llegaron al cliente (7 días)', tono: 'rojo' });
   if (v.en_proceso) alertas.push({ href: '/facturas', n: v.en_proceso, t: 'En proceso en el SRI', sub: 'Enviadas hoy, esperando autorización', tono: 'gris' });
@@ -107,6 +110,16 @@ export default async function Inicio() {
       </div>
       <Avisos avisos={avisos} />
     </div>
+  );
+}
+
+async function AlertaSalud() {
+  const a = await alertasSalud();
+  if (!a.length) return null;
+  return (
+    <Link href="/admin/salud" className="tab-alerta rojo" style={{ marginBottom: 14 }}>
+      <strong>{a.length}</strong><span><strong>Salud del sistema</strong><span>{a.map((x) => x.texto).join(' · ')}</span></span><span aria-hidden="true">›</span>
+    </Link>
   );
 }
 

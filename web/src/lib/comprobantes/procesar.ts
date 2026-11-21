@@ -330,14 +330,15 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
     `<p>Adjunto encontrará el RIDE en PDF y el archivo XML autorizado por el SRI.</p>` +
     (datos.total != null ? `<p>Valor total: $${money(datos.total)}</p>` : '') +
     `<p>Atentamente,</p><p>${e.razon_social}</p>`;
+  const via: { viaSistema?: boolean } = {};
   const err = await enviarCorreoEmisor(e.id, destino, asunto, html, [
     { nombre: `${e.clave}.pdf`, contenido: d.ride, tipo: 'application/pdf' },
     ...(d.xml_retornado ? [{ nombre: `${e.clave}.xml`, contenido: d.xml_retornado, tipo: 'application/xml' }] : []),
-  ]);
+  ], via);
   if (err) await registrarLog(`Correo ${m.nombre} ${id}: ${err}`);
   try {
-    await sql`insert into envio_correo (id_emisor, id_tipo_comprobante, id_comprobante, destino, ok, error)
-      values (${e.id}, ${tipoDoc}, ${id}, ${destino}, ${!err}, ${err ? err.slice(0, 500) : null})`;
+    await sql`insert into envio_correo (id_emisor, id_tipo_comprobante, id_comprobante, destino, ok, error, via_sistema)
+      values (${e.id}, ${tipoDoc}, ${id}, ${destino}, ${!err}, ${err ? err.slice(0, 500) : null}, ${!!via.viaSistema})`;
   } catch { /* registro opcional */ }
   return err;
 }

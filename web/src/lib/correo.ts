@@ -120,7 +120,7 @@ export async function cuentaDelEmisor(idEmisor: number): Promise<(CuentaSmtp & {
  * - Si no lo configuró, aún no lo verificó, o el envío por su correo falla, sale desde el correo general
  *   del sistema (respaldo), mostrando el nombre comercial de la empresa y con «responder a» su correo.
  */
-export async function enviarCorreoEmisor(idEmisor: number, destino: string, asunto: string, html: string, adjuntos: Adjunto[] = []): Promise<string | null> {
+export async function enviarCorreoEmisor(idEmisor: number, destino: string, asunto: string, html: string, adjuntos: Adjunto[] = [], info?: { viaSistema?: boolean }): Promise<string | null> {
   let c: (CuentaSmtp & { verificado: boolean }) | null = null;
   try {
     c = await cuentaDelEmisor(idEmisor);
@@ -129,7 +129,7 @@ export async function enviarCorreoEmisor(idEmisor: number, destino: string, asun
   }
   if (c?.verificado) {
     const error = await enviarCon(c, destino, asunto, html, adjuntos);
-    if (!error) return null;
+    if (!error) { if (info) info.viaSistema = false; return null; }
     await registrarLog(`Correo de la empresa ${idEmisor} falló (${error}); se envió por el correo del sistema a ${destino}`);
   }
   let nombre: string | null = c?.nombre ?? null;
@@ -139,22 +139,29 @@ export async function enviarCorreoEmisor(idEmisor: number, destino: string, asun
       nombre = e?.n ?? null;
     } catch { nombre = null; }
   }
-  return enviarCorreo(destino, asunto, html, adjuntos, { nombre, responder_a: c?.direccion ?? null, copia_a: c?.copia_a ?? null });
+  if (info) info.viaSistema = true;
+  return enviarCorreo(destino, asunto, html, adjuntos, { nombre, responder_a: c?.direccion ?? null, copia_a: c?.copia_a ?? null, idEmisor });
 }
 
 /** Correo del sistema (recuperar clave, avisos): primera cuenta de cuentas_correo, como la app anterior */
 export async function enviarCorreo(
   destino: string, asunto: string, html: string, adjuntos: Adjunto[] = [],
-  como?: { nombre?: string | null; responder_a?: string | null; copia_a?: string | null },
+  como?: { nombre?: string | null; responder_a?: string | null; copia_a?: string | null; idEmisor?: number | null },
 ): Promise<string | null> {
   const [cuenta] = await sql<{ direccion: string; nombre_mostrar: string; servidor: string; puerto: number; ssl: boolean; clave: string }[]>`
     select direccion, nombre_mostrar, servidor, puerto, ssl, clave from cuentas_correo order by id limit 1`;
   if (!cuenta) return 'No hay cuenta de correo del sistema configurada';
-  return enviarCon({
+  const error = await enviarCon({
     direccion: cuenta.direccion, nombre: como?.nombre || cuenta.nombre_mostrar, servidor: cuenta.servidor, puerto: cuenta.puerto,
     seguridad: cuenta.puerto === 465 ? 'SSL' : cuenta.ssl ? 'STARTTLS' : 'OPCIONAL', usuario: cuenta.direccion, clave: cuenta.clave,
     responder_a: como?.responder_a ?? null, copia_a: como?.copia_a ?? null,
   }, destino, asunto, html, adjuntos);
+  // Cuenta los envíos del Gmail del sistema (límite diario de Gmail) para el panel de salud
+  try {
+    await sql`insert into envio_correo (id_emisor, destino, ok, error, via_sistema)
+      values (${como?.idEmisor ?? null}, ${destino}, ${!error}, ${error ? error.slice(0, 500) : null}, true)`;
+  } catch { /* sin registro */ }
+  return error;
 }
 
 export async function registrarLog(mensaje: string) {

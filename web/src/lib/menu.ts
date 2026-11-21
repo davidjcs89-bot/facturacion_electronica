@@ -67,6 +67,7 @@ export const MENU: GrupoMenu[] = [
     titulo: 'Administración',
     soloAdminSistema: true,
     items: [
+      { href: '/admin/salud', texto: 'Salud del sistema' },
       { href: '/admin/emisores', texto: 'Emisores' },
       { href: '/admin/usuarios', texto: 'Usuarios' },
       { href: '/admin/avisos', texto: 'Avisos' },

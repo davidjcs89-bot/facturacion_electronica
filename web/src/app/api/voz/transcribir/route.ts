@@ -1,3 +1,4 @@
+import { registrarUsoVoz } from '@/lib/usoVoz';
 import { NextResponse } from 'next/server';
 import { sesionActual } from '@/lib/session';
 import { sql } from '@/lib/db';
@@ -54,6 +55,8 @@ export async function POST(req: Request) {
     console.error('voz/transcribir', r.status, j.error?.message);
     return NextResponse.json({ error: r.status === 429 ? 'Se alcanzó el límite gratuito de Groq por este minuto. Espere un momento.' : 'No se pudo pasar la voz a texto' }, { status: 502 });
   }
+  const restantes = Number(r.headers.get('x-ratelimit-remaining-requests'));
+  await registrarUsoVoz({ emisor: s.emisorId, tipo: 'audio', restantes: Number.isFinite(restantes) ? restantes : null });
   // Whisper a veces "inventa" frases con silencio; las descartamos
   const texto = (j.text ?? '').trim();
   if (/^(gracias( por ver)?|subtítulos .*|¡?suscríbete.*)[.!]*$/i.test(texto)) return NextResponse.json({ texto: '' });

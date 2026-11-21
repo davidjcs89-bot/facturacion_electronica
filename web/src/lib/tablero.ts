@@ -83,7 +83,7 @@ export async function datosTablero(e: number) {
   const correosQ = sql<{ n: number }[]>`
     select count(*)::int n from (
       select distinct e1.id_tipo_comprobante, e1.id_comprobante from envio_correo e1
-      where e1.id_emisor = ${e} and not e1.ok
+      where e1.id_emisor = ${e} and not e1.ok and e1.id_tipo_comprobante is not null
         and e1.fecha >= (now() at time zone 'America/Guayaquil') - interval '7 days'
         and not exists (select 1 from envio_correo e2 where e2.id_emisor = e1.id_emisor
           and e2.id_tipo_comprobante = e1.id_tipo_comprobante and e2.id_comprobante = e1.id_comprobante
@@ -108,7 +108,7 @@ export async function correosFallidos(e: number) {
       select distinct on (e1.id_tipo_comprobante, e1.id_comprobante)
         e1.id_tipo_comprobante tipo, e1.id_comprobante id, e1.destino, e1.error, e1.fecha
       from envio_correo e1
-      where e1.id_emisor = ${e} and not e1.ok
+      where e1.id_emisor = ${e} and not e1.ok and e1.id_tipo_comprobante is not null
         and e1.fecha >= (now() at time zone 'America/Guayaquil') - interval '7 days'
         and not exists (select 1 from envio_correo e2 where e2.id_emisor = e1.id_emisor
           and e2.id_tipo_comprobante = e1.id_tipo_comprobante and e2.id_comprobante = e1.id_comprobante
