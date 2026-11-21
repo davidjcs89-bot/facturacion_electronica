@@ -77,6 +77,9 @@ export async function clienteXml(idCliente: number) {
     from clientes c join tipo_identificacion t on t.id = c.tipo_identificacion
     where c.id = ${idCliente}`;
   if (!c) throw new Error('Cliente no encontrado');
+  // Clientes antiguos guardados con el tipo equivocado: 13 dígitos terminados en 001… es RUC; 10 dígitos es cédula.
+  if (c.codigo_tipo === '05' && /^\d{13}$/.test(c.identificacion) && Number(c.identificacion.slice(10)) >= 1) c.codigo_tipo = '04';
+  else if (c.codigo_tipo === '04' && /^\d{10}$/.test(c.identificacion)) c.codigo_tipo = '05';
   return c;
 }
 
