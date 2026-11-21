@@ -7,7 +7,7 @@ import { calcularLinea } from '@/lib/comprobantes/calculos';
 import { recalcularFactura } from '@/lib/comprobantes/factura';
 import { emitir } from '@/lib/comprobantes/procesar';
 import { ESTADO, ID_CONSUMIDOR_FINAL, MONTO_MAXIMO_CONSUMIDOR_FINAL, TIPO_IDENTIFICACION } from '@/lib/constantes';
-import { validarIdentificacion, emailValido } from '@/lib/validaciones';
+import { validarIdentificacion, emailValido, provinciaDeIdentificacion } from '@/lib/validaciones';
 import { hoyEcuadorISO } from '@/lib/formato';
 import { interpretarDictado, type BorradorVoz } from '@/lib/voz/interpretar';
 import { vozHabilitada } from '@/lib/voz/habilitada';
@@ -107,7 +107,7 @@ export async function crearDesdeVoz(b: BorradorVoz, idPunto: number, modo: 'emit
       if (ya) idCliente = ya.id;
       else {
         const [c] = await sql<{ id: number }[]>`
-          insert into clientes ${sql({ id_emisor: s.emisorId, nombre_cliente: n.nombre.toUpperCase(), tipo_identificacion: tipo, tipo_cliente: 1, identificacion: n.identificacion, correo })}
+          insert into clientes ${sql({ id_emisor: s.emisorId, nombre_cliente: n.nombre.toUpperCase(), tipo_identificacion: tipo, tipo_cliente: 1, identificacion: n.identificacion, correo, direccion: provinciaDeIdentificacion(n.identificacion) })}
           returning id`;
         idCliente = c.id;
       }
@@ -116,8 +116,8 @@ export async function crearDesdeVoz(b: BorradorVoz, idPunto: number, modo: 'emit
     if (idCliente !== ID_CONSUMIDOR_FINAL) {
       const [ok] = await sql`select 1 from clientes where id = ${idCliente} and id_emisor = ${s.emisorId}`;
       if (!ok) return { mensaje: 'Cliente no válido' };
-    } else if (resumen.total > MONTO_MAXIMO_CONSUMIDOR_FINAL) {
-      return { mensaje: `Una factura a Consumidor Final no puede superar $${MONTO_MAXIMO_CONSUMIDOR_FINAL}: diga o elija el cliente` };
+    } else if (resumen.total >= MONTO_MAXIMO_CONSUMIDOR_FINAL) {
+      return { mensaje: `Una factura a Consumidor Final debe ser menor a $${MONTO_MAXIMO_CONSUMIDOR_FINAL}: diga o elija el cliente` };
     }
     if (b.forma_pago_id) {
       const [ok] = await sql`select 1 from formas_de_pago where id = ${b.forma_pago_id}`;

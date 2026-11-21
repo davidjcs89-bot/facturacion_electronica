@@ -32,11 +32,11 @@ export function FormProducto({ p, iva, ice, irbpnr, tipos, atributos, ivaPorDefe
         <div className="campo"><label>Código principal (SKU) *</label><input name="codigo" defaultValue={p.codigo} required maxLength={25} /></div>
         <div className="campo"><label>Código auxiliar</label><input name="codigo_auxiliar" defaultValue={p.codigo_auxiliar ?? ''} maxLength={25} /></div>
         <div className="campo"><label>Tipo *</label>
-          <select name="tipo_producto" defaultValue={p.tipo_producto ?? 1}>{tipos.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}</select>
+          <select name="tipo_producto" defaultValue={p.tipo_producto ?? 1}>{tipos.map((t) => <option key={t.id} value={t.id}>{t.id === 1 ? "Artículo" : t.descripcion}</option>)}</select>
         </div>
         <div className="campo ancho"><label>Nombre *</label><input name="nombre" defaultValue={p.nombre} required maxLength={300} /></div>
         <div className="campo"><label>IVA *</label>
-          <select name="codigo_iva" value={idIva} onChange={(ev) => setIdIva(Number(ev.target.value))}>{iva.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}</select>
+          <select name="codigo_iva" value={idIva} onChange={(ev) => setIdIva(Number(ev.target.value))}>{iva.map((t) => <option key={t.id} value={t.id}>{t.id === 1 ? "Artículo" : t.descripcion}</option>)}</select>
         </div>
         <div className="campo"><label>Precio sin IVA *</label><input name="precio" type="number" step="0.0001" min="0.01" value={precio} onChange={(ev) => setPrecio(ev.target.value)} required /></div>
         <div className="campo"><label>P.V.P. con IVA</label>
@@ -44,10 +44,10 @@ export function FormProducto({ p, iva, ice, irbpnr, tipos, atributos, ivaPorDefe
         </div>
         <div className="campo"><label>Costo</label><input name="costo_producto" type="number" step="0.0001" min="0" defaultValue={p.costo_producto != null ? Number(p.costo_producto) : ''} /></div>
         <div className="campo"><label>ICE *</label>
-          <select name="codigo_ice" defaultValue={p.codigo_ice ?? 99}>{ice.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}</select>
+          <select name="codigo_ice" defaultValue={p.codigo_ice ?? 99}>{ice.map((t) => <option key={t.id} value={t.id}>{t.id === 1 ? "Artículo" : t.descripcion}</option>)}</select>
         </div>
         <div className="campo"><label>IRBPNR *</label>
-          <select name="codigo_irbpnr" defaultValue={p.codigo_irbpnr ?? 100}>{irbpnr.map((t) => <option key={t.id} value={t.id}>{t.descripcion}</option>)}</select>
+          <select name="codigo_irbpnr" defaultValue={p.codigo_irbpnr ?? 100}>{irbpnr.map((t) => <option key={t.id} value={t.id}>{t.id === 1 ? "Artículo" : t.descripcion}</option>)}</select>
         </div>
         <div className="campo"><label>Fecha de elaboración</label><input type="date" name="fecha_elavoracionproducto" defaultValue={p.fecha_elavoracionproducto ?? ''} /></div>
         <div className="campo"><label>Fecha de caducidad</label><input type="date" name="fecha_caducidadproducto" defaultValue={p.fecha_caducidadproducto ?? ''} /></div>

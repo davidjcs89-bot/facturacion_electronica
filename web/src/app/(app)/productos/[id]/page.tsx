@@ -29,9 +29,9 @@ export default async function EditarProducto({ params, searchParams }: { params:
         <Link className="btn" href={`/reportes/kardex?producto=${id}`}>Kardex</Link>
         <Link className="btn" href="/productos">Volver</Link>
       </Cabecera>
-      {p.guardado && <Alerta tipo="ok">Producto guardado.</Alerta>}
-      {IVA_ANTIGUOS.includes(prod.codigo_iva) && <Alerta tipo="aviso">Este producto tenía IVA 12 % / 14 %, que ya no rige: se propone 15 %. Revise y guarde para corregirlo.</Alerta>}
-      {p.error === 'uso' && <Alerta tipo="error">No se puede eliminar: el producto está usado en comprobantes o movimientos de inventario.</Alerta>}
+      {p.guardado && <Alerta tipo="ok">Guardado.</Alerta>}
+      {IVA_ANTIGUOS.includes(prod.codigo_iva) && <Alerta tipo="aviso">Este artículo tenía IVA 12 % / 14 %, que ya no rige: se propone 15 %. Revise y guarde para corregirlo.</Alerta>}
+      {p.error === 'uso' && <Alerta tipo="error">No se puede eliminar: está usado en comprobantes o movimientos de inventario.</Alerta>}
       <FormProducto
         p={{ ...prod, codigo_iva: IVA_ANTIGUOS.includes(prod.codigo_iva) ? IVA_VIGENTE : prod.codigo_iva, fecha_elavoracionproducto: fechaInput(prod.fecha_elavoracionproducto), fecha_caducidadproducto: fechaInput(prod.fecha_caducidadproducto) }}
         {...op} atributos={atributos} ivaPorDefecto={IVA_ANTIGUOS.includes(prod.codigo_iva) ? IVA_VIGENTE : prod.codigo_iva} />
@@ -45,7 +45,7 @@ export default async function EditarProducto({ params, searchParams }: { params:
         <div className="card">
           <h2>Eliminar</h2>
           <p className="muted">Solo se puede eliminar si no se ha usado en ningún comprobante.</p>
-          <form action={eliminarProducto}><input type="hidden" name="id" value={id} /><BotonBorrar texto="Eliminar producto" /></form>
+          <form action={eliminarProducto}><input type="hidden" name="id" value={id} /><BotonBorrar texto="Eliminar" /></form>
         </div>
       </div>
     </>

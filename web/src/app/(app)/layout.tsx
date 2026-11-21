@@ -21,10 +21,10 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             {emisor ? (
               <>
                 <span className="nombre-emisor">{emisor.razon_social}</span>
-                <span className={`punto-amb ${emisor.tipo_ambiente === 2 ? 'prod' : 'prueba'}`}>{emisor.ambiente}</span>
+                <span className={`punto-amb ${emisor.tipo_ambiente === 2 ? 'prod' : 'prueba'}`}>{emisor.tipo_ambiente === 2 ? "Producción" : "Pruebas"}</span>
                 <small>
                   RUC {emisor.ruc} · Ambiente:{' '}
-                  <span className={`badge ${emisor.tipo_ambiente === 2 ? 'e6' : 'e1'}`}>{emisor.ambiente}</span>
+                  <span className={`badge ${emisor.tipo_ambiente === 2 ? 'e6' : 'e1'}`}>{emisor.tipo_ambiente === 2 ? "Producción" : "Pruebas"}</span>
                   {esAdmin && <> · <Link href="/admin/emisores">cambiar emisor</Link></>}
                 </small>
               </>

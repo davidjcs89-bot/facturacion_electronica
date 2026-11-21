@@ -159,8 +159,8 @@ export async function agregarLinea(_p: Estado, form: FormData): Promise<Estado> 
 
 async function validarConsumidorFinal(id: number): Promise<Estado> {
   const [f] = await sql<{ total: number; id_cliente: number }[]>`select total, id_cliente from factura where id = ${id}`;
-  if (f.id_cliente === ID_CONSUMIDOR_FINAL && Number(f.total) > MONTO_MAXIMO_CONSUMIDOR_FINAL) {
-    return { mensaje: `Atención: el total supera los $${MONTO_MAXIMO_CONSUMIDOR_FINAL} permitidos para Consumidor Final. Cambie el cliente antes de emitir.` };
+  if (f.id_cliente === ID_CONSUMIDOR_FINAL && Number(f.total) >= MONTO_MAXIMO_CONSUMIDOR_FINAL) {
+    return { mensaje: `Atención: el total llega a $${MONTO_MAXIMO_CONSUMIDOR_FINAL} o más: desde ese valor la ley exige los datos del cliente. Cambie el cliente antes de emitir.` };
   }
   return { ok: true };
 }
@@ -292,8 +292,8 @@ export async function emitirFactura(_p: Estado, form: FormData): Promise<Estado>
     if (!f.lineas) return { mensaje: 'Agregue al menos un producto' };
     if (!f.pagos) return { mensaje: 'Agregue la forma de pago' };
     if (Math.abs(Number(f.suma_pagos) - Number(f.total)) > 0.009) return { mensaje: `La suma de los pagos ($${Number(f.suma_pagos).toFixed(2)}) no coincide con el total ($${Number(f.total).toFixed(2)})` };
-    if (f.id_cliente === ID_CONSUMIDOR_FINAL && Number(f.total) > MONTO_MAXIMO_CONSUMIDOR_FINAL) {
-      return { mensaje: `Una factura a Consumidor Final no puede superar $${MONTO_MAXIMO_CONSUMIDOR_FINAL}` };
+    if (f.id_cliente === ID_CONSUMIDOR_FINAL && Number(f.total) >= MONTO_MAXIMO_CONSUMIDOR_FINAL) {
+      return { mensaje: `Una factura a Consumidor Final debe ser menor a $${MONTO_MAXIMO_CONSUMIDOR_FINAL}` };
     }
     const r = await emitir(1, id, s.emisorId);
     revalidatePath('/facturas');

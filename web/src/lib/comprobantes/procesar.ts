@@ -335,6 +335,10 @@ export async function enviarAlReceptor(tipoDoc: number, id: number, destinoManua
     ...(d.xml_retornado ? [{ nombre: `${e.clave}.xml`, contenido: d.xml_retornado, tipo: 'application/xml' }] : []),
   ]);
   if (err) await registrarLog(`Correo ${m.nombre} ${id}: ${err}`);
+  try {
+    await sql`insert into envio_correo (id_emisor, id_tipo_comprobante, id_comprobante, destino, ok, error)
+      values (${e.id}, ${tipoDoc}, ${id}, ${destino}, ${!err}, ${err ? err.slice(0, 500) : null})`;
+  } catch { /* registro opcional */ }
   return err;
 }
 

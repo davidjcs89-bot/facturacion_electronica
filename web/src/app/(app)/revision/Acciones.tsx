@@ -50,7 +50,7 @@ export function CorregirIva({ id, todos }: { id?: number; todos?: number }) {
     <form action={f} style={{ display: 'inline' }}>
       {id && <input type="hidden" name="id" value={id} />}
       <button className={`btn chico ${todos ? 'primario' : ''}`} disabled={p}
-        onClick={(e) => { if (!confirm(todos ? `¿Cambiar a IVA 15 % los ${todos} productos con IVA antiguo?` : '¿Cambiar este producto a IVA 15 %?')) e.preventDefault(); }}>
+        onClick={(e) => { if (!confirm(todos ? `¿Cambiar a IVA 15 % los ${todos} artículos y servicios con IVA antiguo?` : '¿Cambiar este artículo a IVA 15 %?')) e.preventDefault(); }}>
         {p ? 'Cambiando…' : todos ? `Cambiar los ${todos} a IVA 15 %` : 'Cambiar a IVA 15 %'}
       </button>
       {r.mensaje && <span className={r.ok ? '' : 'muted'} style={{ marginLeft: 8, fontSize: '0.85rem' }}>{r.mensaje}</span>}

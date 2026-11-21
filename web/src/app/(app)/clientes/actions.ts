@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { entero, texto } from '@/lib/params';
-import { ajustarTipoIdentificacion, validarIdentificacion, emailValido } from '@/lib/validaciones';
+import { ajustarTipoIdentificacion, validarIdentificacion, emailValido, provinciaDeIdentificacion } from '@/lib/validaciones';
 
 export type EstadoForm = { error?: string; ok?: string };
 
@@ -27,6 +27,8 @@ async function guardarDatosCliente(form: FormData): Promise<{ error: string } | 
   datos.tipo_identificacion = ajustarTipoIdentificacion(datos.tipo_identificacion, datos.identificacion);
   const errId = validarIdentificacion(datos.tipo_identificacion, datos.identificacion);
   if (errId) return { error: errId };
+  // Si no dio dirección, se usa la provincia de su cédula/RUC (la dirección no es obligatoria para el SRI)
+  if (!datos.direccion) datos.direccion = provinciaDeIdentificacion(datos.identificacion);
   if (datos.correo) {
     const malos = datos.correo.split(/[;,]/).map((x) => x.trim()).filter((x) => x && !emailValido(x));
     if (malos.length) return { error: `Correo no válido: ${malos.join(', ')}` };

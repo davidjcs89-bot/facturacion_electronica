@@ -10,7 +10,7 @@ export default async function NuevoProducto() {
   const [e] = await sql<{ id_impuesto_iva_actual: number }[]>`select id_impuesto_iva_actual from emisor where id = ${s.emisorId}`;
   return (
     <>
-      <Cabecera titulo="Nuevo producto" />
+      <Cabecera titulo="Nuevo artículo o servicio" />
       <FormProducto p={{}} {...op} atributos={[]} ivaPorDefecto={e?.id_impuesto_iva_actual ?? 101} />
     </>
   );
