@@ -65,7 +65,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
         </div>
         <div className="campo"><label>Desde</label><input type="date" name="desde" defaultValue={p.desde ?? ''} /></div>
         <div className="campo"><label>Hasta</label><input type="date" name="hasta" defaultValue={p.hasta ?? ''} /></div>
-        <button className="btn">Filtrar</button>
+        <button className="btn primario">Aplicar filtro</button>
       </form>
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay facturas con ese criterio.</Vacio> : (
