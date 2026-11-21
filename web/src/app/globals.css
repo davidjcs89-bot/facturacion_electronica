@@ -159,12 +159,18 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
 }
 
 /* ---------- celular: encabezado delgado, barra fija abajo y menú «Más» ---------- */
-.punto-amb, .nav-movil { display: none; }
+.punto-amb, .nav-movil, .mas-movil { display: none; }
 @media (max-width: 860px) {
   .sidebar, .btn.menu-movil { display: none !important; }
   .topbar { padding: calc(8px + env(safe-area-inset-top)) 16px 8px; min-height: 52px; }
   .topbar .usuario, .topbar .emisor small { display: none; }
-  .topbar .emisor { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+  .topbar .emisor { display: flex; flex-direction: column; min-width: 0; gap: 1px; flex: 1 1 auto; }
+  .topbar { flex-wrap: nowrap; }
+  .mas-movil {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; flex-shrink: 0;
+    min-width: 48px; min-height: 44px; color: var(--text); font-size: 11px; text-decoration: none; margin-right: -6px;
+  }
+  .mas-movil:hover { text-decoration: none; color: var(--primary); }
   .topbar .nombre-emisor { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .punto-amb { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; }
   .punto-amb::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }

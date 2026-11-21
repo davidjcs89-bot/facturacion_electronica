@@ -21,7 +21,7 @@ function Icono({ n, s = 22 }: { n: string; s?: number }) {
   return <svg width={s} height={s} viewBox="0 0 24 24" aria-hidden="true" {...P}>{d[n]}</svg>;
 }
 
-/** Barra fija de abajo en el celular: Inicio · Facturas · + Nueva · Clientes · Compras · Más */
+/** Barra fija de abajo en el celular: Inicio · Facturas · + Nueva · Clientes · Compras (Más va arriba a la derecha) */
 export function NavMovil({ voz, tieneEmisor }: { voz: boolean; tieneEmisor: boolean }) {
   const ruta = usePathname();
   const [hoja, setHoja] = useState(false);
@@ -47,7 +47,6 @@ export function NavMovil({ voz, tieneEmisor }: { voz: boolean; tieneEmisor: bool
         ) : <span style={{ minWidth: 60 }} />}
         <Link href="/clientes" className={activo('/clientes') ? 'on' : ''}><Icono n="clientes" /><span>Clientes</span></Link>
         <Link href="/compras" className={activo('/compras') ? 'on' : ''}><Icono n="compras" /><span>Compras</span></Link>
-        <Link href="/mas" className={activo('/mas') ? 'on' : ''}><Icono n="mas" /><span>Más</span></Link>
       </nav>
       {hoja && (
         <div className="hoja-fondo" onClick={() => setHoja(false)}>
