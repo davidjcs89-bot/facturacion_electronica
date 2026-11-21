@@ -230,7 +230,9 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .tabla.tarjetas tbody tr:active { background: #f1f4f9; }
   .tabla.tarjetas td[data-r="monto"], .tabla.tarjetas td.num { text-align: right; }
 
-  .filtros { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filtros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .filtros .campo label { font-size: 12px; }
+  .filtros .campo input, .filtros .campo select { width: 100%; min-width: 0; padding-left: 6px; padding-right: 4px; }
   .filtros .campo, .filtros .campo.busqueda { min-width: 0; }
   .filtros .campo.busqueda { grid-column: 1 / -1; }
   .filtros > .btn { grid-column: 1 / -1; min-height: 44px; }
