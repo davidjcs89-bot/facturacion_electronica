@@ -9,7 +9,7 @@ import { contarRevision } from '@/lib/revision';
 export default async function Inicio() {
   const s = await requerirSesion();
   const avisos = await sql<{ id: number; message: string; createon: Date }[]>`
-    select id, message, createon from avisos order by createon desc limit 5`;
+    select id, message, createon from avisos where activo order by createon desc limit 5`;
 
   if (!s.emisorId) {
     const [r] = await sql<{ emisores: number; usuarios: number }[]>`

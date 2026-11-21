@@ -17,6 +17,14 @@ export async function guardarAviso(_p: EstadoForm, form: FormData): Promise<Esta
   return { ok: true, mensaje: id ? 'Aviso actualizado' : 'Aviso publicado' };
 }
 
+/** Muestra u oculta el aviso en el inicio de todas las empresas */
+export async function alternarAviso(form: FormData) {
+  await requerirAdminSistema();
+  await sql`update avisos set activo = not activo where id = ${Number(form.get('id'))}`;
+  revalidatePath('/admin/avisos');
+  revalidatePath('/');
+}
+
 export async function eliminarAviso(form: FormData) {
   await requerirAdminSistema();
   await sql`delete from avisos where id = ${Number(form.get('id'))}`;
