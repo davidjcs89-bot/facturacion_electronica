@@ -116,8 +116,8 @@ export async function crearDesdeVoz(b: BorradorVoz, idPunto: number, modo: 'emit
     if (idCliente !== ID_CONSUMIDOR_FINAL) {
       const [ok] = await sql`select 1 from clientes where id = ${idCliente} and id_emisor = ${s.emisorId}`;
       if (!ok) return { mensaje: 'Cliente no válido' };
-    } else if (resumen.total > MONTO_MAXIMO_CONSUMIDOR_FINAL) {
-      return { mensaje: `Una factura a Consumidor Final no puede superar $${MONTO_MAXIMO_CONSUMIDOR_FINAL}: diga o elija el cliente` };
+    } else if (resumen.total >= MONTO_MAXIMO_CONSUMIDOR_FINAL) {
+      return { mensaje: `Una factura a Consumidor Final debe ser menor a $${MONTO_MAXIMO_CONSUMIDOR_FINAL}: diga o elija el cliente` };
     }
     if (b.forma_pago_id) {
       const [ok] = await sql`select 1 from formas_de_pago where id = ${b.forma_pago_id}`;

@@ -34,8 +34,8 @@ export default async function EditarFactura({ params }: { params: Promise<{ id: 
       texto: !pagos.length ? 'Agregue la forma de pago' : Math.abs(pendiente) < 0.01 ? 'Forma de pago completa'
         : pendiente > 0 ? `Falta asignar $${money(pendiente)} en formas de pago` : `Los pagos superan el total en $${money(-pendiente)}`,
     },
-    ...(esCF ? [{ ok: total <= MONTO_MAXIMO_CONSUMIDOR_FINAL, texto: total <= MONTO_MAXIMO_CONSUMIDOR_FINAL
-      ? `Consumidor final: dentro del máximo de $${MONTO_MAXIMO_CONSUMIDOR_FINAL}` : `Consumidor final no puede superar $${MONTO_MAXIMO_CONSUMIDOR_FINAL}: elija un cliente con identificación` }] : []),
+    ...(esCF ? [{ ok: total < MONTO_MAXIMO_CONSUMIDOR_FINAL, texto: total < MONTO_MAXIMO_CONSUMIDOR_FINAL
+      ? `Consumidor final: menor a $${MONTO_MAXIMO_CONSUMIDOR_FINAL}` : `Consumidor final debe ser menor a $${MONTO_MAXIMO_CONSUMIDOR_FINAL}: elija un cliente con identificación` }] : []),
   ];
   return (
     <>

@@ -34,7 +34,8 @@ export default async function Inicio() {
   const mesAnt = new Intl.DateTimeFormat('es-EC', { month: 'short', timeZone: 'America/Guayaquil' })
     .format(new Date(new Date().setDate(0))).replace('.', '');
   const cambio = v.ant_total > 0 ? Math.round(((v.mes_total - v.ant_total) / v.ant_total) * 100) : null;
-  const nombre = (s.nombre || s.usuario || '').split(' ')[0];
+  const n0 = (s.nombre || s.usuario || '').split(' ')[0];
+  const nombre = n0.charAt(0).toUpperCase() + n0.slice(1).toLowerCase();
 
   const alertas: { href: string; n: number | string; t: string; sub: string; tono: 'rojo' | 'ambar' | 'gris' }[] = [];
   if (v.no_aut) alertas.push({ href: '/facturas?estado=7', n: v.no_aut, t: 'No autorizados hoy', sub: `El SRI rechazó ${v.no_aut} ${v.no_aut === 1 ? 'factura' : 'facturas'} de hoy`, tono: 'rojo' });
