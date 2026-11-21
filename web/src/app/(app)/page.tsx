@@ -31,8 +31,8 @@ export default async function Inicio() {
   const rev = await contarRevision(e);
   const [kpi] = await sql<{ mes_total: number; mes_n: number; autorizadas: number; no_aut: number; pendientes: number }[]>`
     select
-      coalesce(sum(total) filter (where estado = 6), 0) mes_total,
-      count(*) filter (where estado = 6) mes_n,
+      coalesce(sum(total) filter (where estado = 6 and substr(coalesce(clave_de_acceso, ''), 24, 1) <> '1'), 0) mes_total,
+      count(*) filter (where estado = 6 and substr(coalesce(clave_de_acceso, ''), 24, 1) <> '1') mes_n,
       (select count(*) from factura where id_emisor = ${e} and estado = 6) autorizadas,
       (select count(*) from factura where id_emisor = ${e} and estado in (5, 7)
          and fecha_emision::date = (now() at time zone 'America/Guayaquil')::date) no_aut,

@@ -33,6 +33,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
       coalesce(sum(total) filter (where fecha_emision >= (now() at time zone 'America/Guayaquil')::date - 29), 0)::float dias30
     from factura
     where id_emisor = ${s.emisorId} and estado = 6
+      and substr(coalesce(clave_de_acceso, ''), 24, 1) <> '1' -- las de PRUEBAS no son ventas reales
       and fecha_emision >= least(date_trunc('month', now() at time zone 'America/Guayaquil'), (now() at time zone 'America/Guayaquil')::date - 29)`;
   const conFiltro = !!(q || p.estado || p.desde || p.hasta);
   const filas = await sql<{ id: number; numero: string; fecha_emision: Date; cliente: string; identificacion: string; total: number; estado: number; ambiente: string | null }[]>`
