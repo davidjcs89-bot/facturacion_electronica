@@ -107,7 +107,7 @@ export async function crearDesdeVoz(b: BorradorVoz, idPunto: number, modo: 'emit
       if (ya) idCliente = ya.id;
       else {
         const [c] = await sql<{ id: number }[]>`
-          insert into clientes ${sql({ id_emisor: s.emisorId, nombre_cliente: n.nombre.toUpperCase(), tipo_identificacion: tipo, tipo_cliente: 1, identificacion: n.identificacion, correo, direccion: provinciaDeIdentificacion(n.identificacion) })}
+          insert into clientes ${sql({ id_emisor: s.emisorId, nombre_cliente: n.nombre.toUpperCase(), tipo_identificacion: tipo, tipo_cliente: 1, identificacion: n.identificacion, correo, direccion: provinciaDeIdentificacion(n.identificacion), provincia: provinciaDeIdentificacion(n.identificacion) })}
           returning id`;
         idCliente = c.id;
       }
