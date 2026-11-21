@@ -178,7 +178,7 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
     padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); justify-content: space-around; align-items: flex-start;
   }
   .nav-movil a, .nav-movil button {
-    display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 60px; min-height: 44px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px; flex: 1 1 0; min-width: 0; min-height: 44px;
     font: inherit; font-size: 11px; color: #5b6676; background: none; border: 0; padding: 0; cursor: pointer; text-decoration: none;
   }
   .nav-movil a.on { color: var(--primary); font-weight: 600; }

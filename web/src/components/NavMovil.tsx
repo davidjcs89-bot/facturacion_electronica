@@ -9,6 +9,7 @@ function Icono({ n, s = 22 }: { n: string; s?: number }) {
     inicio: <><path d="M3 11l9-7 9 7" /><path d="M5 10v10h14V10" /></>,
     facturas: <><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 8h6M9 12h6M9 16h4" /></>,
     clientes: <><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></>,
+    compras: <><path d="M6 7h12l-1 13H7z" /><path d="M9 7a3 3 0 0 1 6 0" /></>,
     mas: <><circle cx="5" cy="12" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="19" cy="12" r="1.5" /></>,
     plus: <path d="M12 5v14M5 12h14" />,
     mic: <><rect x="9" y="2" width="6" height="12" rx="3" /><path d="M5 10a7 7 0 0 0 14 0M12 17v5" /></>,
@@ -20,7 +21,7 @@ function Icono({ n, s = 22 }: { n: string; s?: number }) {
   return <svg width={s} height={s} viewBox="0 0 24 24" aria-hidden="true" {...P}>{d[n]}</svg>;
 }
 
-/** Barra fija de abajo en el celular: Inicio · Facturas · + Nueva · Clientes · Más */
+/** Barra fija de abajo en el celular: Inicio · Facturas · + Nueva · Clientes · Compras · Más */
 export function NavMovil({ voz, tieneEmisor }: { voz: boolean; tieneEmisor: boolean }) {
   const ruta = usePathname();
   const [hoja, setHoja] = useState(false);
@@ -45,6 +46,7 @@ export function NavMovil({ voz, tieneEmisor }: { voz: boolean; tieneEmisor: bool
           </button>
         ) : <span style={{ minWidth: 60 }} />}
         <Link href="/clientes" className={activo('/clientes') ? 'on' : ''}><Icono n="clientes" /><span>Clientes</span></Link>
+        <Link href="/compras" className={activo('/compras') ? 'on' : ''}><Icono n="compras" /><span>Compras</span></Link>
         <Link href="/mas" className={activo('/mas') ? 'on' : ''}><Icono n="mas" /><span>Más</span></Link>
       </nav>
       {hoja && (
