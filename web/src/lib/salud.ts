@@ -44,7 +44,7 @@ export async function datosSalud() {
   const partes = TIPOS_REVISION.map((t) => {
     const m = manejador(t);
     return sql`select x.estado, x.fecha_autorizacion fa from ${sql(m.tabla)} x
-      where x.${sql(m.colFecha)}::date = ${hoy} or x.fecha_autorizacion >= now() - interval '2 days'`;
+      where x.${sql(m.colFecha)} >= ${hoy}::timestamp or x.fecha_autorizacion >= (now() at time zone 'America/Guayaquil') - interval '2 days'`;
   });
   const union = partes.reduce((a, b) => sql`${a} union all ${b}`);
   const sriQ = sql<{ rechazados: number; en_proceso: number; sin_respuesta: number; ultimo: Date | null }[]>`
