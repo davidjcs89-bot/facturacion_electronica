@@ -26,6 +26,15 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
   const [tot] = await sql<{ n: number; total: number }[]>`
     select count(*) n, coalesce(sum(f.total) filter (where f.estado = 6), 0) total
     from factura f join clientes c on c.id = f.id_cliente ${filtro}`;
+  // Autorizado del mes en curso y de los últimos 30 días (hora de Ecuador)
+  const [per] = await sql<{ mes: number; dias30: number }[]>`
+    select
+      coalesce(sum(total) filter (where fecha_emision >= date_trunc('month', now() at time zone 'America/Guayaquil')), 0)::float mes,
+      coalesce(sum(total) filter (where fecha_emision >= (now() at time zone 'America/Guayaquil')::date - 29), 0)::float dias30
+    from factura
+    where id_emisor = ${s.emisorId} and estado = 6
+      and fecha_emision >= least(date_trunc('month', now() at time zone 'America/Guayaquil'), (now() at time zone 'America/Guayaquil')::date - 29)`;
+  const conFiltro = !!(q || p.estado || p.desde || p.hasta);
   const filas = await sql<{ id: number; numero: string; fecha_emision: Date; cliente: string; identificacion: string; total: number; estado: number; ambiente: string | null }[]>`
     select f.id, f.numero, f.fecha_emision, c.nombre_cliente cliente, c.identificacion, f.total, f.estado,
       coalesce(case when length(f.clave_de_acceso) = 49 then substr(f.clave_de_acceso, 24, 1) end, pa.ambiente, ta.codigo_ambiente) ambiente
@@ -38,7 +47,7 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
     limit ${POR_PAGINA} offset ${(pagina - 1) * POR_PAGINA}`;
   return (
     <>
-      <Cabecera titulo="Facturas" sub={<>Total autorizado en la selección: ${money(tot.total)}{rev.comprobantes > 0 && <> · <Link href="/revision">{rev.comprobantes} de días anteriores en Revisión</Link></>}</>}>
+      <Cabecera titulo="Facturas" sub={<>Autorizado este mes: <strong>${money(per.mes)}</strong> · Últimos 30 días: <strong>${money(per.dias30)}</strong>{conFiltro && <> · En la selección: ${money(tot.total)}</>}{rev.comprobantes > 0 && <> · <Link href="/revision">{rev.comprobantes} de días anteriores en Revisión</Link></>}</>}>
         {vozHabilitada(s.emisorId) && <Link href="/facturas/voz" className="btn solo-escritorio">Factura por voz</Link>}
         <Link href="/facturas/nueva" className="btn primario solo-escritorio">+ Nueva factura</Link>
       </Cabecera>
