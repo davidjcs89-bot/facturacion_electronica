@@ -172,9 +172,15 @@ export async function emitir(
 ): Promise<ResultadoEmision> {
   const esperarAutorizacion = opciones.esperarAutorizacion ?? true;
   const m = manejador(tipoDoc);
-  const [previo] = await sql<{ punto: number; clave: string | null }[]>`
-    select ${sql(m.colPunto)} punto, ${sql(m.colClave)} clave from ${sql(m.tabla)} where id = ${id} and ${sql(m.colEmisor)} = ${emisorId}`;
+  const [previo] = await sql<{ punto: number; clave: string | null; antiguo: boolean }[]>`
+    select ${sql(m.colPunto)} punto, ${sql(m.colClave)} clave,
+      ${sql(m.colFecha)}::date < (now() at time zone 'America/Guayaquil')::date antiguo
+    from ${sql(m.tabla)} where id = ${id} and ${sql(m.colEmisor)} = ${emisorId}`;
   if (!previo) return { ok: false, estado: 0, mensaje: 'Comprobante no encontrado' };
+  // REGLA: nunca se envía al SRI un comprobante con fecha anterior a hoy (si se autoriza con fecha antigua genera multa)
+  if (previo.antiguo) {
+    return { ok: false, estado: 0, mensaje: 'Este comprobante tiene fecha anterior a hoy y no se envía al SRI: si se autoriza con fecha antigua genera multa. Si es un borrador, cambie la fecha de emisión a hoy; si ya tiene número, revíselo en Más › Revisión.' };
+  }
   const perm = await emisionPermitida(emisorId, previo.punto, previo.clave);
   if (!perm.permitido) return { ok: false, estado: 0, mensaje: perm.motivo! };
 
