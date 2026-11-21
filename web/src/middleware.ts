@@ -1,8 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-// '/api/prueba-voz' es TEMPORAL (solo vista previa con PRUEBA_VOZ)
-const PUBLICAS = ['/login', '/recuperar', '/api/salud', '/api/prueba-voz'];
+const PUBLICAS = ['/login', '/recuperar', '/api/salud'];
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
