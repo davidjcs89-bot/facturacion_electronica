@@ -26,10 +26,12 @@ export default async function Compras({ searchParams }: { searchParams: SP }) {
     <>
       <Cabecera titulo="Compras" sub={`Total en la selección: $${money(t.total)}`}>
         <Link className="btn primario" href="/compras/importar">Importar XML</Link>
-        <Link className="btn" href="/compras/nueva">+ Compra manual</Link>
+        <Link className="btn" href="/compras/nueva">+ Manual</Link>
       </Cabecera>
-      <form className="filtros">
-        <div className="campo busqueda"><label>Buscar</label><input name="q" defaultValue={q} placeholder="Número, proveedor o RUC" /></div>
+      <form className="filtros plegable">
+        <div className="campo busqueda"><label>Buscar</label><input name="q" type="search" defaultValue={q} placeholder="Número, proveedor o RUC" /></div>
+        <input type="checkbox" id="ver-filtros" className="ver-filtros" defaultChecked={!!(p.desde || p.hasta)} />
+        <label htmlFor="ver-filtros" className="btn boton-filtros">Filtros{p.desde || p.hasta ? ' •' : ''}</label>
         <div className="campo"><label>Desde</label><input type="date" name="desde" defaultValue={p.desde ?? ''} /></div>
         <div className="campo"><label>Hasta</label><input type="date" name="hasta" defaultValue={p.hasta ?? ''} /></div>
         <button className="btn">Filtrar</button>
@@ -37,13 +39,16 @@ export default async function Compras({ searchParams }: { searchParams: SP }) {
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay compras.</Vacio> : (
           <div className="tabla-wrap">
-            <table className="tabla">
+            <table className="tabla tarjetas">
               <thead><tr><th>Fecha</th><th>Número</th><th>Proveedor</th><th>Bodega</th><th className="num">Total</th><th></th></tr></thead>
               <tbody>{filas.map((c) => (
                 <tr key={c.id}>
-                  <td className="nowrap">{fecha(c.fecha)}</td><td className="nowrap"><Link href={`/compras/${c.id}`}>{c.numero}</Link></td>
-                  <td>{c.proveedor}</td><td>{c.bodega}</td><td className="num">{money(c.total)}</td>
-                  <td>{c.estado === 8 && <span className="badge e8">Anulada</span>}</td>
+                  <td className="nowrap" data-r="sub2">{fecha(c.fecha)}</td>
+                  <td className="nowrap" data-r="sub"><Link className="abrir" href={`/compras/${c.id}`}>{c.numero}</Link></td>
+                  <td data-r="titulo">{c.proveedor}</td>
+                  <td data-r="extra" data-p="Bodega: ">{c.bodega}</td>
+                  <td className="num" data-r="monto">{money(c.total)}</td>
+                  <td data-r={c.estado === 8 ? 'estado' : 'ocultar'}>{c.estado === 8 && <span className="badge e8">Anulada</span>}</td>
                 </tr>))}
               </tbody>
             </table>
