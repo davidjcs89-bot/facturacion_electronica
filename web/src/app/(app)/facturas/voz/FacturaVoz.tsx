@@ -511,7 +511,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
           </form>
         )}
 
-        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 200, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '10px 16px 14px' }}>
+        <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 200, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '10px 16px calc(14px + env(safe-area-inset-bottom))' }}>
           <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', gap: 10, alignItems: 'center' }}>
             <button type="button" className="btn" onClick={() => setEscribiendo((x) => !x)} style={{ minHeight: 52 }}>{escribiendo ? 'Ocultar' : 'Escribir'}</button>
             <button type="button" onClick={tocarMic} disabled={pensando || transcribiendo} aria-label={oyendo ? 'Terminar de hablar' : 'Responder hablando'}
@@ -703,7 +703,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
         Abrir en el editor (para revisar con más detalle)
       </button>
 
-      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 200, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '10px 16px 14px' }}>
+      <div style={{ position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 200, background: 'var(--surface)', borderTop: '1px solid var(--border)', padding: '10px 16px calc(14px + env(safe-area-inset-bottom))' }}>
         <div style={{ maxWidth: 480, margin: '0 auto', display: 'flex', gap: 10, alignItems: 'center' }}>
           <button type="button" className="btn" onClick={corregirHablando} aria-label="Corregir o agregar hablando" disabled={pend}
             style={{ width: 52, height: 52, borderRadius: '50%', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)' }}>

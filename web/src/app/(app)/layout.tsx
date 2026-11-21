@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { requerirSesion, ROL_ADMIN_SISTEMA } from '@/lib/auth';
 import { emisorResumen } from '@/lib/emisor';
 import { Sidebar } from '@/components/Sidebar';
+import { NavMovil } from '@/components/NavMovil';
+import { vozHabilitada } from '@/lib/voz/habilitada';
 import { cerrarSesion } from '../login/actions';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +20,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="emisor">
             {emisor ? (
               <>
-                {emisor.razon_social}
+                <span className="nombre-emisor">{emisor.razon_social}</span>
+                <span className={`punto-amb ${emisor.tipo_ambiente === 2 ? 'prod' : 'prueba'}`}>{emisor.ambiente}</span>
                 <small>
                   RUC {emisor.ruc} · Ambiente:{' '}
                   <span className={`badge ${emisor.tipo_ambiente === 2 ? 'e6' : 'e1'}`}>{emisor.ambiente}</span>
@@ -37,6 +40,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
         <main className="contenido">{children}</main>
+        <NavMovil voz={!!emisor && vozHabilitada(s.emisorId)} tieneEmisor={!!emisor} />
       </div>
     </div>
   );
