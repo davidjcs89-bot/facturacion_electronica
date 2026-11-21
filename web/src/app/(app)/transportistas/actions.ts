@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { requerirEmisor } from '@/lib/auth';
 import { sql } from '@/lib/db';
 import { entero, texto } from '@/lib/params';
-import { validarIdentificacion, emailValido } from '@/lib/validaciones';
+import { ajustarTipoIdentificacion, validarIdentificacion, emailValido } from '@/lib/validaciones';
 import type { EstadoForm } from '../admin/_comun/Msg';
 
 export async function guardarTransportista(_p: EstadoForm, form: FormData): Promise<EstadoForm> {
@@ -18,6 +18,7 @@ export async function guardarTransportista(_p: EstadoForm, form: FormData): Prom
     correo: texto(form.get('correo')).toLowerCase() || null,
   };
   if (!d.nombre) return { mensaje: 'Ingrese el nombre' };
+  d.tipo_identificacion = ajustarTipoIdentificacion(d.tipo_identificacion, d.numero_identificacion);
   const err = validarIdentificacion(d.tipo_identificacion, d.numero_identificacion);
   if (err) return { mensaje: err };
   if (!d.placa) return { mensaje: 'Ingrese la placa' };
