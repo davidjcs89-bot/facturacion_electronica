@@ -172,7 +172,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
     let hecho = false;
     const fin = () => { if (hecho) return; hecho = true; setTimeout(() => { if (vivo.current) luego(); }, 250); };
     try {
-      ss.cancel();
+      if (ss.speaking || ss.pending) ss.cancel();
       const u = new SpeechSynthesisUtterance(texto);
       u.lang = 'es-ES';
       const voces = ss.getVoices();
@@ -437,7 +437,13 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
         {error && <div role="alert" style={{ ...caja, background: 'var(--danger-soft)', borderColor: '#f3c4bd', fontSize: 14 }}>{error}</div>}
 
         <div style={{ ...caja, background: 'var(--primary-soft)', borderColor: '#c8d9f5' }}>
-          <p style={{ margin: 0, fontSize: 19, lineHeight: 1.4, fontWeight: 600 }}>{pensando ? 'Un momento…' : preg?.texto}</p>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+            <p style={{ margin: 0, fontSize: 19, lineHeight: 1.4, fontWeight: 600, flexGrow: 1 }}>{pensando ? 'Un momento…' : preg?.texto}</p>
+            {!pensando && preg && (
+              <button type="button" className="btn" aria-label="Escuchar la pregunta otra vez" style={{ flexShrink: 0, width: 44, height: 44, padding: 0 }}
+                onClick={() => { if (!conVozRef.current) { conVozRef.current = true; setConVoz(true); try { localStorage.setItem('voz.sonido', 'si'); } catch { /* */ } } hablar(preg.texto, () => setTocar(true)); }}>🔁</button>
+            )}
+          </div>
         </div>
 
         {/* opciones para tocar */}
