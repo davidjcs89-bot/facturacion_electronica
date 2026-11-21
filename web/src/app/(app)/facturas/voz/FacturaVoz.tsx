@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { interpretar, recalcular, crearDesdeVoz, type Resumen } from './actions';
 import type { BorradorVoz, OpcionProducto } from '@/lib/voz/interpretar';
 import { Grabadora, grabacionSoportada } from '@/lib/voz/grabadora';
+import { ClienteNuevo } from './ClienteNuevo';
 
 type Op = { id: number; texto: string };
 type Paso = 'inicio' | 'guiado' | 'escuchando' | 'pensando' | 'borrador';
@@ -16,8 +17,9 @@ const NEGATIVO = /^(no|nada|listo|ya|ninguno|ninguna|eso es todo|es todo|termina
 /** Siguiente cosa que falta preguntar; null = todo listo para revisar */
 function siguiente(b: BorradorVoz | null): Pregunta {
   if (!b) return { tipo: 'cliente', texto: '¿Para quién es la factura? Diga el nombre, la cédula o «consumidor final». También puede dictar todo el pedido de una vez.' };
-  const cliente = b.cliente.id != null || !!b.cliente.nuevo;
+  const cliente = b.cliente.id != null || !!b.cliente.nuevo?.nombre;
   if (!cliente) {
+    if (b.cliente.nuevo && !b.cliente.nuevo.nombre) return { tipo: 'cliente', texto: `Cliente nuevo con ${b.cliente.nuevo.identificacion.length === 13 ? 'RUC' : 'cédula'} ${b.cliente.nuevo.identificacion}. ¿Cuál es su nombre o razón social?` };
     if (b.cliente.opciones.length) return { tipo: 'cliente', texto: 'Encontré varios clientes parecidos. ¿Cuál es?' };
     if (b.cliente.dicho) return { tipo: 'cliente', texto: `No encontré a «${b.cliente.dicho}». Si es un cliente nuevo, dígame su cédula o RUC.` };
     return { tipo: 'cliente', texto: '¿Para quién es la factura? Diga el nombre, la cédula o «consumidor final».' };
@@ -125,6 +127,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   const [chat, setChat] = useState<{ de: 'app' | 'yo'; texto: string }[]>([]);
   const [respuesta, setRespuesta] = useState('');
   const [transcribiendo, setTranscribiendo] = useState(false);
+  const [formCliente, setFormCliente] = useState(false);
   const [nivel, setNivel] = useState(0);
   const pregRef = useRef<Pregunta | null>(null);
   const borradorRef = useRef<BorradorVoz | null>(null);
@@ -390,7 +393,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   }
 
   const faltaProducto = !!borrador?.lineas.some((l) => !l.producto_id);
-  const clienteListo = !!borrador && (borrador.cliente.id != null || !!borrador.cliente.nuevo);
+  const clienteListo = !!borrador && (borrador.cliente.id != null || !!borrador.cliente.nuevo?.nombre);
   const listo = !!borrador && borrador.lineas.length > 0 && !faltaProducto && clienteListo && !!borrador.forma_pago_id;
   const nombreCliente = (() => {
     if (!borrador) return '';
@@ -402,7 +405,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   // ---------- Guiado: la app pregunta cada parte ----------
   if (paso === 'guiado') {
     const b = borrador;
-    const listoCli = !!b && (b.cliente.id != null || !!b.cliente.nuevo);
+    const listoCli = !!b && (b.cliente.id != null || !!b.cliente.nuevo?.nombre);
     const listoProd = !!b && b.lineas.length > 0 && b.lineas.every((l) => l.producto_id);
     const listoPago = !!b?.forma_pago_id;
     const linea = preg?.linea != null && b ? b.lineas[preg.linea] : null;
@@ -461,6 +464,15 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
           <button type="button" className="btn" style={{ minHeight: 44 }}
             onClick={() => elegirGuiado({ ...(b ?? VACIO), cliente: { dicho: 'consumidor final', id: 1, nuevo: null, opciones: [] } }, 'Consumidor final')}>Consumidor final (hasta $50)</button>
         )}
+        {!pensando && preg?.tipo === 'cliente' && (formCliente ? (
+          <ClienteNuevo
+            inicial={{ identificacion: b?.cliente.nuevo?.identificacion ?? '', nombre: b?.cliente.nuevo?.nombre || (b?.cliente.dicho && !/consumidor|^\d/i.test(b.cliente.dicho) ? b.cliente.dicho.toUpperCase() : ''), correo: b?.cliente.nuevo?.correo ?? '' }}
+            onCancelar={() => setFormCliente(false)}
+            onListo={(d) => { setFormCliente(false); elegirGuiado({ ...(b ?? VACIO), cliente: { dicho: d.nombre, id: null, nuevo: d, opciones: [] } }, `Cliente nuevo: ${d.nombre} (${d.identificacion})`); }}
+          />
+        ) : (
+          <button type="button" className="btn" style={{ minHeight: 44 }} onClick={() => { callar(); setFormCliente(true); }}>+ Crear cliente nuevo</button>
+        ))}
         {!pensando && preg?.tipo === 'producto' && b && linea && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {linea.opciones.map((o) => (
@@ -625,6 +637,13 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
               </button>
             ))}
             <button type="button" className="btn" style={{ minHeight: 44 }} onClick={() => cambiar({ ...b, cliente: { ...b.cliente, id: 1, nuevo: null } })}>Consumidor final (hasta $50)</button>
+            {formCliente ? (
+              <ClienteNuevo inicial={{ identificacion: b.cliente.nuevo?.identificacion ?? '', nombre: b.cliente.nuevo?.nombre || (b.cliente.dicho && !/consumidor|^\d/i.test(b.cliente.dicho) ? b.cliente.dicho.toUpperCase() : ''), correo: b.cliente.nuevo?.correo ?? '' }}
+                onCancelar={() => setFormCliente(false)}
+                onListo={(d) => { setFormCliente(false); cambiar({ ...b, cliente: { dicho: d.nombre, id: null, nuevo: d, opciones: [] } }); }} />
+            ) : (
+              <button type="button" className="btn" style={{ minHeight: 44 }} onClick={() => setFormCliente(true)}>+ Crear cliente nuevo</button>
+            )}
           </>
         )}
       </section>

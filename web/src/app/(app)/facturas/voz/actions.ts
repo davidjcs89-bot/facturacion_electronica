@@ -98,6 +98,7 @@ export async function crearDesdeVoz(b: BorradorVoz, idPunto: number, modo: 'emit
     let idCliente = b.cliente.id;
     if (!idCliente && b.cliente.nuevo) {
       const n = b.cliente.nuevo;
+      if (!n.nombre?.trim()) return { mensaje: 'Falta el nombre del cliente nuevo.' };
       const tipo = n.identificacion.length === 13 ? TIPO_IDENTIFICACION.RUC : TIPO_IDENTIFICACION.CEDULA;
       const err = validarIdentificacion(tipo, n.identificacion);
       if (err) return { mensaje: `Cliente nuevo: ${err}` };

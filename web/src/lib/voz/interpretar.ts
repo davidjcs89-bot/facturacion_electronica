@@ -161,7 +161,10 @@ export async function interpretarDictado(emisorId: number, dictado: string, prev
 en un borrador de factura usando SOLO los clientes, productos y formas de pago de las listas. Reglas:
 - Elige el cliente por nombre o cédula/RUC. Si dice "consumidor final", usa id 1 (Consumidor Final). Si no nombra cliente, deja id = null
   (o conserva el del borrador previo); la app se lo preguntará.
-- Si nombra un cliente que no está en la lista: cliente.id = null y, si dictó su cédula (10 dígitos) o RUC (13 dígitos), llena "nuevo";
+- Si dicta una cédula o RUC, búscalo primero en la lista de clientes por identificación. Un RUC son 10 dígitos + "001"
+  (el dictado puede venir partido: "0195133816, 001" = RUC 0195133816001).
+- Si nombra un cliente que no está en la lista: cliente.id = null y, si dictó su cédula (10 dígitos) o RUC (13 dígitos), llena "nuevo".
+  NUNCA inventes el nombre: si no lo dijo, nuevo.nombre = "" y pregunta el nombre;
   si no dio la identificación, pregunta por ella.
 - Para cada producto dictado busca el más parecido (el vendedor habla rápido y el reconocimiento de voz se equivoca en letras).
   Si hay varios igual de probables (colores, tallas, variantes), producto_id = null y pon hasta 6 ids en "opciones".
@@ -207,8 +210,15 @@ Responde siempre con la herramienta "borrador".`;
   const prod = new Map(productos.map((p) => [p.id, p]));
   const cli = new Map(clientes.map((c) => [c.id, c]));
   const clienteId = s.cliente.id === ID_CONSUMIDOR_FINAL || (s.cliente.id && cli.has(s.cliente.id)) ? s.cliente.id : null;
-  const nuevo = !clienteId && s.cliente.nuevo?.nombre && s.cliente.nuevo.identificacion
-    ? { nombre: s.cliente.nuevo.nombre.toUpperCase(), identificacion: s.cliente.nuevo.identificacion.replace(/\D/g, ''), correo: s.cliente.nuevo.correo || null }
+  // Identificación: el reconocimiento de voz suele partir el RUC ("0195133816, 001"): si lo dictado continúa con 001, es RUC
+  let ident = (s.cliente.nuevo?.identificacion ?? '').replace(/\D/g, '');
+  const soloDigitos = [...(previo?.dictados ?? []), dictado].join(' ').replace(/[^\d]/g, '');
+  if (ident.length === 10 && soloDigitos.includes(ident + '001')) ident += '001';
+  // Nunca inventar el nombre: si no lo dijo, queda vacío y la app lo pide
+  const nombreNuevo = (s.cliente.nuevo?.nombre ?? '').trim();
+  const nombreValido = nombreNuevo.length >= 3 && !/unknown|desconocid|sin nombre|no especificad|n\/a|^<.*>$/i.test(nombreNuevo) ? nombreNuevo.toUpperCase() : '';
+  const nuevo = !clienteId && (ident.length === 10 || ident.length === 13)
+    ? { nombre: nombreValido, identificacion: ident, correo: s.cliente.nuevo?.correo || null }
     : null;
   return {
     cliente: {
