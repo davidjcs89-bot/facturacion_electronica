@@ -40,7 +40,7 @@ export default async function EditarFactura({ params }: { params: Promise<{ id: 
   return (
     <>
       <Cabecera titulo={`Factura · borrador #${f.id}`} sub={<><Estado id={f.estado} /> <span className="muted">· Todo se guarda al momento. Cuando la lista de abajo esté en ✓, emita la factura.</span></>}>
-        <Link className="btn" href="/facturas">Volver</Link>
+        <Link className="btn solo-escritorio" href="/facturas">Volver</Link>
       </Cabecera>
       {!perm.permitido && <Alerta tipo="aviso">{perm.motivo}</Alerta>}
       <DatosFactura id={id} numeracion={await proximosNumeros(s.emisorId, 1)} puntos={puntos.map((p) => ({ id: p.id, texto: textoPunto(p) }))}
@@ -60,7 +60,7 @@ export default async function EditarFactura({ params }: { params: Promise<{ id: 
       </div>
       <div className="grid c2">
         <Totales f={f} />
-        <BotonesFactura id={id} permitido={perm.permitido} requisitos={requisitos} />
+        <BotonesFactura id={id} permitido={perm.permitido} requisitos={requisitos} total={total} />
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 'use client';
 import { useActionState } from 'react';
 import { guardarEmisor, crearEmisor, subirFirma, subirLogo, quitarLogo, type Estado } from './actions';
+import { CampoClave } from '@/components/CampoClave';
 
 function Msg({ e }: { e: Estado }) {
   return e.mensaje ? <div className={`alerta ${e.ok ? 'ok' : 'error'}`}>{e.mensaje}</div> : null;
@@ -44,7 +45,7 @@ export function FormFirma({ reemplazar }: { reemplazar: boolean }) {
       <Msg e={e} />
       <div className="form-grid">
         <div className="campo"><label>Archivo .p12 / .pfx</label><input type="file" name="archivo" accept=".p12,.pfx" required /></div>
-        <div className="campo"><label>Clave de la firma</label><input type="password" name="clave" autoComplete="new-password" required /></div>
+        <div className="campo"><label>Clave de la firma</label><CampoClave name="clave" autoComplete="new-password" required /></div>
       </div>
       <p className="muted" style={{ fontSize: '0.85rem' }}>La clave se guarda cifrada y solo se usa para firmar sus comprobantes.</p>
       <button className="btn primario" disabled={pend}>{pend ? 'Verificando…' : reemplazar ? 'Reemplazar firma' : 'Cargar firma'}</button>

@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useActionState } from 'react';
 import { solicitarCodigo, cambiarClave, type EstadoRecuperar } from './actions';
+import { CampoClave } from '@/components/CampoClave';
 
 export function FormRecuperar() {
   const [s1, pedir, p1] = useActionState<EstadoRecuperar, FormData>(solicitarCodigo, {});
@@ -21,8 +22,8 @@ export function FormRecuperar() {
         {s2.mensaje && <div className="alerta error">{s2.mensaje}</div>}
         <input type="hidden" name="correo" value={s1.correo} />
         <div className="campo"><label>Código de seguridad</label><input name="codigo" inputMode="numeric" maxLength={6} required autoFocus /></div>
-        <div className="campo"><label>Nueva clave</label><input name="clave" type="password" autoComplete="new-password" required /></div>
-        <div className="campo"><label>Confirmar clave</label><input name="confirmacion" type="password" autoComplete="new-password" required /></div>
+        <div className="campo"><label>Nueva clave</label><CampoClave name="clave" autoComplete="new-password" required /></div>
+        <div className="campo"><label>Confirmar clave</label><CampoClave name="confirmacion" autoComplete="new-password" required /></div>
         <button className="btn primario" style={{ width: '100%', marginTop: 8 }} disabled={p2}>{p2 ? 'Guardando…' : 'Cambiar clave'}</button>
       </form>
     );

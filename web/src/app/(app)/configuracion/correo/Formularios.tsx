@@ -1,6 +1,7 @@
 'use client';
 import { useActionState, useState } from 'react';
 import { guardarCorreoEmisor, probarCorreoEmisor, type Estado } from './actions';
+import { CampoClave } from '@/components/CampoClave';
 
 function Msg({ e }: { e: Estado }) {
   return e.mensaje ? <div className={`alerta ${e.ok ? 'ok' : 'error'}`}>{e.mensaje}</div> : null;
@@ -35,7 +36,7 @@ export function FormCorreoEmisor({ c }: { c: Cuenta }) {
       <div className="form-grid">
         <div className="campo"><label>Correo remitente *</label><input name="direccion" type="email" defaultValue={c?.direccion} maxLength={254} required /></div>
         <div className="campo"><label>Usuario (vacío = el mismo correo)</label><input name="usuario" defaultValue={c && c.usuario !== c.direccion ? c.usuario : ''} maxLength={254} /></div>
-        <div className="campo"><label>{c ? 'Nueva clave (vacío = sin cambio)' : 'Clave o contraseña de aplicación *'}</label><input name="clave" type="password" autoComplete="new-password" required={!c} /></div>
+        <div className="campo"><label>{c ? 'Nueva clave (vacío = sin cambio)' : 'Clave o contraseña de aplicación *'}</label><CampoClave name="clave" autoComplete="new-password" required={!c} /></div>
         <div className="campo"><label>Servidor SMTP *</label><input name="servidor" value={servidor} onChange={(x) => setServidor(x.target.value)} placeholder="smtp.gmail.com" maxLength={253} required /></div>
         <div className="campo"><label>Puerto *</label>
           <select name="puerto" value={puerto} onChange={(x) => setPuerto(x.target.value)}>
