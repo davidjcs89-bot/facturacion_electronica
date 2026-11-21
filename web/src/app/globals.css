@@ -320,3 +320,13 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
 .fila-revision .fila { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .fila-revision .acciones { margin-top: 6px; flex-wrap: wrap; }
 .motivos { margin: 2px 0 0; padding-left: 18px; color: var(--danger); font-size: 13px; }
+.grupo-plegable { border-top: 1px solid var(--border); }
+.grupo-plegable:first-child { border-top: 0; }
+.cabeza-grupo {
+  width: 100%; display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 16px;
+  background: none; border: 0; font: inherit; color: var(--text); cursor: pointer; text-align: left;
+}
+.cabeza-grupo .titulo-grupo { flex-grow: 1; font-weight: 600; font-size: 15px; }
+.flecha-grupo { font-size: 20px; color: var(--muted); transition: transform 0.15s; }
+.flecha-grupo.on { transform: rotate(90deg); }
+.grupo-plegable .item-mas { padding-left: 28px; }

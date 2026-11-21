@@ -3,6 +3,8 @@ import { requerirSesion, ROL_ADMIN_SISTEMA } from '@/lib/auth';
 import { emisorResumen } from '@/lib/emisor';
 import { MENU } from '@/lib/menu';
 import { cerrarSesion } from '../../login/actions';
+import { contarRevision } from '@/lib/revision';
+import { GruposMas } from './GruposMas';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +15,7 @@ export default async function MasPage() {
   const esAdmin = s.rol === ROL_ADMIN_SISTEMA;
   const grupos = MENU.filter((g) => (g.soloAdminSistema ? esAdmin : true)).filter((g) => (g.requiereEmisor ? !!emisor : true));
   const nombre = s.nombre || s.usuario;
+  const rev = emisor && s.emisorId ? await contarRevision(s.emisorId) : { comprobantes: 0, productos: 0 };
   const iniciales = String(nombre).split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase();
   return (
     <div className="menu-mas">
@@ -23,14 +26,11 @@ export default async function MasPage() {
           {emisor && <span className="muted" style={{ fontSize: 13 }}>{emisor.razon_social} · RUC {emisor.ruc}</span>}
         </div>
       </section>
-      {grupos.map((g) => (
-        <section key={g.titulo} className="card sin-padding">
-          <div className="grupo-mas">{g.titulo}</div>
-          {g.items.map((i) => (
-            <Link key={i.href} href={i.href} className="item-mas">{i.texto}<span aria-hidden="true">›</span></Link>
-          ))}
-        </section>
-      ))}
+      <GruposMas grupos={grupos.map((g) => ({
+        titulo: g.titulo,
+        items: g.items.map((i) => ({ ...i, aviso: i.href === '/revision' ? rev.comprobantes + rev.productos : undefined })),
+        aviso: g.items.some((i) => i.href === '/revision') ? { texto: 'Revisión', n: rev.comprobantes + rev.productos } : undefined,
+      }))} />
       <section className="card sin-padding">
         {esAdmin && <Link href="/admin/emisores" className="item-mas">Cambiar de empresa<span aria-hidden="true">›</span></Link>}
         <form action={cerrarSesion}>
