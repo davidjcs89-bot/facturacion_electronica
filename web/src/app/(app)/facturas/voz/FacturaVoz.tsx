@@ -206,7 +206,11 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
     };
     r.onerror = (e) => {
       if (e.error === 'not-allowed') { if (porToque.current) setMic('denegado'); setTocar(true); }
-      else if (e.error === 'service-not-allowed') { setError(esIOS() ? 'El iPhone no deja reconocer voz: active Ajustes › General › Teclado › «Activar dictado».' : 'El reconocimiento de voz está desactivado en este navegador.'); setTocar(true); }
+      else if (e.error === 'service-not-allowed') {
+        // iPhone: solo deja escuchar si la persona toca el botón; si fue automático, simplemente pedimos tocar
+        if (porToque.current) setError(esIOS() ? 'El iPhone no dejó usar el reconocimiento de voz. Revise que Siri y Dictado estén permitidos y vuelva a tocar el micrófono.' : 'El reconocimiento de voz está desactivado en este navegador.');
+        setTocar(true);
+      }
       else if (e.error !== 'aborted' && e.error !== 'no-speech') { setError(`El micrófono falló (${e.error}). Puede escribir la respuesta.`); setTocar(true); }
     };
     r.onend = () => {
@@ -226,7 +230,8 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
     setParcial('');
     setChat((c) => [...c, { de: 'app', texto: q.texto }]);
     porToque.current = false;
-    hablar(q.texto, escucharRespuesta);
+    // En iPhone el micrófono solo se abre con un toque: leemos la pregunta y esperamos que toque «Responder»
+    hablar(q.texto, esIOS() ? () => setTocar(true) : escucharRespuesta);
   }
 
   function irAlBorrador(b: BorradorVoz) {
@@ -279,6 +284,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
     if (oyendo) { const r = rec.current; if (r) r.stop(); return; }
     try { window.speechSynthesis?.cancel(); } catch { /* */ }
     porToque.current = true;
+    setError(null);
     escucharRespuesta();
   }
 
