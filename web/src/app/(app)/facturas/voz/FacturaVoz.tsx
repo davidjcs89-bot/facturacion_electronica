@@ -123,6 +123,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   const [mic, setMic] = useState<EstadoMic>('desconocido');
   const [chat, setChat] = useState<{ de: 'app' | 'yo'; texto: string }[]>([]);
   const [respuesta, setRespuesta] = useState('');
+  const [teclado, setTeclado] = useState(false); // iPhone: dictar con el micrófono del teclado
   const pregRef = useRef<Pregunta | null>(null);
   const borradorRef = useRef<BorradorVoz | null>(null);
   const ignorar = useRef(false);
@@ -134,7 +135,8 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   useEffect(() => {
     vivo.current = true;
     try { const g = localStorage.getItem('voz.punto'); if (g && puntos.some((p) => p.id === Number(g))) setPunto(Number(g)); } catch { /* sin almacenamiento */ }
-    try { if (localStorage.getItem('voz.sonido') === 'no') { setConVoz(false); conVozRef.current = false; } } catch { /* */ }
+    try { if (esIOS() && localStorage.getItem('voz.teclado') === 'si') { setTeclado(true); setEscribiendo(true); } } catch { /* */ }
+    try { const g = localStorage.getItem('voz.sonido'); if (g === 'no' || (!g && esIOS())) { setConVoz(false); conVozRef.current = false; } } catch { /* */ }
     const perm = (navigator as Navigator & { permissions?: { query(d: { name: string }): Promise<{ state: string }> } }).permissions;
     perm?.query({ name: 'microphone' })
       .then((r) => setMic(r.state === 'granted' ? 'ok' : r.state === 'denied' ? 'denegado' : 'pedir'))
@@ -208,8 +210,11 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
       if (e.error === 'not-allowed') { if (porToque.current) setMic('denegado'); setTocar(true); }
       else if (e.error === 'service-not-allowed') {
         // iPhone: solo deja escuchar si la persona toca el botón; si fue automático, simplemente pedimos tocar
-        if (porToque.current) setError(esIOS() ? 'El iPhone no dejó usar el reconocimiento de voz. Revise que Siri y Dictado estén permitidos y vuelva a tocar el micrófono.' : 'El reconocimiento de voz está desactivado en este navegador.');
+        // iPhone: si Safari no deja reconocer voz, usamos el dictado del teclado (el micrófono del teclado de Apple)
+        setOyendo(false);
         setTocar(true);
+        if (esIOS()) { setTeclado(true); setEscribiendo(true); setError(null); try { localStorage.setItem('voz.teclado', 'si'); } catch { /* */ } }
+        else if (porToque.current) setError('El reconocimiento de voz está desactivado en este navegador. Puede escribir la respuesta.');
       }
       else if (e.error !== 'aborted' && e.error !== 'no-speech') { setError(`El micrófono falló (${e.error}). Puede escribir la respuesta.`); setTocar(true); }
     };
@@ -281,6 +286,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
   }
 
   function tocarMic() {
+    if (teclado) { setEscribiendo(true); document.getElementById('respuesta-voz')?.focus(); return; }
     if (oyendo) { const r = rec.current; if (r) r.stop(); return; }
     try { window.speechSynthesis?.cancel(); } catch { /* */ }
     porToque.current = true;
@@ -292,7 +298,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
     // desbloquea la voz del teléfono dentro del toque (iPhone lo exige)
     try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; window.speechSynthesis?.speak(u); } catch { /* */ }
     if (!crearReconocedor()) { setSinVoz(true); setEscribiendo(true); return; }
-    if (mic !== 'ok' && !(await pedirMicrofono())) return;
+    if (!esIOS() && mic !== 'ok' && !(await pedirMicrofono())) return;
     setError(null);
     setChat([]);
     setPaso('guiado');
@@ -494,9 +500,16 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
           </div>
         )}
 
+        {teclado && (
+          <div style={{ ...caja, fontSize: 14 }}>
+            Safari no deja usar el reconocimiento de voz aquí, así que usamos el <strong>dictado del teclado</strong>: toque la caja de abajo,
+            luego el <strong>🎤 del teclado</strong>, hable y toque <strong>Enviar</strong>.
+          </div>
+        )}
         {escribiendo && (
           <form onSubmit={(e) => { e.preventDefault(); if (respuesta.trim()) { ignorar.current = true; rec.current?.abort(); responder(respuesta.trim()); } }} style={{ display: 'flex', gap: 8 }}>
-            <input aria-label="Respuesta escrita" value={respuesta} onChange={(e) => setRespuesta(e.target.value)} placeholder="Escriba la respuesta" style={{ flexGrow: 1 }} />
+            <textarea id="respuesta-voz" aria-label="Respuesta" rows={2} value={respuesta} onChange={(e) => setRespuesta(e.target.value)}
+              placeholder={teclado ? 'Toque aquí y luego el 🎤 del teclado' : 'Escriba la respuesta'} style={{ flexGrow: 1, fontSize: 16 }} />
             <button className="btn primario" disabled={pend || !respuesta.trim()}>Enviar</button>
           </form>
         )}
@@ -507,7 +520,7 @@ export function FacturaVoz({ puntos, formas }: { puntos: (Op & { pruebas: boolea
             <button type="button" onClick={tocarMic} disabled={pensando} aria-label={oyendo ? 'Terminar de hablar' : 'Responder hablando'}
               style={{ flexGrow: 1, minHeight: 56, borderRadius: 28, border: 0, color: '#fff', fontSize: 16, fontWeight: 600, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 background: oyendo ? '#c0392b' : 'var(--primary)', opacity: pensando ? 0.6 : 1 }}>
-              <Mic /> {pensando ? 'Pensando…' : oyendo ? 'Listo' : tocar ? 'Tocar para responder' : 'Hablar'}
+              <Mic /> {pensando ? 'Pensando…' : teclado ? 'Dictar con el teclado' : oyendo ? 'Listo' : tocar ? 'Tocar para responder' : 'Hablar'}
             </button>
           </div>
         </div>
