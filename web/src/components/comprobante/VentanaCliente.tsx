@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { formularioCliente, datosCliente, type ClienteBusqueda, type ClienteEdicion, type OpcionCatalogo } from '@/app/(app)/comprobantes/busquedas';
 import { guardarClienteVentana } from '@/app/(app)/clientes/actions';
+import { autoProvincia } from '@/lib/validaciones';
 
 /**
  * Ventana emergente para crear o editar un cliente sin salir del comprobante.
@@ -79,14 +80,14 @@ export function VentanaCliente({ idCliente, tipoCliente = 1, textoInicial, onCer
                 </select>
               </div>
               <div className="campo"><label>Identificación *</label>
-                <input name="identificacion" required maxLength={13} inputMode="numeric"
+                <input name="identificacion" required maxLength={13} inputMode="numeric" onChange={(e) => autoProvincia(e.currentTarget)}
                   defaultValue={c?.identificacion ?? (inicialEsNumero ? textoInicial?.trim() : '')} /></div>
               <div className="campo ancho" style={{ gridColumn: '1 / -1' }}><label>Correo(s)</label>
                 <input name="correo" type="text" inputMode="email" maxLength={100} placeholder="separe varios con ;"
                   defaultValue={c?.correo?.toLowerCase() ?? ''} />
                 <span className="muted" style={{ fontSize: '0.8rem' }}>A este correo se envía la factura autorizada.</span></div>
               <div className="campo ancho" style={{ gridColumn: '1 / -1' }}><label>Dirección</label>
-                <input name="direccion" maxLength={200} defaultValue={c?.direccion ?? ''} /></div>
+                <input name="direccion" maxLength={200} defaultValue={c?.direccion ?? ''} placeholder="Si la deja vacía se usa la provincia de la cédula" /></div>
               <div className="campo"><label>Celular</label><input name="telefono_movil" inputMode="tel" maxLength={15} defaultValue={c?.telefono_movil ?? ''} /></div>
               <div className="campo"><label>Teléfono fijo</label><input name="telefono_fijo" inputMode="tel" maxLength={15} defaultValue={c?.telefono_fijo ?? ''} /></div>
               <div className="campo"><label>Tipo de cliente</label>
