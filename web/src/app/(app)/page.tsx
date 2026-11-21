@@ -64,7 +64,7 @@ export default async function Inicio() {
             <tbody>
               {ultimas.map((f) => (
                 <tr key={f.id}>
-                  <td className="nowrap" data-r="sub"><Link className="abrir" href={`/facturas/${f.id}`}>{f.numero}</Link></td>
+                  <td className="nowrap" data-r="sub"><Link className="abrir" href={f.estado <= 2 ? `/facturas/${f.id}/editar` : `/facturas/${f.id}`}>{f.numero || `Borrador #${f.id}`}</Link></td>
                   <td className="nowrap" data-r="sub2">{fecha(f.fecha_emision)}</td>
                   <td data-r="titulo">{f.cliente}</td>
                   <td className="num" data-r="monto">{money(f.total)}</td>
