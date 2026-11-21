@@ -144,13 +144,13 @@ export function LineasFactura({ id, lineas }: { id: number; lineas: Linea[] }) {
         <div className="campo" style={{ minWidth: 90, maxWidth: 110 }}><label>Cantidad</label><input name="cantidad" type="number" min="1" step="1" defaultValue={1} /></div>
         <div className="campo" style={{ minWidth: 110, maxWidth: 130 }}><label>P.V.P. (con IVA)</label><input name="precio" type="number" step="0.01" min="0" defaultValue={prod ? prod.pvp : ''} /></div>
         <div className="campo" style={{ minWidth: 80, maxWidth: 100 }}><label>Desc. %</label><input name="descuento" type="number" step="0.01" min="0" max="100" defaultValue={0} /></div>
-        <div className="campo" style={{ minWidth: 160 }}><label>Detalle adicional</label><input name="adicional" maxLength={100} /></div>
+        <div className="campo ancho-movil" style={{ minWidth: 160 }}><label>Detalle adicional</label><input name="adicional" maxLength={100} /></div>
         <button className="btn primario" disabled={pend || !prod}>{pend ? 'Agregando…' : 'Agregar'}</button>
       </form>
       {lineas.length === 0 && <p className="muted">Todavía no hay productos. Búsquelo arriba por código o nombre, indique la cantidad y pulse «Agregar».</p>}
       {lineas.length > 0 && (
         <div className="tabla-wrap">
-          <table className="tabla">
+          <table className="tabla tarjetas">
             <thead><tr>
               <th>Descripción</th><th>Código</th><th className="num">Cant.</th><th className="num">P.V.P. con IVA</th><th className="num">Desc.</th>
               <th className="num">P.V.P. con desc.</th><th className="num">Subtotal sin imp.</th><th className="num">IVA</th><th className="num">Total</th><th></th>
@@ -161,16 +161,16 @@ export function LineasFactura({ id, lineas }: { id: number; lineas: Linea[] }) {
                   <FilaEdicion key={l.id} id={id} l={l} onFin={() => setEditando(null)} />
                 ) : (
                   <tr key={l.id}>
-                    <td>{l.nombre}{l.adicional ? <div className="muted">{l.adicional}</div> : null}</td>
-                    <td className="nowrap">{l.codigo}</td>
-                    <td className="num">{l.cantidad}</td>
-                    <td className="num">{money(l.pvp)}</td>
-                    <td className="num">{l.descuento_pct ? `${money(l.descuento_pct)}%` : '—'}</td>
-                    <td className="num">{money(Math.round(l.pvp * (1 - l.descuento_pct / 100) * 100) / 100)}</td>
-                    <td className="num">{money(l.sub_total)}</td>
-                    <td className="num">{money(l.valor_iva)}</td>
-                    <td className="num">{money(l.total)}</td>
-                    <td className="nowrap">
+                    <td data-r="titulo">{l.nombre}{l.adicional ? <div className="muted">{l.adicional}</div> : null}</td>
+                    <td className="nowrap" data-r="ocultar">{l.codigo}</td>
+                    <td className="num" data-r="sub">{l.cantidad}</td>
+                    <td className="num" data-r="sub2" data-x=" × $">{money(l.pvp)}</td>
+                    <td className="num" data-r={l.descuento_pct ? 'sub2' : 'ocultar'} data-x=" · desc. ">{l.descuento_pct ? `${money(l.descuento_pct)}%` : '—'}</td>
+                    <td className="num" data-r="ocultar">{money(Math.round(l.pvp * (1 - l.descuento_pct / 100) * 100) / 100)}</td>
+                    <td className="num" data-r="ocultar">{money(l.sub_total)}</td>
+                    <td className="num" data-r="ocultar">{money(l.valor_iva)}</td>
+                    <td className="num" data-r="monto">{money(l.total)}</td>
+                    <td className="nowrap" data-r="acciones">
                       <button type="button" className="btn chico" onClick={() => setEditando(l.id)}>Editar</button>{' '}
                       <form action={eliminarLinea} style={{ display: 'inline' }}>
                         <input type="hidden" name="id" value={id} /><input type="hidden" name="id_linea" value={l.id} />
@@ -196,7 +196,7 @@ function FilaEdicion({ id, l, onFin }: { id: number; l: Linea; onFin: () => void
   }, {});
   const f = `edit-${l.id}`;
   return (
-    <tr>
+    <tr className="editando">
       <td>
         {l.nombre}
         <form id={f} action={accion}><input type="hidden" name="id" value={id} /><input type="hidden" name="id_linea" value={l.id} /></form>
@@ -207,7 +207,7 @@ function FilaEdicion({ id, l, onFin }: { id: number; l: Linea; onFin: () => void
       <td className="num"><input form={f} name="cantidad" type="number" min="1" step="1" defaultValue={l.cantidad} style={{ width: 70 }} /></td>
       <td className="num"><input form={f} name="precio" type="number" step="0.01" min="0" defaultValue={l.pvp} style={{ width: 90 }} /></td>
       <td className="num"><input form={f} name="descuento" type="number" step="0.01" min="0" max="100" defaultValue={l.descuento_pct} style={{ width: 70 }} /></td>
-      <td colSpan={4}></td>
+      <td colSpan={4} data-r="ocultar"></td>
       <td className="nowrap">
         <button form={f} className="btn chico primario" disabled={pend}>Guardar</button>{' '}
         <button type="button" className="btn chico" onClick={onFin}>Cancelar</button>
@@ -293,7 +293,7 @@ export function AdicionalesFactura({ id, adicionales }: { id: number; adicionale
 export type Requisito = { ok: boolean; texto: string };
 
 /** Lista de lo que falta para emitir + botones de emitir / eliminar borrador */
-export function BotonesFactura({ id, permitido, requisitos }: { id: number; permitido: boolean; requisitos: Requisito[] }) {
+export function BotonesFactura({ id, permitido, requisitos, total }: { id: number; permitido: boolean; requisitos: Requisito[]; total?: number }) {
   const [e, accion, pend] = useActionState<Estado, FormData>(emitirFactura, {});
   const listo = requisitos.every((r) => r.ok);
   return (
@@ -322,6 +322,18 @@ export function BotonesFactura({ id, permitido, requisitos }: { id: number; perm
         </form>
       </div>
       {!listo && <p className="muted" style={{ marginBottom: 0, fontSize: '0.85rem' }}>El botón se habilita cuando todo esté en ✓.</p>}
+      {/* Celular: total y «Emitir» siempre a mano */}
+      <form action={accion} className="barra-acciones-movil barra-emitir">
+        <input type="hidden" name="id" value={id} />
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <span className="muted" style={{ fontSize: 12 }}>{listo ? 'Total' : `Falta: ${requisitos.filter((r) => !r.ok).length} paso(s)`}</span>
+          <strong style={{ fontSize: 20 }}>${money(total ?? 0)}</strong>
+        </div>
+        <button className="btn primario" disabled={pend || !permitido || !listo}
+          onClick={(ev) => { if (!confirm('Se asignará el número, se firmará y se enviará al SRI. ¿Continuar?')) ev.preventDefault(); }}>
+          {pend ? 'Emitiendo…' : 'Emitir factura'}
+        </button>
+      </form>
     </div>
   );
 }

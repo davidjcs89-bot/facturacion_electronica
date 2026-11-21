@@ -280,3 +280,16 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
   .tabla.tarjetas td[data-r="sub2"][data-x] { margin-left: -4px; }
   .cabecera .acciones:not(:has(> :not(.solo-escritorio))) { display: none; }
 }
+
+/* ---------- celular: editor de factura ---------- */
+@media (max-width: 860px) {
+  .filtros .campo.ancho-movil { grid-column: 1 / -1; }
+  .tabla.tarjetas td[data-r="acciones"] { order: 7; flex-basis: 100%; display: flex; gap: 8px; margin-top: 6px; position: relative; z-index: 1; }
+  .tabla.tarjetas td[data-r="acciones"] .btn { min-height: 40px; flex: 1; }
+  .tabla.tarjetas td[data-r="acciones"] form { flex: 1; display: flex !important; }
+  .tabla.tarjetas tr.editando td { flex-basis: 100%; text-align: left; }
+  .tabla.tarjetas tr.editando td.num { flex-basis: calc(33% - 6px); }
+  .tabla.tarjetas tr.editando td.num input { width: 100% !important; }
+  .barra-emitir { grid-template-columns: auto 1fr; align-items: center; margin: 0; }
+  .barra-acciones-movil.barra-emitir > .btn:last-child { width: 100%; }
+}
