@@ -20,7 +20,7 @@ export default async function Revision({ searchParams }: { searchParams: SP }) {
   const servicios = prods.filter((p) => p.tipo === 2);
   const tabs = [
     { k: 'comprobantes', t: 'Comprobantes', n: docs.length },
-    { k: 'productos', t: 'Productos', n: productos.length },
+    { k: 'productos', t: 'Artículos', n: productos.length },
     { k: 'servicios', t: 'Servicios', n: servicios.length },
   ];
   const lista = t === 'servicios' ? servicios : productos;
@@ -61,7 +61,7 @@ export default async function Revision({ searchParams }: { searchParams: SP }) {
           </>
         )
       ) : (
-        lista.length === 0 ? <Vacio>No hay {t === 'servicios' ? 'servicios' : 'productos'} con problemas.</Vacio> : (
+        lista.length === 0 ? <Vacio>No hay {t === 'servicios' ? 'servicios' : 'artículos'} con problemas.</Vacio> : (
           <>
             {ivaAntiguo > 1 && <div className="alerta aviso" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
               <span>{ivaAntiguo} con IVA antiguo (12 % o 14 %). El SRI rechaza facturas con esas tarifas.</span><CorregirIva todos={ivaAntiguo} />
