@@ -44,17 +44,17 @@ export default async function Clientes({ searchParams }: { searchParams: SP }) {
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay clientes con ese criterio.</Vacio> : (
           <div className="tabla-wrap">
-            <table className="tabla">
+            <table className="tabla tarjetas">
               <thead><tr><th>Nombre / razón social</th><th>Identificación</th><th>Tipo</th><th>Correo</th><th>Celular</th><th>Código</th></tr></thead>
               <tbody>
                 {filas.map((c) => (
                   <tr key={c.id}>
-                    <td><Link href={`/clientes/${c.id}`}>{c.nombre_cliente}</Link></td>
-                    <td className="nowrap">{c.identificacion}</td>
-                    <td>{c.tipo}</td>
-                    <td>{c.correo?.toLowerCase()}</td>
-                    <td className="nowrap">{c.telefono_movil}</td>
-                    <td>{c.codigo}</td>
+                    <td data-r="titulo"><Link className="abrir" href={`/clientes/${c.id}`}>{c.nombre_cliente}</Link></td>
+                    <td className="nowrap" data-r="sub">{c.identificacion}</td>
+                    <td data-r="ocultar">{c.tipo}</td>
+                    <td data-r="extra">{c.correo?.toLowerCase()}</td>
+                    <td className="nowrap" data-r="sub2">{c.telefono_movil}</td>
+                    <td data-r="ocultar">{c.codigo}</td>
                   </tr>
                 ))}
               </tbody>

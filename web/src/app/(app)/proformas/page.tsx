@@ -36,15 +36,15 @@ export default async function Proformas({ searchParams }: { searchParams: SP }) 
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay proformas.</Vacio> : (
           <div className="tabla-wrap">
-            <table className="tabla">
+            <table className="tabla tarjetas">
               <thead><tr><th>N.º</th><th>Fecha</th><th>Cliente</th><th className="num">Total</th></tr></thead>
               <tbody>
                 {filas.map((f) => (
                   <tr key={f.id}>
-                    <td><Link href={`/proformas/${f.id}`}>{f.numero}</Link></td>
-                    <td className="nowrap">{fecha(f.fecha_emision)}</td>
-                    <td>{f.cliente}</td>
-                    <td className="num">{money(f.total)}</td>
+                    <td data-r="sub"><Link className="abrir" href={`/proformas/${f.id}`}>{f.numero}</Link></td>
+                    <td className="nowrap" data-r="sub2">{fecha(f.fecha_emision)}</td>
+                    <td data-r="titulo">{f.cliente}</td>
+                    <td className="num" data-r="monto">{money(f.total)}</td>
                   </tr>
                 ))}
               </tbody>

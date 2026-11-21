@@ -200,3 +200,38 @@ pre.xml { background: #0f1720; color: #d6e2f0; padding: 12px; border-radius: 6px
 .menu-mas .grupo-mas { padding: 12px 16px 4px; font-size: 12px; font-weight: 600; color: #5b6676; text-transform: uppercase; letter-spacing: 0.04em; }
 .menu-mas .item-mas { display: flex; justify-content: space-between; align-items: center; min-height: 48px; padding: 0 16px; border-top: 1px solid var(--border); color: var(--text); font-size: 15px; }
 .menu-mas .item-mas:hover { background: #fafbfd; text-decoration: none; }
+
+/* ---------- celular: listas como tarjetas (tabla.tarjetas + data-r en cada celda) ---------- */
+@media (max-width: 860px) {
+  .tabla.tarjetas thead { display: none; }
+  .tabla.tarjetas, .tabla.tarjetas tbody { display: block; }
+  .tabla.tarjetas tbody tr {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px;
+    padding: 12px 14px; border-bottom: 1px solid var(--border); position: relative;
+  }
+  .tabla.tarjetas tbody tr:last-child { border-bottom: 0; }
+  .tabla.tarjetas tbody td { display: block; border: 0; padding: 0; background: none !important; }
+  .tabla.tarjetas td[data-r="ocultar"] { display: none; }
+  .tabla.tarjetas td[data-r="titulo"] { order: 1; flex: 1 1 calc(100% - 120px); min-width: 0; font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tabla.tarjetas td[data-r="titulo"] a { color: var(--text); }
+  .tabla.tarjetas td[data-r="monto"] { order: 2; margin-left: auto; font-weight: 700; font-size: 16px; text-align: right; }
+  .tabla.tarjetas td[data-r="monto"]::before { content: '$'; }
+  .tabla.tarjetas td[data-r="sub"] { order: 3; font-size: 13px; color: var(--muted); }
+  .tabla.tarjetas td[data-r="sub"] a { color: var(--muted); }
+  .tabla.tarjetas td[data-r="sub"] .muted { display: none; }
+  .tabla.tarjetas td[data-r="sub2"] { order: 4; font-size: 13px; color: var(--muted); }
+  .tabla.tarjetas td[data-r="sub2"]::before { content: '· '; }
+  .tabla.tarjetas td[data-r="sub2"][data-p]::before { content: '· ' attr(data-p); }
+  .tabla.tarjetas td[data-r="estado"] { order: 5; margin-left: auto; }
+  .tabla.tarjetas td[data-r="extra"] { order: 6; flex-basis: 100%; font-size: 13px; color: var(--muted); }
+  .tabla.tarjetas td[data-r="extra"][data-p]::before { content: attr(data-p); }
+  .tabla.tarjetas td[data-r="extra"]:empty, .tabla.tarjetas td[data-r="sub2"]:empty, .tabla.tarjetas td[data-r="sub"]:empty { display: none; }
+  .tabla.tarjetas a.abrir::after { content: ''; position: absolute; inset: 0; }
+  .tabla.tarjetas tbody tr:active { background: #f1f4f9; }
+  .tabla.tarjetas td[data-r="monto"], .tabla.tarjetas td.num { text-align: right; }
+
+  .filtros { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .filtros .campo, .filtros .campo.busqueda { min-width: 0; }
+  .filtros .campo.busqueda { grid-column: 1 / -1; }
+  .filtros > .btn { grid-column: 1 / -1; min-height: 44px; }
+}

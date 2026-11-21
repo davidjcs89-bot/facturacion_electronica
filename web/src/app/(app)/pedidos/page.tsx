@@ -37,18 +37,18 @@ export default async function Pedidos({ searchParams }: { searchParams: SP }) {
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay pedidos.</Vacio> : (
           <div className="tabla-wrap">
-            <table className="tabla">
+            <table className="tabla tarjetas">
               <thead><tr><th>N.º</th><th>Fecha</th><th>Cliente</th><th className="num">Total</th><th className="num">Abonado</th><th className="num">Saldo</th><th>Estado</th></tr></thead>
               <tbody>
                 {filas.map((f) => (
                   <tr key={f.id}>
-                    <td className="nowrap"><Link href={`/pedidos/${f.id}`}>{f.numero}</Link></td>
-                    <td className="nowrap">{fecha(f.fecha_creacion)}</td>
-                    <td>{f.cliente}</td>
-                    <td className="num">{money(f.total)}</td>
-                    <td className="num">{money(f.abonado)}</td>
-                    <td className="num">{money(Number(f.total) - Number(f.abonado))}</td>
-                    <td><Estado id={f.estado} /></td>
+                    <td className="nowrap" data-r="sub"><Link className="abrir" href={`/pedidos/${f.id}`}>{f.numero}</Link></td>
+                    <td className="nowrap" data-r="sub2">{fecha(f.fecha_creacion)}</td>
+                    <td data-r="titulo">{f.cliente}</td>
+                    <td className="num" data-r="monto">{money(f.total)}</td>
+                    <td className="num" data-r="ocultar">{money(f.abonado)}</td>
+                    <td className="num" data-r="extra" data-p="Saldo $">{money(Number(f.total) - Number(f.abonado))}</td>
+                    <td data-r="estado"><Estado id={f.estado} /></td>
                   </tr>
                 ))}
               </tbody>

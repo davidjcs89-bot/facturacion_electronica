@@ -41,18 +41,18 @@ export default async function Productos({ searchParams }: { searchParams: SP }) 
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay productos con ese criterio.</Vacio> : (
           <div className="tabla-wrap">
-            <table className="tabla">
+            <table className="tabla tarjetas">
               <thead><tr><th>Código</th><th>Nombre</th><th>Tipo</th><th>IVA</th><th className="num">Precio sin IVA</th><th className="num">P.V.P.</th><th className="num">Stock</th></tr></thead>
               <tbody>
                 {filas.map((x) => (
                   <tr key={x.id}>
-                    <td className="nowrap"><Link href={`/productos/${x.id}`}>{x.codigo}</Link>{x.codigo_auxiliar && <div className="muted">{x.codigo_auxiliar}</div>}</td>
-                    <td><Link href={`/productos/${x.id}`}>{x.nombre}</Link></td>
-                    <td>{x.tipo}</td>
-                    <td className="nowrap">{x.iva}</td>
-                    <td className="num">{money(x.precio)}</td>
-                    <td className="num">{money(Number(x.precio) * (1 + Number(x.iva_pct) / 100))}</td>
-                    <td className="num">{x.stock ?? ''}</td>
+                    <td className="nowrap" data-r="sub"><Link href={`/productos/${x.id}`}>{x.codigo}</Link>{x.codigo_auxiliar && <div className="muted">{x.codigo_auxiliar}</div>}</td>
+                    <td data-r="titulo"><Link className="abrir" href={`/productos/${x.id}`}>{x.nombre}</Link></td>
+                    <td data-r="ocultar">{x.tipo}</td>
+                    <td className="nowrap" data-r="ocultar">{x.iva}</td>
+                    <td className="num" data-r="ocultar">{money(x.precio)}</td>
+                    <td className="num" data-r="monto">{money(Number(x.precio) * (1 + Number(x.iva_pct) / 100))}</td>
+                    <td className="num" data-r={x.stock == null ? 'ocultar' : 'sub2'} data-p="Stock ">{x.stock ?? ''}</td>
                   </tr>
                 ))}
               </tbody>

@@ -50,17 +50,17 @@ export default async function Facturas({ searchParams }: { searchParams: SP }) {
       <div className="card sin-padding">
         {filas.length === 0 ? <Vacio>No hay facturas con ese criterio.</Vacio> : (
           <div className="tabla-wrap">
-            <table className="tabla">
+            <table className="tabla tarjetas">
               <thead><tr><th>Número</th><th>Fecha</th><th>Cliente</th><th>Identificación</th><th className="num">Total</th><th>Estado</th></tr></thead>
               <tbody>
                 {filas.map((f) => (
                   <tr key={f.id}>
-                    <td className="nowrap"><Link href={f.estado <= 2 ? `/facturas/${f.id}/editar` : `/facturas/${f.id}`}>{f.numero || `Borrador #${f.id}`}</Link></td>
-                    <td className="nowrap">{fecha(f.fecha_emision)}</td>
-                    <td>{f.cliente}</td>
-                    <td className="nowrap">{f.identificacion}</td>
-                    <td className="num">{money(f.total)}</td>
-                    <td><Estado id={f.estado} /></td>
+                    <td className="nowrap" data-r="sub"><Link className="abrir" href={f.estado <= 2 ? `/facturas/${f.id}/editar` : `/facturas/${f.id}`}>{f.numero || `Borrador #${f.id}`}</Link></td>
+                    <td className="nowrap" data-r="sub2">{fecha(f.fecha_emision)}</td>
+                    <td data-r="titulo">{f.cliente}</td>
+                    <td className="nowrap" data-r="ocultar">{f.identificacion}</td>
+                    <td className="num" data-r="monto">{money(f.total)}</td>
+                    <td data-r="estado"><Estado id={f.estado} /></td>
                   </tr>
                 ))}
               </tbody>
